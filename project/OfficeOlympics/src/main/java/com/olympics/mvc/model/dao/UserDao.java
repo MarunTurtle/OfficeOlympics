@@ -1,0 +1,24 @@
+package com.olympics.mvc.model.dao;
+
+import java.util.List;
+
+import com.olympics.mvc.model.dto.User;
+
+public interface UserDao {
+	
+	// 회원 가입
+	int insertUser(User user);
+	
+	// 회원 정보 조회
+	User selectUser(User user);
+	
+	// 전체 회원 정보 조회
+	List<User> selectAccounts();
+	
+	// 회원 삭제
+	int deleteUser(int id);
+	
+	// 회원 정보 수정
+	int modifyUser(User user);
+	
+}
