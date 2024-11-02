@@ -3,17 +3,36 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.olympics.mvc.model.dao.UserDao">
+<!-- mybatis에서 dto 변수와 DB column을 잘 매칭시키지 못해서 resultMap 사용함 (11/02) -->
+<resultMap id="userResultMap" type="User">
+    <id property="user_id" column="user_id"/>
+    <result property="email" column="email"/>
+    <result property="password" column="password"/>
+    <result property="salt" column="salt"/>
+    <result property="name" column="name"/>
+    <result property="profile_img" column="profile_img"/>
+    <result property="img_src" column="img_src"/>
+    <result property="reg_date" column="reg_date"/>
+</resultMap>
 
 	<!-- 회원 가입 insertUser -->
-	<insert id="insertUser" parameterType="User">
-		INSERT INTO users (email, password, name, profile_img, img_src)
-		VALUES (#{email}, #{password}, #{name}, #{profile_img}, #{img_src});
+	<!-- keyProperty는 데이터베이스에 레코드를 삽입할 때 자동으로 생성된 키 값을 매핑하는 역할 -->
+	<!-- useGeneratedKeys="true" 설정을 통해 통해 새로 삽입된 레코드의 ID 값을 MyBatis에서 바로 사용할 수 있음-->
+	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="user_id" keyColumn="user_id">
+		INSERT INTO users (email, password, salt, name, profile_img, img_src)
+		VALUES (#{email}, #{password}, #{salt}, #{name}, #{profile_img}, #{img_src});
 	</insert>
 	
 	<!-- 회원 정보 조회 selectUser -->
-	<select id="selectUser" resultType="User" parameterType="User">
+	<select id="selectUser" resultMap="userResultMap" parameterType="String">
 		SELECT * FROM users
 		WHERE email = #{email};
+	</select>
+	
+	<!--  회원 정보 id로 조회 selectById-->
+	<select id="selectById" resultType ="User" parameterType="int">
+		SELECT * FROM users
+		WHERE user_id = #{user_id};
 	</select>
 	
 	<!-- 회원 삭제 deleteUser -->
@@ -22,13 +41,14 @@
 		WHERE user_id = #{user_id};
 	</delete>
 	
-	<!-- 회원 정보 수정 modifyUser -->
+	<!-- 회원 정보 수정 (비밀번호 제외) modifyUser -->
 	<update id="modifyUser" parameterType="User">
 		UPDATE users
-		SET email = #{email}, password = #{password}, name = #{name}, profile_img = #{profile_img},
-		img_src = #{img_src}
+		SET email = #{email}, name = #{name}, profile_img = #{profile_img}, img_src = #{img_src}
 		WHERE user_id = #{user_id};
 	</update>
+	
+	<!-- 비밀번호 수정 -->
 	
 	<!-- 전체 회원 정보 조회 selectAccounts -->
 	<select id="selectAccounts" resultType="User">
