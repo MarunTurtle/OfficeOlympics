@@ -12,6 +12,9 @@ public interface UserDao {
 	// 회원 정보 조회
 	User selectUser(String email);
 	
+	// id index로 회원 조회
+	User selectById(int id);
+	
 	// 전체 회원 정보 조회
 	List<User> selectAccounts();
 	

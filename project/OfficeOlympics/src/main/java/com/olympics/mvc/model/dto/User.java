@@ -3,24 +3,31 @@ package com.olympics.mvc.model.dto;
 public class User {
 	int user_id;
 	String email; // 로그인 아이디
-	String password; // 비밀번호
+	String password; // 비밀번호 (SHA-256)
+	String salt; // 개별 salt
 	String name; // 닉네임
 	String profile_img; // 사용자가 등록한 사진 이름
 	String img_src; // 서버에 저장한 이름
 	String reg_date; // 가입일자
 	
+	public User() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	// User 생성자
-	public User(int user_id, String email, String password, String name, String profile_img, String img_src,
-			String reg_date) {
+	public User(int user_id, String email, String password, String salt, String name, String profile_img,
+			String img_src, String reg_date) {
+		super();
 		this.user_id = user_id;
 		this.email = email;
 		this.password = password;
+		this.salt = salt;
 		this.name = name;
 		this.profile_img = profile_img;
 		this.img_src = img_src;
 		this.reg_date = reg_date;
 	}
-	
+
 	// Getters, Setters
 	public int getUser_id() {
 		return user_id;
@@ -44,6 +51,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 	public String getName() {
@@ -80,10 +95,9 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "UserDto [user_id=" + user_id + ", email=" + email + ", password=" + password + ", name=" + name
-				+ ", profile_img=" + profile_img + ", img_src=" + img_src + ", reg_date=" + reg_date + "]";
+		return "User [ user_id="+ user_id + ", email=" + email + ", name=" + name + ", profile_img=" + profile_img + ", reg_date=" + reg_date
+				+ "]";
 	}
-	
 
 	
 }
