@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.olympics.mvc.model.Service.UserService;
 import com.olympics.mvc.model.dto.User;
+import com.olympics.mvc.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name="User Restful API", description = "계정관련 CRUD")
+@Tag(name="User Auth Restful API", description = "계정관련 CRUD")
 public class AuthController {
 	
 	private final UserService userService;
@@ -86,7 +86,7 @@ public class AuthController {
 	// 회원가입
 	//required=false 속성을 추가하여 profile_img 파라미터가 선택 사항임을 지정
 	@PostMapping("/regist")
-	@Operation(summary = "회원가입", description = "회원가입을 수행합니다.")
+	@Operation(summary = "회원가입 로직 수행", description = "회원가입을 수행합니다.")
 	public ResponseEntity<String> regist(@RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("name") String name,

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.olympics.mvc.model.Service.UserService;
 import com.olympics.mvc.model.dto.User;
+import com.olympics.mvc.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/accounts")
-@Tag(name="User Restful API", description = "계정관련 CRUD")
+@Tag(name="User Accounts Restful API", description = "계정관련 CRUD")
 public class AccountController {
 	
 	private final UserService userService;
@@ -77,7 +77,7 @@ public class AccountController {
 	
 	// 회원 탈퇴 (본인 확인)
     @DeleteMapping("/{id}")
-    @Operation(summary = "회원 탈퇴", description = "세션 인증 후 회원 탈퇴하는 기능입니다.")
+    @Operation(summary = "회원 탈퇴 로직 수행", description = "세션 인증 후 회원 탈퇴하는 기능입니다.")
     public ResponseEntity<String> deleteUser(@PathVariable("id") int id, HttpSession session) {
     	
         // 세션에서 로그인한 사용자 ID 확인

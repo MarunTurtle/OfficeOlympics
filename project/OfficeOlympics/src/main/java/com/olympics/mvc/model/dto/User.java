@@ -1,5 +1,8 @@
 package com.olympics.mvc.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "User DTO")
 public class User {
 	int user_id;
 	String email; // 로그인 아이디
