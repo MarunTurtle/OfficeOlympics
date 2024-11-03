@@ -1,4 +1,4 @@
-package com.olympics.mvc.model.Service;
+package com.olympics.mvc.model.service;
 
 import java.io.File;
 import java.util.List;
