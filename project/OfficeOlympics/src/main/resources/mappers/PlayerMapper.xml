@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.PlayerDao">
+
+	<!-- 올림픽 팀 생성 (자동 생성된 ID를 Olympics 객체의 olympicsId에 매핑) -->
+    <insert id="insertOlympics" parameterType="Olympics" useGeneratedKeys="true" keyProperty="olympicsId" keyColumn="olympics_id">
+        INSERT INTO olympics (user_id, olympics_name)
+        VALUES (#{userId}, #{olympicsName})
+    </insert>
+	
+	<!-- insertPlayers -->
+	<insert id="insertPlayers" parameterType="list" useGeneratedKeys="true" keyColumn="player_id">
+		INSERT INTO players (olympics_id, player_name, total_score, reg_date)
+        VALUES
+        <foreach collection="players" item="player" separator=",">
+            (#{player.olympicsId}, #{player.playerName}, #{player.totalScore}, NOW())
+        </foreach>
+    </insert>
+	
+	<!-- getPlayersByOlympicsId -->
+	<select id="getPlayersByOlympicsId" parameterType="int" resultMap="Player">
+		SELECT * FROM players
+		WHERE olympics_id = #{olympicsId};
+	</select>
+	
+	<!-- deleteOlympics -->
+	<delete id="deleteOlympics" parameterType="int">
+		DELETE FROM olympics
+		WHERE olympics_id = #{olympicsId};
+	</delete>
+	
+</mapper>
