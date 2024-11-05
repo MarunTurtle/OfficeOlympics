@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService{
 				String fileSrc = UUID.randomUUID().toString();
 				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
 				
-				user.setProfile_img(fileName);
-				user.setImg_src(fileSrc+extension);
+				user.setProfileImg(fileName);
+				user.setImgSrc(fileSrc+extension);
 				
 				// 저장 경로 설정
 				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
@@ -68,8 +68,8 @@ public class UserServiceImpl implements UserService{
 				e.printStackTrace();
 			}
 		} else {
-			user.setProfile_img(null);
-			user.setImg_src(null);
+			user.setProfileImg(null);
+			user.setImgSrc(null);
 		}
 		
 		int res = userDao.insertUser(user);
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public boolean modifyUser(User user, MultipartFile profileImg) {
 		// 기존 사용자 정보 조회
-		User exUser = userDao.selectById(user.getUser_id()); 
+		User exUser = userDao.selectById(user.getUserId()); 
 		// 파일이 있으면 저장
 		if (profileImg != null && profileImg.getSize() > 0) {
 			try {
@@ -103,8 +103,8 @@ public class UserServiceImpl implements UserService{
 				String fileId = UUID.randomUUID().toString();
 				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
 				
-				user.setProfile_img(fileName);
-				user.setImg_src(fileId+extension);
+				user.setProfileImg(fileName);
+				user.setImgSrc(fileId+extension);
 				
 				// 저장 경로 설정
 				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
@@ -122,8 +122,8 @@ public class UserServiceImpl implements UserService{
 				}
 			} else {
 				// 이미지 파일이 없으면 기존 이미지 데이터 유지
-	            user.setProfile_img(exUser.getProfile_img());
-	            user.setImg_src(exUser.getImg_src());
+	            user.setProfileImg(exUser.getProfileImg());
+	            user.setImgSrc(exUser.getImgSrc());
 			}
 		
 		// 기타 정보 업데이트 (빈 값이 덮어쓰지 않도록 처리)
