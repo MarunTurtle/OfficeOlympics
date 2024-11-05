@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.olympics.mvc.model.dao.PlayerDao;
+import com.olympics.mvc.model.dto.OlympicsSetup;
 import com.olympics.mvc.model.dto.Player;
 
 @Service
@@ -15,41 +16,43 @@ public class PlayerServiceImpl implements PlayerService{
 	public PlayerServiceImpl(PlayerDao playerDao) {
 		this.playerDao = playerDao;
 	}
-
+	
+	// 올림픽 팀 생성
 	@Override
 	public int insertOlympics(int userId, String olympicsName) {
-		Player olympics = new Player();
-	    olympics.setUser_id(userId);
-	    olympics.setOlympics_name(olympicsName);
+		// 틀 생성
+		OlympicsSetup olympics = new OlympicsSetup();
+		// olympics 기본 설정
+	    olympics.setUserId(userId);
+	    olympics.setOlympicsName(olympicsName);
 
 	    playerDao.insertOlympics(olympics); // 자동 생성된 olympicsId가 olympics 객체에 설정됨
-	    return olympics.getOlympics_id(); // 생성된 ID 반환
+	    return olympics.getOlympicsId(); // 생성된 olympics ID 반환
+	}
+
+	// 여러 플레이어 삽입
+	@Override
+	public boolean insertPlayers(List<Player> players) {
+		int result = playerDao.insertPlayers(players);
+		return result == players.size();
 	}
 	
-	@Override
-	public int getOlympicsIdByUserId(int userId) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int insertPlayers(List<Player> players) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+	// 특정 올림픽의 팀원 조회
 	@Override
 	public List<Player> getPlayersByOlympicsId(int olympicsId) {
-		// TODO Auto-generated method stub
-		return null;
+		return playerDao.getPlayersByOlympicsId(olympicsId);
+	}
+	
+	// 올림픽 팀 삭제
+	@Override
+	public boolean deleteOlympics(int id) {
+		int isDeleted = playerDao.deleteOlympics(id);
+		return isDeleted == 1;
 	}
 
 	@Override
-	public boolean deleteOlympics(int id) {
-		// TODO Auto-generated method stub
-		return false;
+	public int selectGenerateUserId(int olympicsId) {
+		return playerDao.selectGenerateUserId(olympicsId);
 	}
-
-	
 
 }

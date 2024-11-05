@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/olympics")
@@ -34,55 +36,84 @@ public class OlympicsController {
 	
 	// 올림픽 팀 생성 및 설정
     @PostMapping("/team")
-    public ResponseEntity<String> generateOlympics(@RequestBody OlympicsSetup setup) {
+    public ResponseEntity<String> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
         try {
+        	System.out.println(session.getAttribute("loginUserId"));
+        	setup.setUserId((int) session.getAttribute("loginUserId"));
+        	// 사용자가 새로운 올림픽 팀을 생성
             int olympicsId = playerService.insertOlympics(setup.getUserId(), setup.getOlympicsName());
-
+            System.out.println(olympicsId);
+            // 플레이어 목록을 Player 객체로 변환하여 List에 추가
             List<Player> players = new ArrayList<>();
             if (setup.getPlayerNames() != null) {
                 for (String playerName : setup.getPlayerNames()) {
-                    if (playerName != null && !playerName.trim().isEmpty()) {
-                        players.add(new Player(olympicsId, setup.getUserId(), playerName, 0, null));
+                    if (playerName != null && !playerName.trim().isEmpty()) { // 프론트에서 유효성 검사 하면 해당 조건문없이 바로 추가하는 작업 진행 가능
+                    	// 유효한 플레이어 이름이 있는 경우 Player 객체로 변환하여 추가
+                        players.add(new Player(olympicsId, 0, playerName, 0, null));
                     }
                 }
             }
-
+            
+            // 플레이어 목록이 비어있지 않은 경우에 DB에 일괄 삽입
             if (!players.isEmpty()) {
                 playerService.insertPlayers(players);
             }
 
             return new ResponseEntity<>("Olympics 팀 생성 완료", HttpStatus.OK);
+            
+        } catch(DataAccessException dae) {
+        	// 데이터 접근 예외 발생 시 처리
+        	dae.printStackTrace();
+            return new ResponseEntity<>("데이터베이스 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception e) {
+        	// 예외 발생 시 에러 메시지와 500 상태 코드 반환
+        	e.printStackTrace();
             return new ResponseEntity<>("요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 		
 	
- // 올림픽 팀원 조회
+    // 특정 올림픽 팀의 플레이어 조회
     @GetMapping("/team/{olympic_id}")
     public ResponseEntity<?> getPlayers(@PathVariable("olympic_id") int olympicId) {
         try {
+        	// 올림픽 ID에 속한 플레이어 목록 조회
             List<Player> players = playerService.getPlayersByOlympicsId(olympicId);
-            if (players != null && !players.isEmpty()) {
-                return new ResponseEntity<>(players, HttpStatus.OK);
+            if (players.isEmpty()) {
+                return ResponseEntity.noContent().build(); // No Content 상태 코드 반환
             }
-            return new ResponseEntity<>("등록된 팀원이 없습니다.", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(players, HttpStatus.OK);
+        } catch (DataAccessException dae) {
+            return new ResponseEntity<>("데이터베이스 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>("요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 	
- // 올림픽 팀 삭제
+    // 올림픽 팀 삭제
     @DeleteMapping("/team/{olympic_id}")
-    public ResponseEntity<String> deleteOlympics(@PathVariable("olympic_id") int olympicId) {
+    public ResponseEntity<String> deleteOlympics(@PathVariable("olympic_id") int olympicsId, HttpSession session) {
         try {
-            boolean res = playerService.deleteOlympics(olympicId);
-            if (res) {
-                return new ResponseEntity<>("Olympic 삭제가 완료되었습니다.", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Olympic 삭제 실패", HttpStatus.BAD_REQUEST);
+        	
+        	Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
+        	
+        	// 해당 유저가 만든 올림픽 팀만 삭제 가능하도록 확인
+        	if (sessionUserId == playerService.selectGenerateUserId(olympicsId)) {
+        		// 올림픽 ID에 해당하는 팀 삭제 시도
+        		boolean isDeleted = playerService.deleteOlympics(olympicsId);
+        		if (isDeleted) {
+        			return ResponseEntity.noContent().build(); // 성공 시 No Content 반환
+        		}
+        		return new ResponseEntity<>("올림픽 팀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);        		
+        	}
+//        	return new ResponseEntity<>("본인이 생성한 팀만 삭제 가능.", HttpStatus.BAD_REQUEST);
+        	return ResponseEntity.badRequest().build(); // 다른 사람이 만든 팀을 삭제하려했을경우 Bad Request 반환
+        } catch (DataAccessException dae) {
+            return new ResponseEntity<>("데이터베이스 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>("요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
