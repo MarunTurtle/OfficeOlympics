@@ -52,7 +52,7 @@ public class AccountController {
     @Operation(summary = "사용자 정보 수정", description = "내 정보를 수정할 수 있습니다.")
     public ResponseEntity<String> modifyUser(@PathVariable("id") int id, @RequestParam("email") String email,
             @RequestParam("name") String name,
-            @RequestParam(value = "profile_img", required = false) MultipartFile profileImg, 
+            @RequestParam(value = "profileImg", required = false) MultipartFile profileImg, 
             HttpSession session) {
     	
     	// 세션에서 로그인한 사용자 ID 확인
@@ -63,12 +63,12 @@ public class AccountController {
         
         // 수정할 User 객체 생성 및 초기화
         User user = new User();
-        user.setUser_id(id);
+        user.setUserId(id);
         user.setEmail(email);
         user.setName(name);
         
         // 수정 처리
-    	user.setUser_id(id);
+    	user.setUserId(id);
         boolean res = userService.modifyUser(user, profileImg);
         if (res) 
             return new ResponseEntity<>(user.getName() + "님의 정보를 수정했습니다.", HttpStatus.OK);

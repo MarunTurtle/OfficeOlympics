@@ -51,7 +51,7 @@ public class AuthController {
 	            session = request.getSession(true); // 새로운 세션 생성 (세션 고정 공격 방지)
 	            
 	            // 사용자 정보 세션에 저장
-	            session.setAttribute("loginUserId", loginUser.getUser_id()); // 사용자 ID
+	            session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
 	            session.setAttribute("loginUserName", loginUser.getName()); // 사용자 이름
 	            session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
 	            System.out.println(session.getAttribute("loginUserId"));
@@ -90,7 +90,7 @@ public class AuthController {
 	public ResponseEntity<String> regist(@RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("name") String name,
-            @RequestParam(value = "profile_img", required = false) MultipartFile profileImg) {
+            @RequestParam(value = "profileImg", required = false) MultipartFile profileImg) {
 		try {
 		// 사용자 객체 생성 및 정보 설정
 		User user = new User();
