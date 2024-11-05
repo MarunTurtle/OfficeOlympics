@@ -1,6 +1,8 @@
 package com.olympics.mvc.model.dto;
 
-// players, olympics table
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Player DTO")
 public class Player {
 	int olympicsId; // 참여한 올림픽 id
 	int playerId; // 플레이어 id 
@@ -13,8 +15,7 @@ public class Player {
 	}
 	
 	// 전체 생성자
-	public Player(int olympicsId, int playerId, String playerName,
-			int totalScore, String regDate) {
+	public Player(int olympicsId, int playerId, String playerName, int totalScore, String regDate) {
 		super();
 		this.olympicsId = olympicsId;
 		this.playerId = playerId;
