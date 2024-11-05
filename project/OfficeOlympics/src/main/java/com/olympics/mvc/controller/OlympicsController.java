@@ -19,6 +19,7 @@ import com.olympics.mvc.model.dto.OlympicsSetup;
 import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.service.PlayerService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 
@@ -36,6 +37,7 @@ public class OlympicsController {
 	
 	// 올림픽 팀 생성 및 설정
     @PostMapping("/team")
+    @Operation(summary = "올림픽 팀 생성 로직", description = "올림픽 팀 이름, 멤버 이름을 json형식으로 전송하여 팀 생성 후 멤버를 추가합니다.")
     public ResponseEntity<String> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
         try {
         	System.out.println(session.getAttribute("loginUserId"));
@@ -75,6 +77,7 @@ public class OlympicsController {
 	
     // 특정 올림픽 팀의 플레이어 조회
     @GetMapping("/team/{olympic_id}")
+    @Operation(summary = "특정 올림픽 팀의 플레이어 조회", description = "올림픽 id 값을 통해 해당 올림픽 내의 플레이어를 조회합니다.")
     public ResponseEntity<?> getPlayers(@PathVariable("olympic_id") int olympicId) {
         try {
         	// 올림픽 ID에 속한 플레이어 목록 조회
@@ -94,6 +97,7 @@ public class OlympicsController {
 	
     // 올림픽 팀 삭제
     @DeleteMapping("/team/{olympic_id}")
+    @Operation(summary = "올림픽 팀 삭제", description = "session에 등록된 userId를 대조하여 해당 userId가 생성한 팀일 경우에만 팀을 삭제합니다.")
     public ResponseEntity<String> deleteOlympics(@PathVariable("olympic_id") int olympicsId, HttpSession session) {
         try {
         	

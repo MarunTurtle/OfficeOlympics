@@ -2,7 +2,9 @@ package com.olympics.mvc.model.dto;
 
 import java.util.List;
 
-// Olympics 팀 Setting
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Olympics Team Setting DTO")
 public class OlympicsSetup {
 	
 	private int olympicsId;

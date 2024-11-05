@@ -7,6 +7,10 @@
 
 ## 주요 코드 구조 및 로직
 
+### Swagger API 이미지
+
+![be_olympics.png](../media/backend/be_olympics.png)
+
 - **올림픽 팀 관리**: `OlympicsController`와 `PlayerService`를 통해 올림픽 팀을 생성, 조회, 삭제할 수 있는 기능이 구현되어 있습니다.
 - **데이터베이스 연동**: `PlayerDao`와 `PlayerMapper.xml`을 이용해 MyBatis로 데이터베이스와 상호작용하며, `Player` 및 `OlympicsSetup` 객체와 관련된 데이터 CRUD 작업을 수행합니다.
 - **DTO 및 서비스 계층 구성**: `OlympicsSetup` 및 `Player` DTO를 통해 데이터 구조를 정의하며, `PlayerServiceImpl`을 통해 서비스 계층에서 비즈니스 로직을 처리합니다.
