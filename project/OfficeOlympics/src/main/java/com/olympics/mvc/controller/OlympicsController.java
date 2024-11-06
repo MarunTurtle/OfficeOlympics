@@ -42,7 +42,7 @@ public class OlympicsController {
 	
 	
 	// 올림픽 팀 생성 및 설정
-	@PostMapping("/team")
+	@PostMapping("")
     @Operation(summary = "올림픽 팀 생성 로직", description = "올림픽 팀 이름, 멤버 이름을 json형식으로 전송하여 팀 생성 후 멤버를 추가합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "올림픽 팀 생성 성공"),
@@ -106,7 +106,7 @@ public class OlympicsController {
 	
 	
     // 올림픽 팀 삭제
-	@DeleteMapping("/team/{olympic_id}")
+	@DeleteMapping("/team/{olympicId}")
     @Operation(summary = "올림픽 팀 삭제", description = "session에 등록된 userId를 대조하여 해당 userId가 생성한 팀일 경우에만 팀을 삭제합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "올림픽 팀 삭제 성공"),
