@@ -70,12 +70,11 @@ public class AccountController {
     })
     @Parameters({
         @Parameter(name = "userId", description = "수정할 사용자의 ID", required = true),
-        @Parameter(name = "email", description = "수정할 이메일 주소", required = true),
-        @Parameter(name = "name", description = "수정할 이름", required = true),
+        @Parameter(name = "nickname", description = "수정할 닉네임", required = true),
         @Parameter(name = "profileImg", description = "업로드할 프로필 이미지 파일", required = false)
     })
-    public ResponseEntity<String> modifyUser(@PathVariable("userId") int userId, @RequestParam("email") String email,
-            @RequestParam("name") String name,
+    public ResponseEntity<String> modifyUser(@PathVariable("userId") int userId, 
+    		@RequestParam("nickname") String nickname,
             @RequestParam(value = "profileImg", required = false) MultipartFile profileImg, 
             HttpSession session) {
     	
@@ -86,10 +85,8 @@ public class AccountController {
         }
         
         // 수정할 User 객체 생성 및 초기화
-        User user = new User();
-        user.setUserId(userId);
-        user.setEmail(email);
-        user.setName(name);
+        User user = userService.selectById(userId);
+        user.setNickname(nickname);
         
         // 수정 처리
     	user.setUserId(userId);
