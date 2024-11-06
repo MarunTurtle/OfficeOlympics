@@ -15,13 +15,13 @@
 	
 	<!-- 회원 정보 조회 selectUser -->
 	<select id="selectUser" resultType="User" parameterType="String">
-		SELECT email, name, nickname, profileImg, regDate FROM users
+		SELECT * FROM users
 		WHERE email = #{email};
 	</select>
 	
 	<!--  회원 정보 id로 조회 selectById-->
 	<select id="selectById" resultType ="User" parameterType="int">
-		SELECT email, name, nickname, profileImg, regDate FROM users
+		SELECT email, name, nickname, profile_img, reg_date FROM users
 		WHERE user_id = #{userId};
 	</select>
 	

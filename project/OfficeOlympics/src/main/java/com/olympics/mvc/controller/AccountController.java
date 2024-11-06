@@ -61,7 +61,7 @@ public class AccountController {
 	
 	
     // 정보 수정
-    @PutMapping("/{id}")
+    @PutMapping("/{userId}")
     @Operation(summary = "사용자 정보 수정", description = "내 정보를 수정할 수 있습니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "회원 정보 수정 성공"),
