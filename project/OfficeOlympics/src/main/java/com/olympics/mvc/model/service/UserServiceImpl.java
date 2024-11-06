@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService{
 		return hashedInputPassword.equals(user.getPassword());
 	}
 
-	// id index로 회원 조회
+	// id index로 회원 조회 (마이페이지 조회)
 	@Override
 	public User selectById(int id) {
 		return userDao.selectById(id);

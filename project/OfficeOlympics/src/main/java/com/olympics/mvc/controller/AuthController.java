@@ -69,11 +69,9 @@ public class AuthController {
 	            
 	            // 사용자 정보 세션에 저장
 	            session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
-	            session.setAttribute("loginUserName", loginUser.getName()); // 사용자 이름
 	            session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
-	            System.out.println(session.getAttribute("loginUserId"));
 	            
-	            return new ResponseEntity<>(loginUser.getName()+"님 로그인 성공", HttpStatus.OK);
+	            return new ResponseEntity<>(loginUser.getNickname()+"님 로그인 성공", HttpStatus.OK);
 	        } else {
 	            // 조회 실패 시 실패 메시지 반환
 	            return new ResponseEntity<>("로그인 실패: 이메일 또는 비밀번호를 확인하세요", HttpStatus.BAD_REQUEST);
@@ -118,16 +116,19 @@ public class AuthController {
 		 @Parameter(name = "email", description = "회원가입할 사용자의 이메일", required = true),
 		 @Parameter(name = "password", description = "회원가입할 사용자의 비밀번호", required = true),
 		 @Parameter(name = "name", description = "회원가입할 사용자의 이름", required = true),
+		 @Parameter(name = "nickname", description = "회원가입할 사용자의 닉네임", required = true),
 		 @Parameter(name = "profileImg", description = "프로필 이미지 파일 (선택사항)", required = false)
 	})
 	public ResponseEntity<String> regist(@RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("name") String name,
+            @RequestParam("nickname") String nickname,
             @RequestParam(value = "profileImg", required = false) MultipartFile profileImg) {
 		try {
 		// 사용자 객체 생성 및 정보 설정
 		User user = new User();
 		user.setName(name);
+		user.setNickname(nickname);
 		user.setEmail(email);
 		user.setPassword(password);
 		
