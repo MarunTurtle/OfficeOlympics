@@ -2,52 +2,52 @@ package com.olympics.mvc.model.dto;
 
 // challenge table
 public class Challenge {
-	int challenge_id;
-	String challenge_name;
-	String challenge_desc;
-	String reg_date;
+	int challengeId;
+	String challengeName;
+	String challengeDesc;
+	String regDate;
 	
 	// 챌린지 정보 생성자
-	public Challenge(int challenge_id, String challenge_name, String challenge_desc, String reg_date) {
+	public Challenge(int challengeId, String challengeName, String challengeDesc, String regDate) {
 		super();
-		this.challenge_id = challenge_id;
-		this.challenge_name = challenge_name;
-		this.challenge_desc = challenge_desc;
-		this.reg_date = reg_date;
+		this.challengeId = challengeId;
+		this.challengeName = challengeName;
+		this.challengeDesc = challengeDesc;
+		this.regDate = regDate;
 	}
 
 	// Getters, Setters
-	public int getChallenge_id() {
-		return challenge_id;
-	}
-
-	public void setChallenge_id(int challenge_id) {
-		this.challenge_id = challenge_id;
-	}
-
-	public String getChallenge_name() {
-		return challenge_name;
-	}
-
-	public void setChallenge_name(String challenge_name) {
-		this.challenge_name = challenge_name;
-	}
-
-	public String getChallenge_desc() {
-		return challenge_desc;
-	}
-
-	public void setChallenge_desc(String challenge_desc) {
-		this.challenge_desc = challenge_desc;
-	}
-
-	public String getReg_date() {
-		return reg_date;
-	}
-
-	public void setReg_date(String reg_date) {
-		this.reg_date = reg_date;
-	}
-
 	
+	public int getChallengeId() {
+		return challengeId;
+	}
+
+	public void setChallengeId(int challengeId) {
+		this.challengeId = challengeId;
+	}
+
+	public String getChallengeName() {
+		return challengeName;
+	}
+
+	public void setChallengeName(String challengeName) {
+		this.challengeName = challengeName;
+	}
+
+	public String getChallengeDesc() {
+		return challengeDesc;
+	}
+
+	public void setChallengeDesc(String challengeDesc) {
+		this.challengeDesc = challengeDesc;
+	}
+
+	public String getRegDate() {
+		return regDate;
+	}
+
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+
 }

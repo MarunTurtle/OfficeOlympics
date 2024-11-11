@@ -13,13 +13,13 @@ public interface UserDao {
 	User selectUser(String email);
 	
 	// id index로 회원 조회
-	User selectById(int id);
+	User selectById(int userId);
 	
 	// 전체 회원 정보 조회
 	List<User> selectAccounts();
 	
 	// 회원 삭제
-	int deleteUser(int id);
+	int deleteUser(int userId);
 	
 	// 회원 정보 수정
 	int modifyUser(User user);
