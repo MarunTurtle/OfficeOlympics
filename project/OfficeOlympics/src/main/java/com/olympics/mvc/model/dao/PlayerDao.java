@@ -14,7 +14,7 @@ public interface PlayerDao {
 	int insertPlayers(List<Player> players);
 	
 	// 특정 올림픽에 속한 모든 플레이어 조회
-	List<Player> getPlayersByOlympicsId(int olympics_id);
+	List<Player> getPlayersByOlympicsId(int olympicsId);
 	
 	// 해당 올림픽 생성한 user 조회
 	int selectGenerateUserId(int olympicId);
