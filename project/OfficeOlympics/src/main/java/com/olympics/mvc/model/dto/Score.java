@@ -1,42 +1,32 @@
 package com.olympics.mvc.model.dto;
 
+import java.util.List;
+
 // challenge_scores table
 public class Score {
 	int scoreId;
 	int challengeId;
-	int playerId;
-	int score;
+	List<String> playerNames;
+	List<Integer> playerId;
+	List<Integer> scores;
 	String regDate;
-	String playerName;
-	int totalScore;
-	int rank;
 	
-	// 챌린지 획득 점수 저장 생성자
-	public Score(int scoreId, int challengeId, int playerId, int score, String regDate) {
+	public Score() {
+	}
+
+	public Score(int scoreId, int challengeId, List<String> playerNames, List<Integer> playerId, List<Integer> scores,
+			String regDate) {
 		super();
 		this.scoreId = scoreId;
 		this.challengeId = challengeId;
+		this.playerNames = playerNames;
 		this.playerId = playerId;
-		this.score = score;
+		this.scores = scores;
 		this.regDate = regDate;
 	}
 	
-	// 개별 챌린지 리더보드 생성자
-	public Score(String playerName, int score) {
-		this.playerName = playerName;
-		this.score = score;
-	}
-	
-	// 전체 리더보드용 생성자
-	public Score(int rank, String playerName, int totalScore) {
-		super();
-		this.rank = rank;
-		this.playerName = playerName;
-		this.totalScore = totalScore;
-	}
+	// getter, setter
 
-	// Getters, Setters
-	
 	public int getScoreId() {
 		return scoreId;
 	}
@@ -53,20 +43,28 @@ public class Score {
 		this.challengeId = challengeId;
 	}
 
-	public int getPlayerId() {
+	public List<String> getPlayerNames() {
+		return playerNames;
+	}
+
+	public void setPlayerNames(List<String> playerNames) {
+		this.playerNames = playerNames;
+	}
+
+	public List<Integer> getPlayerId() {
 		return playerId;
 	}
 
-	public void setPlayerId(int playerId) {
+	public void setPlayerId(List<Integer> playerId) {
 		this.playerId = playerId;
 	}
 
-	public int getScore() {
-		return score;
+	public List<Integer> getScores() {
+		return scores;
 	}
 
-	public void setScore(int score) {
-		this.score = score;
+	public void setScores(List<Integer> scores) {
+		this.scores = scores;
 	}
 
 	public String getRegDate() {
@@ -76,29 +74,6 @@ public class Score {
 	public void setRegDate(String regDate) {
 		this.regDate = regDate;
 	}
-
-	public String getPlayerName() {
-		return playerName;
-	}
-
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
-	}
-
-	public int getTotalScore() {
-		return totalScore;
-	}
-
-	public void setTotalScore(int totalScore) {
-		this.totalScore = totalScore;
-	}
-
-	public int getRank() {
-		return rank;
-	}
-
-	public void setRank(int rank) {
-		this.rank = rank;
-	}
+	
 	
 }

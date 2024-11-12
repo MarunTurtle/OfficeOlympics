@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.ChallengeScoreDao">
+	<!-- 챌린지 조회 -->
+    <select id="selectChallenge" parameterType="int" resultType="Challenge">
+    	SELECT * FROM challenges
+    	WHERE challenge_id = #{challengeId};
+    </select>
+    
+    <!-- player_name -> player_id로 전환 -->
+    <select id="nameToId" parameterType="list" resultType="int">
+    	SELECT player_id FROM players
+    	WHERE player_name IN
+    	<foreach item="playerName" collection="playerNames" open="(" separator="," close=")">
+        #{playerName}
+    	</foreach>
+    	;
+    </select>
+    
+    
+    <!-- 챌린지 기록 제출 -->
+    <insert id="insertScore" parameterType="list" useGeneratedKeys="true" keyProperty="scoreId">
+    	INSERT INTO challenge_scores (challenge_id, player_id, score, reg_date)
+    	VALUES 
+    	<foreach collection="list" item="score" separator=",">
+    		(#{score.challengeId}, #{score.playerId}, #{score.score}*100, NOW())
+    	</foreach>
+    	;
+    </insert>
+    
+    <!-- 전체 점수 업데이트 -->
+    <update id="updateScore">
+	    UPDATE players 
+		SET total_score = (
+					  SELECT SUM(score) 
+					  FROM challenge_scores 
+					  WHERE challenge_scores.player_id = players.player_id);
+    </update>
+    
+    <!-- 현재 챌린지에서의 순위 조회 -->
+    <select id="selectChallengeScore" parameterType="int" resultType="Rank">
+    	SELECT row_number() over(order by score desc) as 'rank', pl.player_name as 'playerName', cs.score as 'score'
+		FROM challenge_scores cs 
+		INNER JOIN players pl ON pl.player_id=cs.player_id
+		WHERE cs.challenge_id = #{challengeId}
+		LIMIT 3;
+    </select>
+    
+    <!-- 올림픽 팀 내 순위 조회 -->
+    <select id="selectFinalScore" parameterType="int" resultType="Rank">
+    	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
+		FROM players p
+		inner join olympics o ON p.olympics_id=o.olympics_id
+        WHERE o.user_id = #{useId}
+		LIMIT 3;
+    </select>
+    
+    <!-- 리더보드에서 순위 조회 -->
+    <select id="selectMainScore" resultType="Rank">
+    	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
+		FROM players
+		LIMIT 3;
+    </select>
+</mapper>

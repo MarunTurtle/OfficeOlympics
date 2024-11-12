@@ -5,19 +5,24 @@ public class Challenge {
 	int challengeId;
 	String challengeName;
 	String challengeDesc;
+	String challengeUrl;
 	String regDate;
 	
+	public Challenge() {};
+	
 	// 챌린지 정보 생성자
-	public Challenge(int challengeId, String challengeName, String challengeDesc, String regDate) {
+	
+	public Challenge(int challengeId, String challengeName, String challengeDesc, String challengeUrl, String regDate) {
 		super();
 		this.challengeId = challengeId;
 		this.challengeName = challengeName;
 		this.challengeDesc = challengeDesc;
+		this.challengeUrl = challengeUrl;
 		this.regDate = regDate;
 	}
 
 	// Getters, Setters
-	
+		
 	public int getChallengeId() {
 		return challengeId;
 	}
@@ -40,6 +45,14 @@ public class Challenge {
 
 	public void setChallengeDesc(String challengeDesc) {
 		this.challengeDesc = challengeDesc;
+	}
+
+	public String getChallengeUrl() {
+		return challengeUrl;
+	}
+
+	public void setChallengeUrl(String challengeUrl) {
+		this.challengeUrl = challengeUrl;
 	}
 
 	public String getRegDate() {
