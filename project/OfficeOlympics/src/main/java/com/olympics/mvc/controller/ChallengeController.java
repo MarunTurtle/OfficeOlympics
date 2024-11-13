@@ -60,8 +60,13 @@ public class ChallengeController {
 	}
 	
 	
+	@GetMapping("/{challengeId}/score")
+	public ResponseEntity<String> getRecordForm(@PathVariable("challengeId") int challengeId){
+		return ResponseEntity.ok("점수 기록 페이지입니다.");
+	}
+	
 	// 챌린지 기록 제출 (+DB 점수 갱신)
-	@PostMapping("/{challengeId}/record")
+	@PostMapping("/{challengeId}/score")
 	@Operation(summary = "챌린지 기록 제출", description = "멤버 이름, 점수를 json형식으로 전송하여 해당 챌린지의 점수를 기록합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "챌린지 성공"),
@@ -75,10 +80,10 @@ public class ChallengeController {
     })
 	public ResponseEntity<String> recordScores(@PathVariable("challengeId") int challengeId, @RequestBody Score score){
 		score.setChallengeId(challengeId);
-	    boolean success = challengeService.insertScores(score);
+	    boolean success = challengeService.upsertScores(score);
 	    if (success) {
 	    	// DB total 점수 갱신
-	    	challengeService.updateScore();
+	    	challengeService.updateTotalScore();
 	    	return ResponseEntity.ok("챌린지 점수 기록 완료");	    			    	
 	    } else {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 점수 기록 실패");

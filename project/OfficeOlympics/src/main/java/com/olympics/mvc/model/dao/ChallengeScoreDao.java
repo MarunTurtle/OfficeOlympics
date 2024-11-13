@@ -15,11 +15,17 @@ public interface ChallengeScoreDao {
     // 이름->id로 전환
     List<Integer> nameToId(List<String> playerNames);
     
+    // score_id 존재 여부 확인
+    int findScoreId(List<Map<String, Object>> score);
+    
     // 챌린지 기록 제출
     int insertScore(List<Map<String, Object>> score);
     
+    // 챌린지 기록 누적
+    int updateScore(List<Map<String, Object>> score);
+    
     // 챌린지 점수 업데이트
-    int updateScore();
+    int updateTotalScore();
     
     // 현재 챌린지에서의 순위 조회
     List<Rank> selectChallengeScore(int challengeId);
