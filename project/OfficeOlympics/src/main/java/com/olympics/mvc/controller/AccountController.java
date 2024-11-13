@@ -1,6 +1,9 @@
 package com.olympics.mvc.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +13,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
 
+import com.olympics.mvc.model.dto.OlympicsSetup;
+import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.dto.User;
+import com.olympics.mvc.model.service.PlayerService;
 import com.olympics.mvc.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,9 +38,11 @@ import jakarta.servlet.http.HttpSession;
 public class AccountController {
 	
 	private final UserService userService;
+	private final PlayerService playerService;
 	
-	public AccountController(UserService userService) {
+	public AccountController(UserService userService, PlayerService playerService) {
 		this.userService = userService;
+		this.playerService=playerService;
 	}
 
 	
@@ -45,17 +55,31 @@ public class AccountController {
 	    @ApiResponse(responseCode = "204", description = "사용자 정보 없음")
 	})
 	@Parameter(name = "userId", description = "조회할 사용자의 ID", required = true)
-	public ResponseEntity<User> mypage(@PathVariable("userId") int userId) {
-	    // 주어진 ID로 사용자 정보를 조회
+	public ResponseEntity<?> mypage(@PathVariable("userId") int userId) {
+	    // 주어진 ID로 사용자 정보, 올림픽 팀을 조회
 	    User user = userService.selectById(userId);
-	    System.out.println(user);
+        
+	    if(user == null) {
+	    	return ResponseEntity.noContent().build();
+	    }
 
-	    // 사용자가 존재할 경우 사용자 정보를 반환
-	    if (user != null)
-	        return new ResponseEntity<>(user, HttpStatus.OK);
-
-	    // 사용자가 존재하지 않을 경우 NO_CONTENT 상태 반환
-	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	    // 사용자 닉네임 HTML 이스케이프 처리
+	    user.setNickname(HtmlUtils.htmlEscape(user.getNickname()));
+	    
+	    // 사용자 올림픽 팀 정보 조회
+	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
+    	List<Player> players = playerService.getPlayersByOlympicsId(olympicsId);
+	    
+    	if(players != null && !players.isEmpty()) {
+    		Map<String, Object> userWithOlympic = new HashMap<>();
+    		userWithOlympic.put("user", user);
+    		userWithOlympic.put("players", players);
+    		
+    		return ResponseEntity.ok(userWithOlympic);
+    	}
+    	
+	    // 사용자가 올림픽 팀이 없을 경우 user만 반환
+	    return ResponseEntity.ok(user);
 	}
 
 	
@@ -75,25 +99,43 @@ public class AccountController {
     })
     public ResponseEntity<String> modifyUser(@PathVariable("userId") int userId, 
     		@RequestParam("nickname") String nickname,
-            @RequestParam(value = "profileImg", required = false) MultipartFile profileImg, 
+    		@RequestParam(value = "profileImg", required = false) MultipartFile profileImg, 
+    		@RequestParam("olympicsName") String olympicsName,
+    		@RequestParam("playerNames") List<String> playerNames,
             HttpSession session) {
     	
     	// 세션에서 로그인한 사용자 ID 확인
         Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
-        if (sessionUserId == null || sessionUserId != userId) {
-            return new ResponseEntity<>("잘못된 접근입니다.", HttpStatus.UNAUTHORIZED);
+        if (sessionUserId == null || !sessionUserId.equals(userId)) {
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
         }
+        
+        System.out.println("userId : " + userId);
         
         // 수정할 User 객체 생성 및 초기화
         User user = userService.selectById(userId);
         user.setNickname(nickname);
+        user.setUserId(userId);
+        System.out.println("user: " + user);
         
-        // 수정 처리
-    	user.setUserId(userId);
-        boolean isModify = userService.modifyUser(user, profileImg);
-        if (isModify) 
-            return new ResponseEntity<>(user.getName() + "님의 정보를 수정했습니다.", HttpStatus.OK);
-        return new ResponseEntity<>("회원 정보 수정 실패", HttpStatus.BAD_REQUEST);
+        if (profileImg != null && profileImg.isEmpty()) {
+            profileImg = null;
+        }
+ 
+        boolean isUserModified = userService.modifyUser(user, profileImg);
+        
+        OlympicsSetup olympic = new OlympicsSetup(userId, olympicsName, playerNames);
+        olympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));
+        
+        boolean isOlympicModified = playerService.modifyOlympics(olympic);
+        
+        
+        if (isUserModified && isOlympicModified) {
+        	return ResponseEntity.ok(user.getName() + "님의 정보를 수정했습니다.");     	
+        }
+        
+        // 실패 시 처리
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 정보 수정 실패");
     }
 	
     
@@ -112,8 +154,8 @@ public class AccountController {
         // 세션에서 로그인한 사용자 ID 확인
         Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
         System.out.println(sessionUserId);
-        if (sessionUserId == null || sessionUserId != userId) {
-            return new ResponseEntity<>("인증된 사용자만 탈퇴할 수 있습니다.", HttpStatus.UNAUTHORIZED);
+        if (sessionUserId == null || !sessionUserId.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증된 사용자만 탈퇴할 수 있습니다.");
         }
 
         // 탈퇴 처리
@@ -121,23 +163,23 @@ public class AccountController {
         if (isDeleted) {
         	// 회원 탈퇴 성공 시 세션 무효화
         	session.invalidate();
-        	return new ResponseEntity<>("회원 탈퇴가 완료되었습니다.", HttpStatus.OK);        	
+        	return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");        	
         }
         
-        return new ResponseEntity<>("회원 탈퇴 실패", HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 탈퇴 실패");
     }
 	
     
     
     // 전체 회원 조회
- 	@GetMapping("/admin")
- 	@Operation(summary = "전체 회원 조회", description = "추가 기능으로 관리자 페이지에서 전체 회원 조회를 실행합니다.")
- 	@ApiResponses({
- 	    @ApiResponse(responseCode = "200", description = "전체 사용자 목록 반환")
- 	})
-	public ResponseEntity<List<User>> showAccounts(){
-		List<User> users = userService.selectAccounts();
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
-	}
+// 	@GetMapping("/admin")
+// 	@Operation(summary = "전체 회원 조회", description = "추가 기능으로 관리자 페이지에서 전체 회원 조회를 실행합니다.")
+// 	@ApiResponses({
+// 	    @ApiResponse(responseCode = "200", description = "전체 사용자 목록 반환")
+// 	})
+//	public ResponseEntity<List<User>> showAccounts(){
+//		List<User> users = userService.selectAccounts();
+//		return ResponseEntity.ok(users);
+//	}
 	
 }

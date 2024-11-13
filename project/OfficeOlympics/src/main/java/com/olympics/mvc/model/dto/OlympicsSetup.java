@@ -11,6 +11,17 @@ public class OlympicsSetup {
     private int userId; // 올림픽 팀을 생성한 사용자 ID
     private String olympicsName; // 올림픽 팀 이름
     private List<String> playerNames; // 플레이어 이름 목록 (최대 10명 등 제한 가능)
+
+    public OlympicsSetup() {
+		super();
+	}
+
+	public OlympicsSetup(int userId, String olympicsName, List<String> playerNames) {
+    	super();
+    	this.userId = userId;
+    	this.olympicsName = olympicsName;
+    	this.playerNames = playerNames;
+    }
     
     // Getters and Setters
     

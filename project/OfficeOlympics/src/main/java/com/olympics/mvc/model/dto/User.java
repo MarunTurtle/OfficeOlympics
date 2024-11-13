@@ -4,15 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "User DTO")
 public class User {
-	int userId;
-	String email; // 로그인 아이디
-	String password; // 비밀번호 (SHA-256)
-	String salt; // 개별 salt
-	String name; // 닉네임
-	String nickname;
-	String profileImg; // 사용자가 등록한 사진 이름
-	String imgSrc; // 서버에 저장한 이름
-	String regDate; // 가입일자
+	private int userId;
+	private String email; // 로그인 아이디
+	private String password; // 비밀번호 (SHA-256)
+	private String salt; // 개별 salt
+	private String name; // 닉네임
+	private String nickname;
+	private String profileImg; // 사용자가 등록한 사진 이름
+	private String imgSrc; // 서버에 저장한 이름
+	private String regDate; // 가입일자
 	
 	public User() {
 		// TODO Auto-generated constructor stub

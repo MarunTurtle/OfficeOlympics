@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService{
 	private final UserDao userDao;
 	private final ResourceLoader resourceLoader;
 	
-	public UserServiceImpl(UserDao userDao, ResourceLoader resourceLoader) {
+	public UserServiceImpl(UserDao userDao,  ResourceLoader resourceLoader) {
 		this.userDao = userDao;
 		this.resourceLoader = resourceLoader;
 	}
@@ -84,56 +84,7 @@ public class UserServiceImpl implements UserService{
 		return res == 1;
 	}
 	
-	// 회원 정보 수정
-	@Transactional
-	@Override
-	public boolean modifyUser(User user, MultipartFile profileImg) {
-		// 기존 사용자 정보 조회
-		User exUser = userDao.selectById(user.getUserId()); 
-		// 파일이 있으면 저장
-		if (profileImg != null && profileImg.getSize() > 0) {
-			try {
-				// 확장자 검증
-				if (!FileConfirm.isValidImageFile(profileImg)) {
-				    throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
-				}
-				
-				// 파일명과 확장자 설정
-				String fileName = profileImg.getOriginalFilename();
-				String fileId = UUID.randomUUID().toString();
-				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
-				
-				user.setProfileImg(fileName);
-				user.setImgSrc(fileId+extension);
-				
-				// 저장 경로 설정
-				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
-				File uploadDir = resource.getFile(); // Resource를 File로 변환
-				if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
-				
-                // 파일 저장
-				profileImg.transferTo(new File(uploadDir, fileId));
-				
-				} catch (Exception e){
-					e.printStackTrace();
-					return false;	
-				}
-			} else {
-				// 이미지 파일이 없으면 기존 이미지 데이터 유지
-	            user.setProfileImg(exUser.getProfileImg());
-	            user.setImgSrc(exUser.getImgSrc());
-			}
-		
-		// 기타 정보 업데이트 (빈 값이 덮어쓰지 않도록 처리)
-        if (user.getName() == null) user.setName(exUser.getName());
-        if (user.getEmail() == null) user.setEmail(exUser.getEmail());
-        
-        // 사용자 정보 업데이트
-		int res = userDao.modifyUser(user);
-		return res == 1;
-	}
+	
 	
 	///////////////////////////////////로그인///////////////////////////////////
 	
@@ -152,18 +103,73 @@ public class UserServiceImpl implements UserService{
 		return hashedInputPassword.equals(user.getPassword());
 	}
 
+	
+	///////////////////////////////////마이페이지///////////////////////////////////
+	
+	
 	// id index로 회원 조회 (마이페이지 조회)
 	@Override
 	public User selectById(int id) {
 		return userDao.selectById(id);
 	}
 
+	// 회원 정보 수정
+	@Transactional
+	@Override
+	public boolean modifyUser(User user, MultipartFile profileImg) {
+		// 기존 사용자 정보 조회
+		User exUser = userDao.selectById(user.getUserId());
+		System.out.println(exUser);
+		// 파일이 있으면 저장
+		if (profileImg != null && profileImg.getSize() > 0) {
+			try {
+				// 확장자 검증
+				if (!FileConfirm.isValidImageFile(profileImg)) {
+					throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
+				}
+				
+				// 파일명과 확장자 설정
+				String fileName = profileImg.getOriginalFilename();
+				String fileId = UUID.randomUUID().toString();
+				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
+				
+				user.setProfileImg(fileName);
+				user.setImgSrc(fileId+extension);
+				
+				// 저장 경로 설정
+				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
+				File uploadDir = resource.getFile(); // Resource를 File로 변환
+				if (!uploadDir.exists()) {
+					uploadDir.mkdirs();
+				}
+				
+				// 파일 저장
+				profileImg.transferTo(new File(uploadDir, fileId));
+				
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;	
+			}
+		} else {
+			// 이미지 파일이 없으면 기존 이미지 데이터 유지
+			user.setProfileImg(exUser.getProfileImg());
+			user.setImgSrc(exUser.getImgSrc());
+		}
+		
+		// 기타 정보 업데이트 (빈 값이 덮어쓰지 않도록 처리)
+		if (user.getName() == null) user.setName(exUser.getName());
+		if (user.getEmail() == null) user.setEmail(exUser.getEmail());
+		
+		// 사용자 정보 업데이트
+		int res = userDao.modifyUser(user);
+		return res == 1;
+	}
+	
+	
 	// 전체 계정 정보 조회
 	@Override
 	public List<User> selectAccounts() {
 		return userDao.selectAccounts();
 	}
-	
-	
 	
 }

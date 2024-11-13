@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
 
 import com.olympics.mvc.model.dto.User;
 import com.olympics.mvc.model.service.UserService;
@@ -71,7 +72,10 @@ public class AuthController {
 	            session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
 	            session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
 	            
-	            return new ResponseEntity<>(loginUser.getNickname()+"님 로그인 성공", HttpStatus.OK);
+	            // 닉네임 출력 시 HTML 이스케이프 처리
+	            String safeNickname = HtmlUtils.htmlEscape(loginUser.getNickname());
+	            
+	            return new ResponseEntity<>(safeNickname+"님 로그인 성공", HttpStatus.OK);
 	        } else {
 	            // 조회 실패 시 실패 메시지 반환
 	            return new ResponseEntity<>("로그인 실패: 이메일 또는 비밀번호를 확인하세요", HttpStatus.BAD_REQUEST);

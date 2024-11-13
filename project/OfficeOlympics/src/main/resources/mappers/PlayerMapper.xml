@@ -10,8 +10,8 @@
         VALUES (#{userId}, #{olympicsName});
     </insert>
 	
-	<!-- 여러 플레이어 일괄 삽입 -->
-	<insert id="insertPlayers" parameterType="list" useGeneratedKeys="true" keyColumn="player_id">
+	<!-- 올림픽 팀 설정 -->
+	<insert id="addPlayers" parameterType="list" useGeneratedKeys="true" keyColumn="player_id">
 		INSERT INTO players (olympics_id, player_name, total_score, reg_date)
         VALUES
         <foreach collection="players" item="player" separator=",">
@@ -19,17 +19,52 @@
         </foreach>
         ;
     </insert>
+    
+	<!-- player_name -> player_id 추출 -->
+    <select id="nameToId" parameterType="list" resultType="int">
+    	SELECT player_id FROM players
+    	WHERE player_name IN
+    	<foreach item="playerName" collection="list" open="(" separator="," close=")">
+        #{playerName}
+    	</foreach>
+    	;
+    </select>
+    
+    <!-- 올림픽 팀 멤버 수정 -->
+    <update id="modifyPlayers" parameterType="map">
+	    <foreach collection="playerDataList" item="playerData" separator=";">
+	        UPDATE players
+	        SET player_name = #{playerData.playerName}
+	        WHERE olympics_id = #{olympicsId} AND player_id = #{playerData.playerId}
+	    </foreach>
+	</update>
 	
-	<!-- 특정 올림픽 팀원 조회 -->
-	<select id="getPlayersByOlympicsId" parameterType="int" resultType="Player">
-		SELECT * FROM players
+	<!-- 올림픽 팀 이름 수정 -->
+	<update id="modifyOlympics" parameterType="map">
+		UPDATE olympics
+		SET olympics_name = #{olympicsName}
 		WHERE olympics_id = #{olympicsId};
+	</update>
+	
+	<!-- 올림픽 팀원 조회 (올림픽 ID 기준) -->
+	<select id="getPlayersByOlympicsId" parameterType="int" resultType="Player">
+		SELECT o.olympics_name, p.player_name, p.total_score FROM players p
+		INNER JOIN olympics o ON o.olympics_id = p.olympics_id
+		WHERE user_id = #{userId};
 	</select>
-	<!-- 해당 올림픽 생성한 user 조회 -->
-	<select id="selectGenerateUserId" parameterType="int" resultType="int">
+	
+	<!-- 올림픽 ID 조회 (사용자 ID 기준) -->
+	<select id="findOlympicsIdByUserId">
+		SELECT olympics_id FROM olympics
+		WHERE user_id = #{userId};
+	</select>
+	
+	<!-- 올림픽을 생성한 사용자 ID 조회 -->
+	<select id="getOlympicCreatorUserId" parameterType="int" resultType="int">
 		SELECT user_id FROM olympics
 		WHERE olympics_id = #{olympicsId};
 	</select>
+	
 	
 	<!-- 올림픽 팀 삭제 -->
 	<delete id="deleteOlympics" parameterType="int">

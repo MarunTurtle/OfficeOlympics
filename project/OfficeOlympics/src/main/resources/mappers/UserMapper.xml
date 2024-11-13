@@ -13,6 +13,12 @@
 		VALUES (#{email}, #{password}, #{salt}, #{name}, #{nickname}, #{profileImg}, #{imgSrc});
 	</insert>
 	
+	<!-- 회원 삭제 deleteUser -->
+	<delete id="deleteUser" parameterType="int">
+		DELETE FROM users
+		WHERE user_id = #{userId};
+	</delete>
+	
 	<!-- 회원 정보 조회 selectUser -->
 	<select id="selectUser" resultType="User" parameterType="String">
 		SELECT * FROM users
@@ -25,14 +31,8 @@
 		WHERE user_id = #{userId};
 	</select>
 	
-	<!-- 회원 삭제 deleteUser -->
-	<delete id="deleteUser" parameterType="int">
-		DELETE FROM users
-		WHERE user_id = #{userId};
-	</delete>
-	
 	<!-- 회원 정보 수정 (비밀번호 제외) modifyUser -->
-	<!-- 회원정보는 이미지만 수정 가능하도록 변경 -->
+	<!-- 회원정보는 닉네임, 이미지만 수정 가능하도록 변경 -->
 	<update id="modifyUser" parameterType="User">
 		UPDATE users
 		SET nickname = #{nickname}, profile_img = #{profileImg}, img_src = #{imgSrc}
