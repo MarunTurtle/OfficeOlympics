@@ -12,10 +12,10 @@ public interface ChallengeScoreService {
     Challenge selectChallenge(int challengeId);
     
     // 챌린지 결과 기록
-    boolean insertScores(Score score);
+    boolean upsertScores(Score score);
     
     // 챌린지 점수 업데이트
-    void updateScore();
+    void updateTotalScore();
     
     // 현재 챌린지에서의 순위 조회
     List<Rank> selectChallengeScore(int challengeId);

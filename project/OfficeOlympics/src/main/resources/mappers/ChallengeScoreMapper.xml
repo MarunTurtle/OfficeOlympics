@@ -19,6 +19,15 @@
     	;
     </select>
     
+    <!-- score_id 존재 여부 확인 -->
+    <select id="findScoreId" parameterType="list" resultType="int">
+    	SELECT count(*) FROM challenge_scores
+    	WHERE
+    	<foreach collection="list" item="score" separator="OR">
+        (challenge_id = #{score.challengeId} AND player_id = #{score.playerId})
+    	</foreach>
+    	;
+    </select>
     
     <!-- 챌린지 기록 제출 -->
     <insert id="insertScore" parameterType="list" useGeneratedKeys="true" keyProperty="scoreId">
@@ -30,15 +39,25 @@
     	;
     </insert>
     
+    <!-- 챌린지 기록 누적 -->
+    <update id="updateScore" parameterType="list">
+	    <foreach collection="list" item="score" separator=";">
+	        UPDATE challenge_scores
+	        SET score = score + #{score.score} * 100, reg_date = NOW()
+	        WHERE challenge_id = #{score.challengeId} AND player_id = #{score.playerId}
+	    </foreach>
+	</update>
+
     <!-- 전체 점수 업데이트 -->
-    <update id="updateScore">
+    <update id="updateTotalScore">
 	    UPDATE players 
 		SET total_score = (
 					  SELECT SUM(score) 
 					  FROM challenge_scores 
-					  WHERE challenge_scores.player_id = players.player_id);
+					  WHERE challenge_scores.player_id = players.player_id)
+			, reg_date = NOW();
     </update>
-    
+
     <!-- 현재 챌린지에서의 순위 조회 -->
     <select id="selectChallengeScore" parameterType="int" resultType="Rank">
     	SELECT row_number() over(order by score desc) as 'rank', pl.player_name as 'playerName', cs.score as 'score'
@@ -53,7 +72,7 @@
     	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
 		FROM players p
 		inner join olympics o ON p.olympics_id=o.olympics_id
-        WHERE o.user_id = #{useId}
+        WHERE o.user_id = #{userId}
 		LIMIT 3;
     </select>
     

@@ -29,31 +29,39 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 
 	// 챌린지 결과 기록
 	@Override
-	public boolean insertScores(Score score) {
+	public boolean upsertScores(Score score) {
 		// 이름을 ID로 변환
 	    List<Integer> ids = challengeDao.nameToId(score.getPlayerNames());
 	    score.setPlayerId(ids);
 
 	    // 변환된 데이터를 insert에 사용 가능한 형태로 준비
-	    List<Map<String, Object>> insertData = new ArrayList<>();
+	    List<Map<String, Object>> scoreData = new ArrayList<>();
 	    for (int i = 0; i < score.getPlayerId().size(); i++) {
 	        Map<String, Object> map = new HashMap<>();
 	        map.put("challengeId", score.getChallengeId());
 	        map.put("playerId", score.getPlayerId().get(i));
 	        map.put("score", score.getScores().get(i));
-	        insertData.add(map);
-	        System.out.println(insertData.get(i));
+	        scoreData.add(map);
+	        System.out.println(scoreData.get(i));
 	    }
-
-	    // DB에 점수 삽입
-	    int isInserted = challengeDao.insertScore(insertData);
-	    return isInserted == score.getScores().size();
+	    
+	    // challenge_id와 player_id에 대응하는 score_id가 있는지 확인
+	    int isExist = challengeDao.findScoreId(scoreData);
+	    
+	    // 있으면 update, 없으면 insert 진행
+	    if(isExist > 0) {
+	    	int isUpdated = challengeDao.updateScore(scoreData);
+	    	return isUpdated == 1;
+	    } else {
+	    	int isInserted = challengeDao.insertScore(scoreData);
+	    	return isInserted == 1;
+	    }
 	}
 	
 	// 챌린지 점수 업데이트
 	@Override
-	public void updateScore() {
-		challengeDao.updateScore();
+	public void updateTotalScore() {
+		challengeDao.updateTotalScore();
 	}
 
 	// 현재 챌린지에서의 순위 조회
