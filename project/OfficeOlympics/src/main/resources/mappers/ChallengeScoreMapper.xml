@@ -3,13 +3,18 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.olympics.mvc.model.dao.ChallengeScoreDao">
+	<!-- 전체 챌린지 조회 -->
+	<select id="getChallenges">
+		SELECT * FROM challenges;
+	</select>
+
 	<!-- 챌린지 조회 -->
     <select id="selectChallenge" parameterType="int" resultType="Challenge">
     	SELECT * FROM challenges
     	WHERE challenge_id = #{challengeId};
     </select>
     
-    <!-- player_name -> player_id로 전환 -->
+    <!-- player_name -> player_id 추출 -->
     <select id="nameToId" parameterType="list" resultType="int">
     	SELECT player_id FROM players
     	WHERE player_name IN
@@ -29,7 +34,7 @@
     	;
     </select>
     
-    <!-- 챌린지 기록 제출 -->
+    <!-- 챌린지 결과 기록 (삽입) -->
     <insert id="insertScore" parameterType="list" useGeneratedKeys="true" keyProperty="scoreId">
     	INSERT INTO challenge_scores (challenge_id, player_id, score, reg_date)
     	VALUES 
@@ -39,7 +44,7 @@
     	;
     </insert>
     
-    <!-- 챌린지 기록 누적 -->
+    <!-- 챌린지 결과 기록 (누적) -->
     <update id="updateScore" parameterType="list">
 	    <foreach collection="list" item="score" separator=";">
 	        UPDATE challenge_scores
@@ -48,7 +53,7 @@
 	    </foreach>
 	</update>
 
-    <!-- 전체 점수 업데이트 -->
+    <!-- 챌린지 총 점수 업데이트 -->
     <update id="updateTotalScore">
 	    UPDATE players 
 		SET total_score = (
@@ -76,7 +81,7 @@
 		LIMIT 3;
     </select>
     
-    <!-- 리더보드에서 순위 조회 -->
+    <!-- 리더보드에서 전체 순위 조회 -->
     <select id="selectMainScore" resultType="Rank">
     	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
 		FROM players

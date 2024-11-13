@@ -4,12 +4,12 @@ import java.util.List;
 
 // challenge_scores table
 public class Score {
-	int scoreId;
-	int challengeId;
-	List<String> playerNames;
-	List<Integer> playerId;
-	List<Integer> scores;
-	String regDate;
+	private int scoreId;
+	private int challengeId;
+	private List<String> playerNames;
+	private List<Integer> playerId;
+	private List<Integer> scores;
+	private String regDate;
 	
 	public Score() {
 	}

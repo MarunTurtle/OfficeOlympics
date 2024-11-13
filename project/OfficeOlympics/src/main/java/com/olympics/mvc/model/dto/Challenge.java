@@ -2,11 +2,11 @@ package com.olympics.mvc.model.dto;
 
 // challenge table
 public class Challenge {
-	int challengeId;
-	String challengeName;
-	String challengeDesc;
-	String challengeUrl;
-	String regDate;
+	private int challengeId;
+	private String challengeName;
+	private String challengeDesc;
+	private String challengeUrl;
+	private String regDate;
 	
 	public Challenge() {};
 	
