@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.olympics.mvc.model.dao.ChallengeScoreDao;
 import com.olympics.mvc.model.dto.Challenge;
@@ -21,6 +22,12 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 		this.challengeDao = challengeDao;
 	}
 
+	// 전체 챌린지 조회
+	@Override
+	public List<Challenge> getChallenges() {
+		return challengeDao.getChallenges();
+	}
+	
 	// 챌린지 조회
 	@Override
 	public Challenge selectChallenge(int challengeId) {
@@ -28,6 +35,7 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	}
 
 	// 챌린지 결과 기록
+	@Transactional
 	@Override
 	public boolean upsertScores(Score score) {
 		// 이름을 ID로 변환
@@ -58,7 +66,8 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	    }
 	}
 	
-	// 챌린지 점수 업데이트
+	// 챌린지 총 점수 업데이트
+	@Transactional
 	@Override
 	public void updateTotalScore() {
 		challengeDao.updateTotalScore();
@@ -81,5 +90,6 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	public List<Rank> selectMainScore() {
 		return challengeDao.selectMainScore();
 	}
+
 
 }

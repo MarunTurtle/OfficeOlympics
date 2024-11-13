@@ -73,10 +73,10 @@ public class OlympicsController {
         
         // 비어 있지 않은 경우 플레이어 목록을 DB에 일괄 삽입
         if (!players.isEmpty()) {
-            playerService.insertPlayers(players);
+            playerService.addPlayers(players);
         }
 
-        return new ResponseEntity<>("Olympics 팀 생성 완료", HttpStatus.OK);
+        return ResponseEntity.ok("Olympics 팀 생성 완료");
     }
 		
 	
@@ -100,7 +100,7 @@ public class OlympicsController {
             return ResponseEntity.noContent().build();
         }
         // 플레이어가 있는 경우 목록과 함께 200 OK 상태 코드 반환
-        return new ResponseEntity<>(players, HttpStatus.OK);
+        return ResponseEntity.ok(players);
     }
 
 	
@@ -120,12 +120,12 @@ public class OlympicsController {
         Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
         
         // 세션의 사용자 ID와 팀 생성자 ID를 비교하여 일치하는 경우에만 삭제
-        if (sessionUserId == playerService.selectGenerateUserId(olympicsId)) {
+        if (sessionUserId == playerService.getOlympicCreatorUserId(olympicsId)) {
             boolean isDeleted = playerService.deleteOlympics(olympicsId);
             if (isDeleted) {
                 return ResponseEntity.noContent().build(); // 성공 시 204 No Content 반환
             }
-            return new ResponseEntity<>("올림픽 팀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);        		
+            return ResponseEntity.notFound().build();       		
         }
         // 요청한 사용자가 생성한 팀이 아닌 경우 400 Bad Request 반환
         return ResponseEntity.badRequest().build();
