@@ -78,7 +78,7 @@ public class ChallengeController {
 	}
 	
 	// 점수 기록 페이지
-	@GetMapping("/{challengeId}/score")
+	@GetMapping("/{challengeId}/score")@Operation(summary = "점수 기록 페이지 반환", description = "점수 기록 페이지를 반환합니다.")
 	public ResponseEntity<String> getRecordForm(@PathVariable("challengeId") int challengeId){
 		return ResponseEntity.ok("점수 기록 페이지입니다.");
 	}
@@ -146,7 +146,13 @@ public class ChallengeController {
 	
 	// 댓글 쓰기
 	@PostMapping("/{challengeId}/comments")
-	public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId, HttpSession session, @RequestBody Comments comments){
+	@Operation(summary = "챌린지 댓글 작성", description = "선택한 챌린지 영상 하단에 댓글을 작성할 수 있습니다.")
+	@Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
+        @Parameter(name = "commentText", description = "댓글내용", required = true)
+    })
+	public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId, 
+			HttpSession session, @RequestBody Comments comments){
 		
 		int userId = (int) session.getAttribute("loginUserId");
 		comments.setChallengeId(challengeId);
@@ -162,24 +168,36 @@ public class ChallengeController {
 	}
 	
 	// 댓글 수정
-		@PutMapping("/{challengeId}/comments")
-		public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId, 
-				HttpSession session, @RequestBody Comments comments){
-			
-			int userId = (int) session.getAttribute("loginUserId");
-			comments.setChallengeId(challengeId);
-			comments.setUserId(userId);
-
-			boolean isModified = commentService.modifyComment(comments);
-			
-			if (isModified)
-				return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
-			
-			return ResponseEntity.badRequest().build();
-		}
-			
+	@PutMapping("/{challengeId}/comments")
+	@Operation(summary = "댓글 수정", description = "작성한 댓글을 수정할 수 있습니다.")
+	@Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
+        @Parameter(name = "commentId", description = "댓글 고유 ID", required = true),
+        @Parameter(name = "commentText", description = "댓글내용", required = true)
+    })
+	public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId, 
+			HttpSession session, @RequestBody Comments comments){
+		
+		int userId = (int) session.getAttribute("loginUserId");
+		comments.setChallengeId(challengeId);
+		comments.setUserId(userId);
+		
+		boolean isModified = commentService.modifyComment(comments);
+		
+		if (isModified)
+			return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
+		
+		return ResponseEntity.badRequest().build();
+	}
+	
+	
 	// 댓글 삭제
 	@DeleteMapping("/{challengeId}/comments/{commentId}")
+	@Operation(summary = "댓글 삭제", description = "작성한 댓글을 삭제합니다.")
+	@Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
+        @Parameter(name = "commentId", description = "댓글 고유 ID", required = true)
+    })
 	public ResponseEntity<?> deleteComment(@PathVariable("challengeId") int challengeId, 
 										   @PathVariable("commentId") int commentId){
 		

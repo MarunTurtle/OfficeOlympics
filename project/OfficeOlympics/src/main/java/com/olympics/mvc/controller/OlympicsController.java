@@ -39,7 +39,11 @@ public class OlympicsController {
 		this.playerService = playerService;
 	}
 	
-	
+	@GetMapping("")
+	@Operation(summary = "올림픽 팀 생성 폼 반환", description = "올림픽 팀 생성 폼을 반환합니다.")
+	public ResponseEntity<String> getOlympicsForm(){
+		return ResponseEntity.ok("올림픽 설정 폼 반환");
+	}
 	
 	// 올림픽 팀 생성 및 설정
 	@PostMapping("")
@@ -78,35 +82,9 @@ public class OlympicsController {
 
         return ResponseEntity.ok("Olympics 팀 생성 완료");
     }
-		
-	
-	
-    // 특정 올림픽 팀의 플레이어 조회
-	@GetMapping("/team/{olympicId}")
-    @Operation(summary = "특정 올림픽 팀의 플레이어 조회", description = "올림픽 id 값을 통해 해당 올림픽 내의 플레이어를 조회합니다.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "플레이어 목록 반환"),
-        @ApiResponse(responseCode = "204", description = "플레이어 목록 없음"),
-        @ApiResponse(responseCode = "503", description = "데이터베이스 오류 발생"),
-        @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
-    })
-    @Parameter(name = "olympicId", description = "조회할 올림픽 팀의 ID", required = true)
-    public ResponseEntity<?> getPlayers(@PathVariable("olympicId") int olympicId) {
-        // 주어진 올림픽 ID에 속한 모든 플레이어를 조회
-        List<Player> players = playerService.getPlayersByOlympicsId(olympicId);
-        
-        // 플레이어가 없는 경우 204 No Content 상태 코드 반환
-        if (players.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        // 플레이어가 있는 경우 목록과 함께 200 OK 상태 코드 반환
-        return ResponseEntity.ok(players);
-    }
-
-	
 	
     // 올림픽 팀 삭제
-	@DeleteMapping("/team/{olympicId}")
+	@DeleteMapping("/{olympicId}")
     @Operation(summary = "올림픽 팀 삭제", description = "session에 등록된 userId를 대조하여 해당 userId가 생성한 팀일 경우에만 팀을 삭제합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "올림픽 팀 삭제 성공"),
