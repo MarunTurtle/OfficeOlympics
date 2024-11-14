@@ -84,7 +84,11 @@ public class PlayerServiceImpl implements PlayerService{
 	// 올림픽 ID 조회 (사용자 ID 기준)
 	@Override
 	public int findOlympicsIdByUserId(int userId) {
-		return playerDao.findOlympicsIdByUserId(userId);
+		Integer olympicsId = playerDao.findOlympicsIdByUserId(userId);
+		if (olympicsId == null) {
+			olympicsId = 0;
+		}
+		return olympicsId;
 	}
 
 	// 올림픽을 생성한 사용자 ID 조회

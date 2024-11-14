@@ -66,20 +66,20 @@ public class AccountController {
 	    // 사용자 닉네임 HTML 이스케이프 처리
 	    user.setNickname(HtmlUtils.htmlEscape(user.getNickname()));
 	    
-	    // 사용자 올림픽 팀 정보 조회
 	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
-    	List<Player> players = playerService.getPlayersByOlympicsId(olympicsId);
+
+	    if (olympicsId != 0) {
+	    	List<Player> players = playerService.getPlayersByOlympicsId(olympicsId);
+	    	
+	    	Map<String, Object> userWithOlympic = new HashMap<>();
+	    	userWithOlympic.put("user", user);
+	    	userWithOlympic.put("players", players);
+	    	
+	    	return ResponseEntity.ok(userWithOlympic);	    	
+	    }
 	    
-    	if(players != null && !players.isEmpty()) {
-    		Map<String, Object> userWithOlympic = new HashMap<>();
-    		userWithOlympic.put("user", user);
-    		userWithOlympic.put("players", players);
-    		
-    		return ResponseEntity.ok(userWithOlympic);
-    	}
-    	
-	    // 사용자가 올림픽 팀이 없을 경우 user만 반환
-	    return ResponseEntity.ok(user);
+		
+		return ResponseEntity.ok(user);
 	}
 
 	

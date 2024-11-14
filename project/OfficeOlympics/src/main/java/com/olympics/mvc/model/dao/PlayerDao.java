@@ -27,7 +27,7 @@ public interface PlayerDao {
 	List<Player> getPlayersByOlympicsId(int olympicsId);
 	
 	// 올림픽 ID 조회 (사용자 ID 기준)
-	int findOlympicsIdByUserId(int UserId);
+	Integer findOlympicsIdByUserId(int UserId);
 	
 	// 올림픽을 생성한 사용자 ID 조회
 	int getOlympicCreatorUserId(int olympicId);

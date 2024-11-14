@@ -54,8 +54,8 @@
 	</select>
 	
 	<!-- 올림픽 ID 조회 (사용자 ID 기준) -->
-	<select id="findOlympicsIdByUserId">
-		SELECT olympics_id FROM olympics
+	<select id="findOlympicsIdByUserId" resultType="int">
+		SELECT COALESCE(olympics_id, 0) FROM olympics
 		WHERE user_id = #{userId};
 	</select>
 	
