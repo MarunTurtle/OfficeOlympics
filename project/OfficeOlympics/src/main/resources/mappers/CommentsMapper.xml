@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.CommentsDao">
+
+	<!-- 챌린지별 댓글 확인 -->
+	<select id="getComments" parameterType="int" resultType="Comments">
+		SELECT u.nickname, com.comment_text, com.reg_date FROM comments com
+		INNER JOIN users u ON com.user_id = u.user_id
+		WHERE challenge_id = #{challengeId};
+	</select>
+	
+	<!-- 작성한 댓글 확인 -->
+	<select id="findUserComments" parameterType="int" resultType="int">
+		SELECT DISTINCT(user_id) FROM comments
+		WHERE challenge_id = #{challengeId};
+	</select>
+
+	<!-- 댓글 쓰기 -->
+	<insert id="insertComment" parameterType="Comments" useGeneratedKeys="true" keyProperty="commentId">
+		INSERT INTO comments (user_id, challenge_id, comment_text, reg_date)
+		VALUES (#{userId}, #{challengeId}, #{commentText}, NOW());
+	</insert>
+	
+	<!-- 댓글 수정 -->
+	<update id="modifyComment" parameterType="Comments">
+		UPDATE comments
+		SET comment_text = #{commentText}, update_Date = NOW()
+		WHERE comment_id = #{commentId} AND challenge_id = #{challengeId};
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="map">
+		DELETE FROM comments
+		WHERE comment_id = #{commentId} AND challenge_id = #{challengeId};
+	</delete>
+
+</mapper>
