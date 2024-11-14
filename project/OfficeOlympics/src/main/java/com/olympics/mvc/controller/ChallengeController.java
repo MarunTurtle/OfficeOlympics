@@ -1,22 +1,27 @@
 package com.olympics.mvc.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.olympics.mvc.model.dto.Challenge;
+import com.olympics.mvc.model.dto.Comments;
 import com.olympics.mvc.model.dto.Rank;
 import com.olympics.mvc.model.dto.Score;
 
 import com.olympics.mvc.model.service.ChallengeScoreService;
+import com.olympics.mvc.model.service.CommentsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,18 +29,20 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/challenges")
 @Tag(name="Challenges Restful API", description = "챌린지 CRUD")
 public class ChallengeController {
-	private final ChallengeScoreService challengeService;
 	
-	public ChallengeController(ChallengeScoreService challengeService) {
+	private final ChallengeScoreService challengeService;
+	private final CommentsService commentService;
+	
+	public ChallengeController(ChallengeScoreService challengeService, CommentsService commentService) {
 		super();
 		this.challengeService = challengeService;
+		this.commentService = commentService;
 	}
 	
 	// 챌린지 세부 정보 조회
@@ -48,18 +55,29 @@ public class ChallengeController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
 	@Parameter(name = "challengeId", description = "조회할 챌린지의 ID", required = true)
-	public ResponseEntity<Challenge> getChallenge(@PathVariable("challengeId") int challengeId){
+	public ResponseEntity<?> getChallenge(@PathVariable("challengeId") int challengeId){
 		// id에 부합하는 챌린지를 조회
 		Challenge challenge = challengeService.selectChallenge(challengeId);
-		// 챌린지가 있는 경우 내용과 함께 200 OK 상태 코드 반환
-		if(challenge != null) {
-			return ResponseEntity.ok(challenge);
+		
+		if(challenge == null) {
+			return ResponseEntity.noContent().build();
 		}
-		// 챌린지가 없는 경우 204 No Content 상태 코드 반환
-		return ResponseEntity.noContent().build();
+		
+		
+		List<Comments> commentList = commentService.getComments(challengeId);
+		
+		if(commentList == null || commentList.isEmpty() ){
+			return ResponseEntity.ok(challenge);			
+		}
+		
+		Map<String, Object> challengeData = new HashMap<>();
+		challengeData.put("challenge", challenge);
+		challengeData.put("commentList", commentList);
+		
+		return ResponseEntity.ok(challengeData);
 	}
 	
-	
+	// 점수 기록 페이지
 	@GetMapping("/{challengeId}/score")
 	public ResponseEntity<String> getRecordForm(@PathVariable("challengeId") int challengeId){
 		return ResponseEntity.ok("점수 기록 페이지입니다.");
@@ -89,7 +107,6 @@ public class ChallengeController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 점수 기록 실패");
 	    }
 	}
-	
 	
 	// 해당 챌린지 리더보드 조회
 	@GetMapping("/{challengeId}/rank")
@@ -125,5 +142,60 @@ public class ChallengeController {
 	    return ResponseEntity.ok(rank);
 	}
 
+	///////////////////////////////////// 댓글 /////////////////////////////////////////
+	
+	// 댓글 쓰기
+	@PostMapping("/{challengeId}/comments")
+	public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId, HttpSession session, @RequestBody Comments comments){
+		
+		int userId = (int) session.getAttribute("loginUserId");
+		comments.setChallengeId(challengeId);
+		comments.setUserId(userId);
+		
+		boolean isInserted = commentService.insertComment(comments);
+		
+		if (isInserted)
+			return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
+		
+		return ResponseEntity.badRequest().build();
 
+	}
+	
+	// 댓글 수정
+		@PutMapping("/{challengeId}/comments")
+		public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId, 
+				HttpSession session, @RequestBody Comments comments){
+			
+			int userId = (int) session.getAttribute("loginUserId");
+			comments.setChallengeId(challengeId);
+			comments.setUserId(userId);
+
+			boolean isModified = commentService.modifyComment(comments);
+			
+			if (isModified)
+				return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
+			
+			return ResponseEntity.badRequest().build();
+		}
+			
+	// 댓글 삭제
+	@DeleteMapping("/{challengeId}/comments/{commentId}")
+	public ResponseEntity<?> deleteComment(@PathVariable("challengeId") int challengeId, 
+										   @PathVariable("commentId") int commentId){
+		
+		boolean comments = commentService.findUserComments(challengeId);
+
+		if (!comments) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+		boolean isDeleted = commentService.deleteComment(commentId, challengeId);
+		
+		if (isDeleted) {
+			return ResponseEntity.noContent().build();			
+		}
+		
+		return ResponseEntity.badRequest().build();
+	}
+	
 }
