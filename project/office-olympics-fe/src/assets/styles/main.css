@@ -1,0 +1,170 @@
+/* Font Imports */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@font-face {
+  font-family: 'GongGothicMedium';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicMedium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+/* Global Font Family */
+body {
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--secondary-color);
+  color: #333;
+}
+
+/* Colors */
+:root {
+  --primary-color: #2B88D9;
+  --secondary-color: #F2F2F0;
+  --warning-color: #F2AE30;
+  --interaction-hover-color: #0DA64F;
+  --alert-color: #F2668B;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: 'GongGothicMedium', sans-serif;
+  margin: 0;
+}
+
+h4, h5, h6 {
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+p {
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+/* Buttons */
+button {
+  font-family: 'Pretendard', sans-serif;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button.primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+button.primary:hover {
+  background-color: var(--interaction-hover-color);
+}
+
+button.warning {
+  background-color: var(--warning-color);
+  color: #fff;
+}
+
+button.alert {
+  background-color: var(--alert-color);
+  color: #fff;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Navbar */
+.navbar {
+  font-family: 'Pretendard', sans-serif;
+  background-color: var(--secondary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.navbar-brand {
+  font-family: 'GongGothicMedium', sans-serif;
+  color: var(--primary-color) !important;
+  font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--interaction-hover-color) !important;
+}
+
+/* Footer */
+footer {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Forms */
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Cards */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card .card-title {
+  font-family: 'GongGothicMedium', sans-serif;
+  color: var(--primary-color);
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff;
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color) !important;
+}
