@@ -23,8 +23,11 @@ public interface PlayerDao {
 	// 올림픽 팀 이름 수정
 	int modifyOlympics(Map<String, Object> ModifyOlympic);
 	
+	// 올림픽 playerID 조회
+	List<Integer> getPlayerIdByOlympics(int olympicId);
+	
 	// 올림픽 팀원 조회 (올림픽 ID 기준)
-	List<Player> getPlayersByOlympicsId(int olympicsId);
+	List<Map<String, Object>> getPlayersByOlympicsId(int olympicsId);
 	
 	// 올림픽 ID 조회 (사용자 ID 기준)
 	Integer findOlympicsIdByUserId(int UserId);
