@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.olympics.mvc.model.dto.Challenge;
 import com.olympics.mvc.model.dto.Comments;
@@ -34,6 +36,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/challenges")
 @Tag(name="Challenges Restful API", description = "챌린지 CRUD")
+@CrossOrigin("*")
 public class ChallengeController {
 	
 	private final ChallengeScoreService challengeService;
@@ -96,15 +99,18 @@ public class ChallengeController {
         @Parameter(name = "playerNames", description = "플레이어 이름 (List형태)", required = true),
         @Parameter(name = "scores", description = "점수 (List형태)", required = true),
     })
-	public ResponseEntity<String> recordScores(@PathVariable("challengeId") int challengeId, @RequestBody Score score){
+	public ResponseEntity<?> recordScores(@PathVariable("challengeId") int challengeId, @RequestBody Score score){
 		score.setChallengeId(challengeId);
 	    boolean success = challengeService.upsertScores(score);
+	    
 	    if (success) {
 	    	// DB total 점수 갱신
 	    	challengeService.updateTotalScore();
 	    	return ResponseEntity.ok("챌린지 점수 기록 완료");	    			    	
-	    } else {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 점수 기록 실패");
+	    } 
+	    else {
+	    	
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	    }
 	}
 	
