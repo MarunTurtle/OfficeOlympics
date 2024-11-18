@@ -1,5 +1,6 @@
 package com.olympics.mvc.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/olympics")
 @Tag(name="Olympics Restful API", description = "올림픽 팀 설정 CRUD")
+@CrossOrigin("*")
 public class OlympicsController {
 	
 	private final PlayerService playerService;
@@ -61,6 +63,7 @@ public class OlympicsController {
     public ResponseEntity<String> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
         // 세션에서 로그인된 사용자 ID를 가져와 설정 정보에 추가
         setup.setUserId((int) session.getAttribute("loginUserId"));
+        
         
         // 새로운 올림픽 팀 생성 및 ID 반환
         int olympicsId = playerService.insertOlympics(setup.getUserId(), setup.getOlympicsName());
