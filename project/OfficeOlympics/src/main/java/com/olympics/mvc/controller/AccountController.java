@@ -1,19 +1,18 @@
 package com.olympics.mvc.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
@@ -35,6 +34,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/accounts")
 @Tag(name="User Accounts Restful API", description = "계정관련 CRUD")
+@CrossOrigin("*")
 public class AccountController {
 	
 	private final UserService userService;
@@ -69,13 +69,13 @@ public class AccountController {
 	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
 
 	    if (olympicsId != 0) {
-	    	List<Player> players = playerService.getPlayersByOlympicsId(olympicsId);
+	    	List<Map<String, Object>> players = playerService.getPlayersByOlympicsId(olympicsId);
 	    	
 	    	Map<String, Object> userWithOlympic = new HashMap<>();
 	    	userWithOlympic.put("user", user);
 	    	userWithOlympic.put("players", players);
 	    	
-	    	return ResponseEntity.ok(userWithOlympic);	    	
+	    	return ResponseEntity.ok(userWithOlympic);
 	    }
 	    
 		
@@ -110,7 +110,6 @@ public class AccountController {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
         }
         
-        System.out.println("userId : " + userId);
         
         // 수정할 User 객체 생성 및 초기화
         User user = userService.selectById(userId);
@@ -123,6 +122,11 @@ public class AccountController {
         }
  
         boolean isUserModified = userService.modifyUser(user, profileImg);
+        
+        OlympicsSetup exOlympic = new OlympicsSetup();
+        exOlympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));
+        
+        
         
         OlympicsSetup olympic = new OlympicsSetup(userId, olympicsName, playerNames);
         olympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));

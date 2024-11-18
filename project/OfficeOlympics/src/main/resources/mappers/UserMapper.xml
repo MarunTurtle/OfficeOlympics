@@ -27,7 +27,7 @@
 	
 	<!--  회원 정보 id로 조회 selectById-->
 	<select id="selectById" resultType ="User" parameterType="int">
-		SELECT email, name, nickname, profile_img, reg_date FROM users
+		SELECT email, name, nickname, profile_img, img_src, reg_date FROM users
 		WHERE user_id = #{userId};
 	</select>
 	

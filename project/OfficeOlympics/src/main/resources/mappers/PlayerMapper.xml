@@ -30,6 +30,7 @@
     	;
     </select>
     
+    
     <!-- 올림픽 팀 멤버 수정 -->
     <update id="modifyPlayers" parameterType="map">
 	    <foreach collection="playerDataList" item="playerData" separator=";">
@@ -46,15 +47,21 @@
 		WHERE olympics_id = #{olympicsId};
 	</update>
 	
-	<!-- 올림픽 팀원 조회 (올림픽 ID 기준) -->
-	<select id="getPlayersByOlympicsId" parameterType="int" resultType="Player">
+	<!-- 올림픽 playerID 조회 -->
+	<select id="getPlayerIdByOlympics" parameterType="int" resultType="String">
+		SELECT player_id FROM players
+		WHERE olympics_id = #{olympicsId};
+	</select>
+	
+	<!-- 올림픽 팀원 조회 (olympics ID 기준) -->
+	<select id="getPlayersByOlympicsId" parameterType="int" resultType="map">
 		SELECT o.olympics_name, p.player_name, p.total_score FROM players p
 		INNER JOIN olympics o ON o.olympics_id = p.olympics_id
-		WHERE user_id = #{userId};
+		WHERE o.olympics_id = #{olympicsId};
 	</select>
 	
 	<!-- 올림픽 ID 조회 (사용자 ID 기준) -->
-	<select id="findOlympicsIdByUserId" resultType="int">
+	<select id="findOlympicsIdByUserId" parameterType="int" resultType="int">
 		SELECT COALESCE(olympics_id, 0) FROM olympics
 		WHERE user_id = #{userId};
 	</select>
