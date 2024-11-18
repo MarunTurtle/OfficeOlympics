@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
 				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
 				
 				user.setProfileImg(fileName);
-				user.setImgSrc(fileSrc+extension);
+				user.setImgSrc(fileSrc + extension);
 				
 				// 저장 경로 설정
 				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService{
                 }
                 
                 // 파일 저장
-				profileImg.transferTo(new File(uploadDir, fileSrc));
+				profileImg.transferTo(new File(uploadDir, fileSrc + extension));
                 
 			} catch (Exception e){
 				e.printStackTrace();

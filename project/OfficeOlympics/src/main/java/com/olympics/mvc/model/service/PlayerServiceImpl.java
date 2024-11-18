@@ -48,7 +48,7 @@ public class PlayerServiceImpl implements PlayerService{
 	@Override
 	public boolean modifyOlympics(OlympicsSetup olympicsSetup) {
 		
-		List<Integer> playerIds = playerDao.nameToId(olympicsSetup.getPlayerNames());
+		List<Integer> playerIds = playerDao.getPlayerIdByOlympics(olympicsSetup.getOlympicsId());
 		
 		List<Map<String, Object>> playerDataList = new ArrayList<>();
 		for (int i = 0; i < olympicsSetup.getPlayerNames().size(); i++) {
@@ -76,11 +76,10 @@ public class PlayerServiceImpl implements PlayerService{
 	
 	// 올림픽 팀원 조회 (올림픽 ID 기준)
 	@Override
-	public List<Player> getPlayersByOlympicsId(int olympicsId) {
+	public List<Map<String, Object>> getPlayersByOlympicsId(int olympicsId) {
 		return playerDao.getPlayersByOlympicsId(olympicsId);
 	}
 	
-
 	// 올림픽 ID 조회 (사용자 ID 기준)
 	@Override
 	public int findOlympicsIdByUserId(int userId) {

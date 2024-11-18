@@ -1,6 +1,7 @@
 package com.olympics.mvc.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.olympics.mvc.model.dto.OlympicsSetup;
 import com.olympics.mvc.model.dto.Player;
@@ -17,7 +18,7 @@ public interface PlayerService {
 	boolean modifyOlympics(OlympicsSetup olympicsSetup);
 	
 	// 올림픽 팀원 조회 (올림픽 ID 기준)
-	List<Player> getPlayersByOlympicsId(int olympicsId);
+	List<Map<String, Object>> getPlayersByOlympicsId(int olympicsId);
 	
 	// 올림픽 ID 조회 (사용자 ID 기준)
 	int findOlympicsIdByUserId(int userId);
