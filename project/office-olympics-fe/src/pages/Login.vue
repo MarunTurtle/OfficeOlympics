@@ -44,14 +44,18 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useOlympicStore } from '@/stores/olympic';
 import { isValidEmail, isNotEmpty } from '@/utils/validation'; // Import validation functions
+import { useRouter } from 'vue-router';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
+const router = useRouter();
 const email = ref('');
 const password = ref('');
 const emailError = ref(false);
 const passwordError = ref(false);
 const authStore = useAuthStore();
+const olympicStore = useOlympicStore();
 
 const validateInputs = () => {
   emailError.value = !isValidEmail(email.value);
@@ -67,11 +71,20 @@ const onLogin = async () => {
   }
 
   try {
-    await authStore.login({ email: email.value, password: password.value });
-    alert('Login successful!');
+    // Login and set user
+    await authStore.loginUser({ email: email.value, password: password.value });
+    const olympicId = olympicStore.userOlympicId;
+
+    // Navigate based on Olympic ID
+    if (olympicId) {
+      router.push('/'); // Redirect to home page if Olympic ID exists
+    } else {
+      router.push('/olympic/create'); // Redirect to Olympic creation page otherwise
+    }
+
+    alert(`Welcome, ${authStore.user.nickname}!`);
   } catch (error) {
-    alert('Invalid email or password.');
-    console.error(error);
+    alert(error.message || 'Login failed. Please try again.');
   }
 };
 </script>

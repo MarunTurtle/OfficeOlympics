@@ -107,10 +107,6 @@ button:hover {
   transition: color 0.3s ease;
 }
 
-.navbar-nav .nav-link:hover {
-  color: var(--interaction-hover-color) !important;
-}
-
 /* Footer */
 footer {
   background-color: var(--primary-color);
@@ -168,3 +164,4 @@ input:focus, select:focus, textarea:focus {
 .bg-secondary {
   background-color: var(--secondary-color) !important;
 }
+

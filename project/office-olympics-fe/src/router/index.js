@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/stores/auth'; // Import the auth store
 import Home from '@/pages/Home.vue';
 import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
@@ -10,15 +11,48 @@ const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
-  { path: '/olympic/create', name: 'OlympicCreate', component: OlympicCreate },
-  { path: '/challenges/:id', name: 'ChallengeDetail', component: () => import('@/pages/ChallengeDetail.vue'), // Lazy load component
-    props: true, },
+  {
+    path: '/olympic/create',
+    name: 'OlympicCreate',
+    component: OlympicCreate,
+    meta: { requiresAuth: true }, // Require user to be logged in
+  },
+  {
+    path: '/challenges/:id',
+    name: 'ChallengeDetail',
+    component: () => import('@/pages/ChallengeDetail.vue'), // Lazy load component
+    props: true,
+    meta: { requiresAuth: true }, // Require user to be logged in
+  },
   { path: '/:pathMatch(.*)*', name: 'Error', component: ErrorPage },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// Add navigation guards
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore(); // Access the auth store
+
+  // Ensure the user's session is loaded from localStorage
+  if (!authStore.user) {
+    authStore.loadUser(); // Load user from localStorage if not already loaded
+  }
+
+  // Handle protected routes
+  if (to.meta.requiresAuth && !authStore.user) {
+    return next({ name: 'Login', query: { redirect: to.fullPath } }); // Redirect to login with query
+  }
+
+  // Redirect logged-in users away from Login/Register
+  if ((to.name === 'Login' || to.name === 'Register') && authStore.user) {
+    return next({ name: 'Home' });
+  }
+
+  // Allow navigation to the requested route
+  next();
 });
 
 export default router;

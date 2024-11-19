@@ -8,19 +8,18 @@ export const useUserStore = defineStore('user', {
   }),
 
   actions: {
-    /**
-     * Fetch the current user's profile
-     */
     async fetchUser() {
       this.loading = true;
-      try {
-        const response = await fetchUserProfile();
-        this.user = response.data; // Adjust based on API response structure
-        console.log('User profile fetched:', this.user);
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      } finally {
-        this.loading = false;
+      if (!this.user) {
+        try {
+          const response = await fetchUserProfile();
+          this.user = response.data; // Adjust based on API response structure
+          console.log('User profile fetched:', this.user);
+        } catch (error) {
+          console.error('Failed to fetch user profile:', error);
+        } finally {
+          this.loading = false;
+        }
       }
     },
 

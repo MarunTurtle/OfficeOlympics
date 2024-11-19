@@ -6,7 +6,7 @@ import api from '@/services/api';
  * @returns {Promise}
  */
 export const createOlympic = (olympicData) => {
-  return api.post('/olympics/team', olympicData);
+  return api.post('/olympics', olympicData);
 };
 
 /**
@@ -15,7 +15,7 @@ export const createOlympic = (olympicData) => {
  * @returns {Promise}
  */
 export const getOlympicDetails = (olympicId) => {
-  return api.get(`/olympics/team/${olympicId}`);
+  return api.get(`/olympics/${olympicId}`);
 };
 
 /**
@@ -24,7 +24,7 @@ export const getOlympicDetails = (olympicId) => {
  * @returns {Promise}
  */
 export const deleteOlympic = (olympicId) => {
-  return api.delete(`/olympics/team/${olympicId}`);
+  return api.delete(`/olympics/${olympicId}`);
 };
 
 /**
@@ -33,5 +33,5 @@ export const deleteOlympic = (olympicId) => {
  * @returns {Promise}
  */
 export const getOlympicPlayers = (olympicId) => {
-  return api.get(`/olympics/team/${olympicId}/players`);
+  return api.get(`/olympics/${olympicId}/players`);
 };

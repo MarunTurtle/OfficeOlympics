@@ -10,19 +10,36 @@ export const useOlympicStore = defineStore('olympic', {
   state: () => ({
     olympic: null, // Current Olympic event details
     players: [], // List of players in the Olympic event
+    userOlympicId: null, // Olympic ID for the logged-in user
     loading: false, // Loading state for API calls
   }),
 
   actions: {
+
+    // Set user Olympic ID
+    setUserOlympicId(olympicId) {
+      this.userOlympicId = olympicId;
+    },
+
+    // Clear Olympic data (called upon logout)
+    clearOlympicData() {
+      this.olympic = null;
+      this.players = [];
+      this.userOlympicId = null;
+    },    
+
     // Create a new Olympic event
     async createOlympicEvent(olympicData) {
       this.loading = true;
       try {
         const response = await createOlympic(olympicData);
         this.olympic = response.data;
+        this.userOlympicId = response.data.olympicsId;
         console.log('Olympic created successfully:', this.olympic);
+        return response.data; // Return the created Olympic data
       } catch (error) {
         console.error('Failed to create Olympic event:', error);
+        throw error; // Rethrow error for error handling in the caller
       } finally {
         this.loading = false;
       }
@@ -34,8 +51,10 @@ export const useOlympicStore = defineStore('olympic', {
       try {
         const response = await getOlympicDetails(olympicId);
         this.olympic = response.data;
+        console.log('Fetched Olympic details:', this.olympic);
       } catch (error) {
         console.error('Failed to fetch Olympic details:', error);
+        throw error; // Rethrow error for error handling in the caller=
       } finally {
         this.loading = false;
       }
@@ -47,9 +66,11 @@ export const useOlympicStore = defineStore('olympic', {
       try {
         await deleteOlympic(olympicId);
         this.olympic = null;
+        this.userOlympicId = null; // Clear the user Olympic ID
         console.log('Olympic deleted successfully.');
       } catch (error) {
         console.error('Failed to delete Olympic event:', error);
+        throw error; // Rethrow error for error handling in the caller
       } finally {
         this.loading = false;
       }
@@ -61,8 +82,11 @@ export const useOlympicStore = defineStore('olympic', {
       try {
         const response = await getOlympicPlayers(olympicId);
         this.players = response.data.players; // Adjust based on API response
+        console.log('Fetched players:', this.players);
+        return this.players; // Return the players list
       } catch (error) {
         console.error('Failed to fetch Olympic players:', error);
+        throw error; // Rethrow error for error handling in the caller
       } finally {
         this.loading = false;
       }

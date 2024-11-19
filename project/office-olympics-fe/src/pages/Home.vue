@@ -11,7 +11,9 @@ const olympicStore = useOlympicStore();
 const challengeStore = useChallengeStore();
 
 const isLoggedIn = computed(() => authStore.isAuthenticated);
-const hasOlympics = computed(() => olympicStore.userOlympicId !== null);
+const hasOlympics = computed(() => !!olympicStore.userOlympicId);
+
+
 const leaderboard = ref([]);
 const errorMessage = ref("");
 
@@ -60,7 +62,7 @@ onMounted(async () => {
           <div class="hero-content">
             <h1 class="welcome-message">Get your team moving!</h1>
             <button
-              class="btn btn-success mt-3"
+              class="btn btn-warning mt-3"
               @click="$router.push('/olympic/create')"
             >
               Get Started
@@ -90,9 +92,9 @@ onMounted(async () => {
         <h2 class="text-center">Featured Challenges</h2>
         <div class="d-flex flex-wrap justify-content-center mt-3">
           <ChallengeCard
-            v-for="challenge in challengeStore.challenges"
+            v-for="challenge in challengeStore.challenge"
             :key="challenge.challenge_id"
-            :thumbnail="challenge.thumbnail"
+            :image="challenge.thumbnail"
             :title="challenge.challenge_name"
             :description="challenge.challenge_desc"
             :id="challenge.challenge_id"

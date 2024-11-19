@@ -1,6 +1,6 @@
 <template>
   <div class="card" style="width: 18rem;">
-    <img :src="image" class="card-img-top" alt="Challenge Image" />
+    <img :src="imageUrl" class="card-img-top" alt="Challenge Image" />
     <div class="card-body">
       <h5 class="card-title">{{ title }}</h5>
       <p class="card-text">{{ description }}</p>
@@ -11,6 +11,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { getImageUrl } from "@/services/api";
 
 // Props are destructured at the top
 defineProps({
@@ -30,4 +31,6 @@ const router = useRouter();
 const onDetails = () => {
   router.push({ name: 'ChallengeDetail', params: { id } });
 };
+
+const imageUrl = computed(() => (image ? getImageUrl(image) : ''));
 </script>

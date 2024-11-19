@@ -5,6 +5,10 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Include cookies with requests
 });
+
+export const getImageUrl = (path) =>
+  `${import.meta.env.VITE_IMAGE_BASE_URL}/${path}`;
 
 export default api;

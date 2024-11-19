@@ -13,9 +13,10 @@
   "dependencies": {
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
