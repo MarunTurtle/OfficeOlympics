@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +18,6 @@ import com.olympics.mvc.model.service.PlayerService;
 import com.olympics.mvc.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +27,6 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/auth")
 @Tag(name="User Auth Restful API", description = "계정관련 CRUD")
-@CrossOrigin("http://localhost:5173")
 public class AuthController {
 	
 	private final UserService userService;
@@ -91,6 +87,8 @@ public class AuthController {
 			data.put("olympicsId", olympicsId);
 		}
 		
+		System.out.println("[1. SessionID: "+session.getId()+"]");
+		System.out.println("[2. loginUserId: "+session.getAttribute("loginUserId")+"]");
 		return ResponseEntity.ok(data);
 	}
 	

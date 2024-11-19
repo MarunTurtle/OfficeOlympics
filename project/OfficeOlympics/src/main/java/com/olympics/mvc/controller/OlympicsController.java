@@ -1,6 +1,5 @@
 package com.olympics.mvc.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import com.olympics.mvc.model.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +30,6 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/olympics")
 @Tag(name="Olympics Restful API", description = "올림픽 팀 설정 CRUD")
-@CrossOrigin("*")
 public class OlympicsController {
 	
 	private final PlayerService playerService;
@@ -73,7 +70,8 @@ public class OlympicsController {
     public ResponseEntity<?> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
 
 		Integer userId = (Integer) session.getAttribute("loginUserId");
-		System.out.println(userId);
+		System.out.println("[1. SessionID: "+session.getId()+"]");
+		System.out.println("[2. loginUserId: "+session.getAttribute("loginUserId")+"]");
 		
 		if(userId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
