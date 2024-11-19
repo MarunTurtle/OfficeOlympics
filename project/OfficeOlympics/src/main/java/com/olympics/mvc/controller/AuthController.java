@@ -1,5 +1,8 @@
 package com.olympics.mvc.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
+import com.olympics.mvc.model.dao.PlayerDao;
 import com.olympics.mvc.model.dto.User;
+import com.olympics.mvc.model.service.PlayerService;
 import com.olympics.mvc.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,10 +36,12 @@ import jakarta.servlet.http.HttpSession;
 public class AuthController {
 	
 	private final UserService userService;
+	private final PlayerService playerService;
 		
-	public AuthController(UserService userService) {
+	public AuthController(UserService userService, PlayerService playerService) {
 		super();
 		this.userService = userService;
+		this.playerService = playerService;
 	}
 
 	
@@ -60,33 +67,39 @@ public class AuthController {
 		 @Parameter(name = "userId", description = "로그인하려는 사용자의 이메일", required = true),
 		 @Parameter(name = "password", description = "로그인하려는 사용자의 비밀번호", required = true),
 	})
-	public ResponseEntity<String> login(@RequestBody User user, HttpSession session, HttpServletRequest request) {
-	    try {
-	        User loginUser = userService.selectUser(user.getEmail());
-	        System.out.println(loginUser);
+	public ResponseEntity<?> login(@RequestBody User user, HttpSession session, HttpServletRequest request) {
+		User loginUser = userService.selectUser(user.getEmail());
+		
+		if (loginUser == null || !userService.checkPassword(loginUser, user.getPassword())) {
+			return ResponseEntity.badRequest().body("로그인 실패: 이메일 또는 비밀번호를 확인하세요");
+		}
+		
+		session.invalidate(); // 기존 세션 무효화
+		session = request.getSession(true); // 새로운 세션 생성 (세션 고정 공격 방지)
+		
+		// 사용자 정보 세션에 저장
+		session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
+		session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
+		
+		int olympicsId = playerService.findOlympicsIdByUserId(loginUser.getUserId());		
+		
+		// 닉네임 출력 시 HTML 이스케이프 처리
+		String safeNickname = HtmlUtils.htmlEscape(loginUser.getNickname());
+		
+		if (olympicsId > 0) {
+			Map<String, Object> data  = new HashMap<>();
+			data.put("loginUserId", session.getAttribute("loginUserId"));
+			data.put("olympicsId", olympicsId);
+			
+			return ResponseEntity.ok(data);
+		}
+		else {
+			Map<String, Object> data  = new HashMap<>();
+			data.put("loginUserId", session.getAttribute("loginUserId"));
+			
+			return ResponseEntity.ok(data);
+		}
 
-	        // 사용자가 존재하고 비밀번호가 일치할 경우
-	        if (loginUser != null && userService.checkPassword(loginUser, user.getPassword())) {
-	            session.invalidate(); // 기존 세션 무효화
-	            session = request.getSession(true); // 새로운 세션 생성 (세션 고정 공격 방지)
-	            
-	            // 사용자 정보 세션에 저장
-	            session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
-	            session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
-	            
-	            // 닉네임 출력 시 HTML 이스케이프 처리
-	            String safeNickname = HtmlUtils.htmlEscape(loginUser.getNickname());
-	            
-	            return ResponseEntity.ok(safeNickname+"님 로그인 성공");
-	        } else {
-	            // 조회 실패 시 실패 메시지 반환
-	            return ResponseEntity.badRequest().body("로그인 실패: 이메일 또는 비밀번호를 확인하세요");
-	        }
-	    } catch (Exception e) {
-	        // 서버에서 예외 발생 시 상세 정보를 로그로 남기고, 사용자에게는 일반 오류 메시지 전달
-	        e.printStackTrace();
-	        return ResponseEntity.badRequest().body("요청 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
-	    }
 	}
 	
 

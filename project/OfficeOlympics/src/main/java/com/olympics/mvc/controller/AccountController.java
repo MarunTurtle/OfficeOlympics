@@ -67,19 +67,27 @@ public class AccountController {
 	    user.setNickname(HtmlUtils.htmlEscape(user.getNickname()));
 	    
 	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
-
-	    if (olympicsId != 0) {
+	    
+	    Map<String, Object> userData = new HashMap<>();
+	    userData.put("userId", userId);
+	    userData.put("email", user.getEmail());
+	    userData.put("name", user.getName());
+	    userData.put("nickname", user.getNickname());
+	    userData.put("profileImg", user.getProfileImg());
+	    
+	    if (olympicsId > 0) {
+	    	
 	    	List<Map<String, Object>> players = playerService.getPlayersByOlympicsId(olympicsId);
 	    	
 	    	Map<String, Object> userWithOlympic = new HashMap<>();
-	    	userWithOlympic.put("user", user);
+	    	userWithOlympic.put("user", userData);
 	    	userWithOlympic.put("players", players);
 	    	
 	    	return ResponseEntity.ok(userWithOlympic);
 	    }
 	    
 		
-		return ResponseEntity.ok(user);
+		return ResponseEntity.ok(userData);
 	}
 
 	
