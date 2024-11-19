@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -60,7 +62,7 @@ public class OlympicsController {
         @Parameter(name = "olympicsName", description = "팀 이름", required = true),
         @Parameter(name = "playerNames", description = "플레이어 이름 (List형태)", required = true),
     })
-    public ResponseEntity<String> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
+    public ResponseEntity<?> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
         // 세션에서 로그인된 사용자 ID를 가져와 설정 정보에 추가
         setup.setUserId((int) session.getAttribute("loginUserId"));
         
@@ -82,8 +84,12 @@ public class OlympicsController {
         if (!players.isEmpty()) {
             playerService.addPlayers(players);
         }
+        
+        Map<String, Object> returnOlympics = new HashMap<>();
+        returnOlympics.put("Response", "Olympic 생성이 완료되었습니다.");
+        returnOlympics.put("OlympicsId", olympicsId);
 
-        return ResponseEntity.ok("Olympics 팀 생성 완료");
+        return ResponseEntity.ok(returnOlympics);
     }
 	
     // 올림픽 팀 삭제
