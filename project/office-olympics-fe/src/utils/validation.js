@@ -15,8 +15,9 @@ export const isValidEmail = (email) => {
  * @returns {boolean} - True if valid, false otherwise
  */
 export const isValidPassword = (password) => {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  return passwordRegex.test(password);
+  // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  // return passwordRegex.test(password);
+  return password && password.length >= 8;
 };
 
 /**

@@ -35,10 +35,10 @@ export const useAuthStore = defineStore('auth', {
         console.log('Registration successful:', response.data);
 
         // Optional: Log the user in immediately after registration
-        this.user = {
-          nickname: registerData.get('nickname'), // Assuming FormData is passed
-        };
-        localStorage.setItem('user', JSON.stringify(this.user));
+        // this.user = {
+        //   nickname: registerData.get('nickname'), // Assuming FormData is passed
+        // };
+        // localStorage.setItem('user', JSON.stringify(this.user));
         alert('Registration successful! Please log in.');
       } catch (error) {
         console.error('Registration failed:', error);

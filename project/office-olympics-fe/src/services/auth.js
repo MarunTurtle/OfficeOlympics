@@ -6,21 +6,20 @@ export const login = async (credentials) => {
 
   return {
     user: {
-      nickname: response.data.loginUserId, // Adjust based on backend response
+      nickname: response.data.loginUserId,
     },
-    olympicsId: response.data.olympicsId || null, // Store olympicsId if available
-    token: null, // Optional, for future token handling
+    olympicsId: response.data.olympicsId || null,
+    token: null,
   };
 };
 
+// For register, we only need to specify Content-Type since it differs from the global setting
 export const register = async (data) => {
-  return api.post('/auth/regist', data, {
+  return api.post('/auth/register', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
-
-// Function for logging out a user
 export const logout = async () => {
   return api.post('/auth/logout');
 };

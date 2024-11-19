@@ -34,7 +34,7 @@ export const submitChallengeScore = (challengeId, scoreData) => {
  * @returns {Promise}
  */
 export const getChallengeComments = (challengeId) => {
-  return api.get(`/challenges/${challengeId}/comment`);
+  return api.get(`/challenges/${challengeId}/comments`);
 };
 
 /**
@@ -44,7 +44,7 @@ export const getChallengeComments = (challengeId) => {
  * @returns {Promise}
  */
 export const addChallengeComment = (challengeId, commentData) => {
-  return api.post(`/challenges/${challengeId}/comment`, commentData);
+  return api.post(`/challenges/${challengeId}/comments`, commentData);
 };
 
 /**
@@ -54,5 +54,5 @@ export const addChallengeComment = (challengeId, commentData) => {
  * @returns {Promise}
  */
 export const deleteChallengeComment = (challengeId, commentId) => {
-  return api.delete(`/challenges/${challengeId}/comment/${commentId}`);
+  return api.delete(`/challenges/${challengeId}/comments/${commentId}`);
 };

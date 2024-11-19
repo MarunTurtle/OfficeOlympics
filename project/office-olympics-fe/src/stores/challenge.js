@@ -10,34 +10,53 @@ import {
 
 export const useChallengeStore = defineStore('challenge', {
   state: () => ({
-    challenge: null, // Stores details of a specific challenge
-    leaderboard: [], // Stores leaderboard data
-    comments: [], // Stores comments for the challenge
-    loading: false, // Loading state for API calls
+    challenges: [], // Add this to store all challenges
+    challenge: null,
+    leaderboard: [],
+    comments: [],
+    loading: false,
   }),
 
   actions: {
+    // Add this action
+    async fetchChallenges() {
+      this.loading = true;
+      try {
+        const response = await getChallengeDetails();
+        this.challenges = response.data;
+      } catch (error) {
+        console.error('Failed to fetch challenges:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     // Fetch challenge details
     async fetchChallengeDetails(challengeId) {
       this.loading = true;
       try {
         const response = await getChallengeDetails(challengeId);
         this.challenge = response.data;
+        return this.challenge;
       } catch (error) {
         console.error('Failed to fetch challenge details:', error);
+        throw error;
       } finally {
         this.loading = false;
       }
     },
 
     // Fetch leaderboard for a challenge
-    async fetchChallengeLeaderboard(challengeId) {
+    async fetchLeaderboard(olympicId) {
       this.loading = true;
       try {
-        const response = await getChallengeLeaderboard(challengeId);
-        this.leaderboard = response.data.players; // Adjust based on API response structure
+        const response = await getChallengeLeaderboard(olympicId);
+        this.leaderboard = response.data;
+        return this.leaderboard;
       } catch (error) {
         console.error('Failed to fetch leaderboard:', error);
+        throw error;
       } finally {
         this.loading = false;
       }
@@ -58,9 +77,11 @@ export const useChallengeStore = defineStore('challenge', {
       this.loading = true;
       try {
         const response = await getChallengeComments(challengeId);
-        this.comments = response.data.comments; // Adjust based on API response structure
+        this.comments = response.data;
+        return this.comments;
       } catch (error) {
         console.error('Failed to fetch comments:', error);
+        throw error;
       } finally {
         this.loading = false;
       }
@@ -70,10 +91,10 @@ export const useChallengeStore = defineStore('challenge', {
     async addComment(challengeId, commentData) {
       try {
         const response = await addChallengeComment(challengeId, commentData);
-        this.comments.push(response.data); // Add new comment to the state
-        console.log('Comment added successfully!');
+        return response.data;
       } catch (error) {
         console.error('Failed to add comment:', error);
+        throw error;
       }
     },
 

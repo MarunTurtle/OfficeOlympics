@@ -3,30 +3,25 @@ import { fetchUserProfile, updateUserProfile, deleteUserAccount } from '@/servic
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: null, // Current user data
-    loading: false, // Loading state for API interactions
+    user: null,
+    loading: false,
   }),
 
   actions: {
     async fetchUser() {
       this.loading = true;
-      if (!this.user) {
-        try {
-          const response = await fetchUserProfile();
-          this.user = response.data; // Adjust based on API response structure
-          console.log('User profile fetched:', this.user);
-        } catch (error) {
-          console.error('Failed to fetch user profile:', error);
-        } finally {
-          this.loading = false;
-        }
+      try {
+        const response = await fetchUserProfile();
+        this.user = response.data;
+        console.log('User profile fetched:', this.user);
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        // Consider adding user feedback here, e.g., a notification
+      } finally {
+        this.loading = false;
       }
     },
 
-    /**
-     * Update the current user's profile
-     * @param {object} updatedData - Updated user data
-     */
     async updateUser(updatedData) {
       if (!this.user?.id) {
         console.error('No user ID available to update.');
@@ -36,18 +31,16 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         const response = await updateUserProfile(this.user.id, updatedData);
-        this.user = response.data; // Update the user state with new data
+        this.user = response.data;
         console.log('User profile updated:', this.user);
       } catch (error) {
         console.error('Failed to update user profile:', error);
+        // Consider adding user feedback here
       } finally {
         this.loading = false;
       }
     },
 
-    /**
-     * Delete the current user's account
-     */
     async deleteUser() {
       if (!this.user?.id) {
         console.error('No user ID available to delete.');
@@ -57,11 +50,12 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         await deleteUserAccount(this.user.id);
-        this.user = null; // Clear user state
+        this.user = null;
         console.log('User account deleted successfully.');
-        // Redirect to login or home page if needed
+        // Consider redirecting the user here
       } catch (error) {
         console.error('Failed to delete user account:', error);
+        // Consider adding user feedback here
       } finally {
         this.loading = false;
       }

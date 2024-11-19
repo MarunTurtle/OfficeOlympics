@@ -5,8 +5,22 @@ import api from '@/services/api';
  * @param {object} olympicData - Data for the Olympic event
  * @returns {Promise}
  */
-export const createOlympic = (olympicData) => {
-  return api.post('/olympics', olympicData);
+export const createOlympic = async (olympicData) => {
+  try {
+    const response = await api.post('/olympics', olympicData);
+    
+    // Validate response structure
+    if (!response.data || !response.data.olympicsId) {
+      throw new Error('Invalid response format from server');
+    }
+    
+    return response;
+  } catch (error) {
+    if (error.response?.status === 400) {
+      throw new Error('Invalid Olympic data provided');
+    }
+    throw error;
+  }
 };
 
 /**

@@ -5,7 +5,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: false, // Include cookies with requests
+  withCredentials: true, // 쿠키 포함 설정
 });
 
 export const getImageUrl = (path) =>

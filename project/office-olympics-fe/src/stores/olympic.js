@@ -31,17 +31,23 @@ export const useOlympicStore = defineStore('olympic', {
     // Create a new Olympic event
     async createOlympicEvent(olympicData) {
       this.loading = true;
-      try {
-        const response = await createOlympic(olympicData);
-        this.olympic = response.data;
-        this.userOlympicId = response.data.olympicsId;
-        console.log('Olympic created successfully:', this.olympic);
-        return response.data; // Return the created Olympic data
-      } catch (error) {
-        console.error('Failed to create Olympic event:', error);
-        throw error; // Rethrow error for error handling in the caller
-      } finally {
-        this.loading = false;
+      let retries = 3;
+      
+      while (retries > 0) {
+        try {
+          const response = await createOlympic(olympicData);
+          this.olympic = response.data;
+          this.userOlympicId = response.data.olympicsId;
+          localStorage.setItem('olympicsId', response.data.olympicsId);
+          return response.data;
+        } catch (error) {
+          retries--;
+          if (retries === 0) {
+            console.error('Failed to create Olympic event:', error);
+            throw error;
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
     },
 
