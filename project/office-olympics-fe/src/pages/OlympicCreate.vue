@@ -16,6 +16,17 @@ const eventNameError = ref(false);
 const playerCountError = ref(false);
 const playerErrors = ref([]);
 
+const maxPlayerCount = 10;
+
+const isPlayerCountValid = computed(() => {
+  return playerCount.value > 0 && playerCount.value <= maxPlayerCount;
+});
+
+const hasDuplicateNicknames = computed(() => {
+  const nicknames = players.value.map(p => p.nickname.trim().toLowerCase());
+  return new Set(nicknames).size !== nicknames.length;
+});
+
 // Function to generate player input fields dynamically
 const generatePlayerFields = () => {
   players.value = Array.from({ length: playerCount.value }, (_, index) => ({
@@ -28,10 +39,11 @@ const generatePlayerFields = () => {
 // Validate the entire form
 const isFormValid = computed(() => {
   const eventNameValid = eventName.value.trim().length > 0;
-  const playerCountValid = playerCount.value > 0;
+  const playerCountValid = isPlayerCountValid.value;
   const allPlayersValid = players.value.every((player) => player.nickname.trim().length > 0);
+  const noDuplicates = !hasDuplicateNicknames.value;
 
-  return eventNameValid && playerCountValid && allPlayersValid;
+  return eventNameValid && playerCountValid && allPlayersValid && noDuplicates;
 });
 
 // Submit handler for creating Olympic event
@@ -70,14 +82,8 @@ const onCreateOlympic = async () => {
         <!-- Event Name -->
         <div class="mb-3">
           <label for="event-name" class="form-label">Event Name</label>
-          <input
-            type="text"
-            id="event-name"
-            class="form-control"
-            v-model="eventName"
-            placeholder="Enter the Olympic event name"
-            required
-          />
+          <input type="text" id="event-name" class="form-control" v-model="eventName"
+            placeholder="Enter the Olympic event name" required />
           <small v-if="!eventName" class="text-danger">
             Event name is required.
           </small>
@@ -86,15 +92,8 @@ const onCreateOlympic = async () => {
         <!-- Number of Players -->
         <div class="mb-3">
           <label for="player-count" class="form-label">Number of Players</label>
-          <input
-            type="number"
-            id="player-count"
-            class="form-control"
-            v-model.number="playerCount"
-            @input="generatePlayerFields"
-            placeholder="Enter the number of players"
-            required
-          />
+          <input type="number" id="player-count" class="form-control" v-model.number="playerCount"
+            @input="generatePlayerFields" placeholder="Enter the number of players" required />
           <small v-if="playerCount <= 0" class="text-danger">
             Please enter a valid number of players.
           </small>
@@ -105,25 +104,15 @@ const onCreateOlympic = async () => {
           <label :for="'player-' + player.id" class="form-label">
             Player {{ index + 1 }} Nickname
           </label>
-          <input
-            type="text"
-            :id="'player-' + player.id"
-            class="form-control"
-            v-model="player.nickname"
-            placeholder="Enter the player's nickname"
-            required
-          />
+          <input type="text" :id="'player-' + player.id" class="form-control" v-model="player.nickname"
+            placeholder="Enter the player's nickname" required />
           <small v-if="!player.nickname.trim()" class="text-danger">
             Nickname is required for Player {{ index + 1 }}.
           </small>
         </div>
 
         <!-- Submit Button -->
-        <button
-          type="submit"
-          class="btn btn-primary w-100"
-          :disabled="loading"
-        >
+        <button type="submit" class="btn btn-primary w-100" :disabled="loading">
           {{ loading ? "Creating..." : "Start Olympics" }}
         </button>
       </form>
@@ -167,10 +156,12 @@ button {
   color: white;
   padding: 10px;
   font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
   background-color: var(--interaction-hover-color);
+  transform: scale(1.05);
 }
 
 button:disabled {

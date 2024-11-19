@@ -5,14 +5,8 @@
       <form @submit.prevent="onRegister">
         <div class="mb-3">
           <label for="name" class="form-label">Name</label>
-          <input
-            type="text"
-            id="name"
-            class="form-control"
-            v-model="name"
-            placeholder="Enter your full name"
-            @blur="nameTouched = true"
-          />
+          <input type="text" id="name" class="form-control" v-model="name" placeholder="Enter your full name"
+            @blur="nameTouched = true" />
           <small v-if="nameTouched && !isNotEmpty(name)" class="text-danger">
             Name is required.
           </small>
@@ -20,14 +14,8 @@
 
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
-          <input
-            type="email"
-            id="email"
-            class="form-control"
-            v-model="email"
-            placeholder="Enter your email"
-            @blur="emailTouched = true"
-          />
+          <input type="email" id="email" class="form-control" v-model="email" placeholder="Enter your email"
+            @blur="emailTouched = true" />
           <small v-if="emailTouched && !isValidEmail(email)" class="text-danger">
             Please enter a valid email.
           </small>
@@ -35,14 +23,8 @@
 
         <div class="mb-3">
           <label for="nickname" class="form-label">Nickname</label>
-          <input
-            type="text"
-            id="nickname"
-            class="form-control"
-            v-model="nickname"
-            placeholder="Enter a unique nickname"
-            @blur="nicknameTouched = true"
-          />
+          <input type="text" id="nickname" class="form-control" v-model="nickname" placeholder="Enter a unique nickname"
+            @blur="nicknameTouched = true" />
           <small v-if="nicknameTouched && !isNotEmpty(nickname)" class="text-danger">
             Nickname is required.
           </small>
@@ -50,52 +32,28 @@
 
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            id="password"
-            class="form-control"
-            v-model="password"
-            placeholder="Enter your password"
-            @blur="passwordTouched = true"
-          />
+          <input type="password" id="password" class="form-control" v-model="password" placeholder="Enter your password"
+            @blur="passwordTouched = true" />
           <small v-if="passwordTouched && !isValidPassword(password)" class="text-danger">
-            Password must be at least 8 characters and include letters and numbers.
+            Password must be at least 8 characters.
           </small>
         </div>
 
         <div class="mb-3">
           <label for="confirm-password" class="form-label">Confirm Password</label>
-          <input
-            type="password"
-            id="confirm-password"
-            class="form-control"
-            v-model="confirmPassword"
-            placeholder="Confirm your password"
-            @blur="confirmPasswordTouched = true"
-          />
-          <small
-            v-if="confirmPasswordTouched && password !== confirmPassword"
-            class="text-danger"
-          >
+          <input type="password" id="confirm-password" class="form-control" v-model="confirmPassword"
+            placeholder="Confirm your password" @blur="confirmPasswordTouched = true" />
+          <small v-if="confirmPasswordTouched && password !== confirmPassword" class="text-danger">
             Passwords do not match.
           </small>
         </div>
 
         <div class="mb-3">
           <label for="profile-img" class="form-label">Profile Image (Optional)</label>
-          <input
-            type="file"
-            id="profile-img"
-            class="form-control"
-            @change="onFileChange"
-          />
+          <input type="file" id="profile-img" class="form-control" @change="onFileChange" />
         </div>
 
-        <button
-          type="submit"
-          class="btn btn-primary w-100"
-          :disabled="!isFormValid"
-        >
+        <button type="submit" class="btn btn-primary w-100" :disabled="!isFormValid">
           Sign Up
         </button>
       </form>
@@ -160,8 +118,7 @@ const onRegister = async () => {
 
     // Call the API
     await authStore.registerUser(formData);
-    alert('Registration successful! Redirecting to the main page...');
-    router.push('/')
+    router.push('/auth/login');
   } catch (error) {
     console.error('Registration failed:', error);
     alert('An error occurred during registration.');
@@ -178,6 +135,7 @@ const onRegister = async () => {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .text-danger {
   color: var(--alert-color);
   font-size: 0.875rem;

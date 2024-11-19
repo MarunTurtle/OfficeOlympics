@@ -2,18 +2,13 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
       <!-- Logo -->
-      <RouterLink class="navbar-brand" to="/">Office Olympics</RouterLink>
+      <RouterLink class="navbar-brand" to="/">
+        <img src="@/assets/images/logo.png" alt="Office Olympics Logo" class="navbar-logo">
+      </RouterLink>
 
       <!-- Toggle Button for Responsive Navbar -->
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -22,10 +17,10 @@
           <!-- Case 1: Logged Out -->
           <template v-if="!isLoggedIn">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/login">Login</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/login">Login</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/register">Register</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/register">Register</RouterLink>
             </li>
           </template>
 
@@ -74,15 +69,15 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 // Logout handler
 const onLogout = async () => {
   try {
-    
+
     // If the user has an OlympicId, delete it from the backend
-    if (olympicStore.userOlympicId) {
-      await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
-    }    
-    
+    // if (olympicStore.userOlympicId) {
+    //   await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
+    // }    
+
     // Logout the user (clears user data on the frontend and backend)
     await authStore.logoutUser();
-    
+
     alert("You have been logged out.");
     router.push('/'); // Redirect to the main page
   } catch (error) {
@@ -95,12 +90,12 @@ const onLogout = async () => {
 <style scoped>
 .navbar {
   background-color: var(--secondary-color);
-  border-bottom: 2px solid var(--primary-color);
 }
 
-.navbar-brand {
-  font-weight: bold;
-  color: var(--primary-color) !important;
+.navbar-logo {
+  height: 3.75rem;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-link {
