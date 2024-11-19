@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class MainController {
 	
 	private final ChallengeScoreDao challengeDao;
@@ -29,10 +29,17 @@ public class MainController {
 		this.challengeDao = challengeDao;
 	}
 
+	
+	/**
+	 * 메인 페이지 반환
+	 * 
+	 * @return 전체 챌린지 및 리더보드 정보
+	 */
 	@GetMapping("")
 	@Operation(summary = "메인페이지", description = "전체 챌린지 정보와 리더보드 정보를 반환합니다.")
 	public ResponseEntity<?> mainPage() {
 	    List<Rank> leaderBoard = challengeDao.selectMainScore();
+	    System.out.println(leaderBoard);
 	    List<Challenge> challengeList = challengeDao.getChallenges();
 
 	    if ((leaderBoard == null || leaderBoard.isEmpty()) && (challengeList == null || challengeList.isEmpty())) {

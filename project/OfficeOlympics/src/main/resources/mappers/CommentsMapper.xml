@@ -6,7 +6,7 @@
 
 	<!-- 챌린지별 댓글 확인 -->
 	<select id="getComments" parameterType="int" resultType="Comments">
-		SELECT u.nickname, com.comment_text, com.reg_date FROM comments com
+		SELECT com.comment_id, u.user_id, com.challenge_id, u.nickname, com.comment_text, com.reg_date FROM comments com
 		INNER JOIN users u ON com.user_id = u.user_id
 		WHERE challenge_id = #{challengeId};
 	</select>

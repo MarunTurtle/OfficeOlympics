@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/auth")
 @Tag(name="User Auth Restful API", description = "계정관련 CRUD")
-@CrossOrigin("*")
+@CrossOrigin("http://localhost:5173")
 public class AuthController {
 	
 	private final UserService userService;
@@ -43,8 +43,11 @@ public class AuthController {
 	}
 
 	
-	
-	// 로그인 폼 반환
+	/**
+	 * 로그인 폼 반환
+	 * 
+	 * @return 로그인 페이지 문자열
+	 */
 	@GetMapping("/login")
 	@Operation(summary = "로그인 폼 반환", description = "로그인 페이지로 이동합니다.")
 	@ApiResponse(responseCode = "200", description = "로그인 페이지 반환")
@@ -53,18 +56,20 @@ public class AuthController {
 	}
 	
 	
-	
-	// 로그인
+	/**
+	 * 로그인 로직 수행
+	 * 
+	 * @param user 로그인 요청 사용자 정보 (email, password 포함)
+	 * @param session 현재 세션 객체
+	 * @param request HTTP 요청 객체
+	 * @return 로그인 결과 데이터 (사용자 정보)
+	 */
 	@PostMapping("/login")
-	@Operation(summary = "로그인 로직 수행", description = "사용자 id와 pw확인 후, 일치하는 사용자가 있으면 로그인 정보를 세션에 담아 반환합니다.")
-	@ApiResponses({
-		 @ApiResponse(responseCode = "200", description = "로그인 성공"),
-		 @ApiResponse(responseCode = "400", description = "로그인 실패: 이메일 또는 비밀번호 확인 필요")
-	})
-	@Parameters({
-		 @Parameter(name = "userId", description = "로그인하려는 사용자의 이메일", required = true),
-		 @Parameter(name = "password", description = "로그인하려는 사용자의 비밀번호", required = true),
-	})
+    @Operation(summary = "로그인 로직 수행", description = "사용자 id와 pw 확인 후 로그인 정보를 세션에 저장합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "로그인 성공"),
+        @ApiResponse(responseCode = "400", description = "로그인 실패: 이메일 또는 비밀번호 확인 필요")
+    })
 	public ResponseEntity<?> login(@RequestBody User user, HttpSession session, HttpServletRequest request) {
 		User loginUser = userService.selectUser(user.getEmail());
 		
@@ -72,10 +77,10 @@ public class AuthController {
 			return ResponseEntity.badRequest().body("로그인 실패: 이메일 또는 비밀번호를 확인하세요");
 		}
 		
-		session.invalidate(); // 기존 세션 무효화
-		session = request.getSession(true); // 새로운 세션 생성 (세션 고정 공격 방지)
-		session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
-		session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
+		session.invalidate();
+		session = request.getSession(true);
+		session.setAttribute("loginUserId", loginUser.getUserId());
+		session.setMaxInactiveInterval(60 * 60);
 		
 		Map<String, Object> data  = new HashMap<>();
 		data.put("loginUserId", session.getAttribute("loginUserId"));
@@ -87,11 +92,15 @@ public class AuthController {
 		}
 		
 		return ResponseEntity.ok(data);
-
 	}
 	
 
-	// 로그아웃 처리
+	/**
+	 * 로그아웃 로직 수행
+	 * 
+	 * @param session 현재 세션 객체
+	 * @return 로그아웃 결과 메시지
+	 */
 	@PostMapping("/logout")
 	@Operation(summary = "로그아웃 로직 수행", description = "로그아웃 클릭 시 세션을 무효화시킵니다.")
 	@ApiResponse(responseCode = "200", description = "로그아웃 성공")
@@ -101,7 +110,11 @@ public class AuthController {
 	}
 	
 	
-	// 회원가입 폼 반환
+	/**
+	 * 회원가입 폼 반환
+	 * 
+	 * @return 회원가입 페이지 문자열
+	 */
 	@GetMapping("/regist")
 	@Operation(summary = "회원가입 폼 반환", description = "회원가입 페이지로 이동합니다.")
 	@ApiResponse(responseCode = "200", description = "회원가입 페이지 반환")
@@ -109,21 +122,23 @@ public class AuthController {
 		return ResponseEntity.ok("회원가입 페이지입니다.");
 	}
 	
-	// 회원가입
-	//required=false 속성을 추가하여 profile_img 파라미터가 선택 사항임을 지정
+	
+	/**
+	 * 회원가입 로직 수행
+	 * 
+	 * @param email 회원가입할 사용자의 이메일
+	 * @param password 회원가입할 사용자의 비밀번호
+	 * @param name 회원가입할 사용자의 이름
+	 * @param nickname 회원가입할 사용자의 닉네임
+	 * @param profileImg 프로필 이미지 파일 (선택사항)
+	 * @return 회원가입 결과 메시지
+	 */
 	@PostMapping("/regist")
-	@Operation(summary = "회원가입 로직 수행", description = "회원가입을 수행합니다.")
-	@ApiResponses({
-		 @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-		 @ApiResponse(responseCode = "400", description = "회원가입 실패: 이미 존재하는 사용자 또는 잘못된 입력")
-	})
-	@Parameters({
-		 @Parameter(name = "email", description = "회원가입할 사용자의 이메일", required = true),
-		 @Parameter(name = "password", description = "회원가입할 사용자의 비밀번호", required = true),
-		 @Parameter(name = "name", description = "회원가입할 사용자의 이름", required = true),
-		 @Parameter(name = "nickname", description = "회원가입할 사용자의 닉네임", required = true),
-		 @Parameter(name = "profileImg", description = "프로필 이미지 파일 (선택사항)", required = false)
-	})
+    @Operation(summary = "회원가입 로직 수행", description = "회원가입을 수행합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+        @ApiResponse(responseCode = "400", description = "회원가입 실패: 이미 존재하는 사용자 또는 잘못된 입력")
+    })
 	public ResponseEntity<String> regist(@RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("name") String name,
@@ -136,7 +151,6 @@ public class AuthController {
 		user.setEmail(email);
 		user.setPassword(password);
 		
-		// 회원가입 로직 호출
 		boolean isRegistered = userService.insertUser(user, profileImg);
 		
 		if (isRegistered) {
@@ -145,7 +159,4 @@ public class AuthController {
 			return ResponseEntity.badRequest().body("회원가입 실패 : 이미 존재하는 사용자입니다.");
 		}
 	}
-	
 }
-
-

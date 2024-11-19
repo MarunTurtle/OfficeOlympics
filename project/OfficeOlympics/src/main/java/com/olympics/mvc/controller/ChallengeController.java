@@ -35,7 +35,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/challenges")
 @Tag(name="Challenges Restful API", description = "챌린지 CRUD")
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class ChallengeController {
 	
 	private final ChallengeScoreService challengeService;

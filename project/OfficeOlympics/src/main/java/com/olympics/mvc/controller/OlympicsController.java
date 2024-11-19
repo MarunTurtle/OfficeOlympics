@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,42 +37,51 @@ public class OlympicsController {
 	
 	private final PlayerService playerService;
 
+	
 	public OlympicsController(PlayerService playerService) {
 		super();
 		this.playerService = playerService;
 	}
 	
+	
+	/**
+	 * 올림픽 생성 폼 반환
+	 * 
+	 * @return 올림픽 생성 페이지 문자열
+	 */
 	@GetMapping("")
-	@Operation(summary = "올림픽 팀 생성 폼 반환", description = "올림픽 팀 생성 폼을 반환합니다.")
+	@Operation(summary = "올림픽 생성 폼 반환", description = "올림픽 생성 폼을 반환합니다.")
 	public ResponseEntity<String> getOlympicsForm(){
-		return ResponseEntity.ok("올림픽 설정 폼 반환");
+		return ResponseEntity.ok("올림픽 생성 폼 반환");
 	}
 	
-	// 올림픽 팀 생성 및 설정
+	
+	/**
+	 * 올림픽 생성 로직
+	 * 
+	 * @param setup 올림픽 생성 정보 (사용자 ID, 올림픽 이름, 플레이어 이름 목록)
+	 * @param session 현재 사용자 세션
+	 * @return 생성된 올림픽 데이터 (메시지, 올림픽 ID, 플레이어 수)
+	 */
 	@PostMapping("")
-    @Operation(summary = "올림픽 팀 생성 로직", description = "올림픽 팀 이름, 멤버 이름을 json형식으로 전송하여 팀 생성 후 멤버를 추가합니다.")
+    @Operation(summary = "올림픽 생성 로직", description = "올림픽 이름과 플레이어 이름을 JSON 형식으로 전송하여 팀 생성 및 멤버 추가를 수행합니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "올림픽 팀 생성 성공"),
+        @ApiResponse(responseCode = "200", description = "올림픽 생성 성공"),
         @ApiResponse(responseCode = "503", description = "데이터베이스 오류 발생"),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
-	@Parameters({
-        @Parameter(name = "userId", description = "팀 생성할 사용자의 ID", required = true),
-        @Parameter(name = "olympicsName", description = "팀 이름", required = true),
-        @Parameter(name = "playerNames", description = "플레이어 이름 (List형태)", required = true),
-    })
     public ResponseEntity<?> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
-        // 세션에서 로그인된 사용자 ID를 가져와 설정 정보에 추가
+
 		Integer userId = (Integer) session.getAttribute("loginUserId");
+		System.out.println(userId);
+		
 		if(userId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
 		}
         setup.setUserId(userId);
         
-        // 새로운 올림픽 팀 생성 및 ID 반환
         int olympicsId = playerService.insertOlympics(setup.getUserId(), setup.getOlympicsName());
         
-        // 플레이어 목록 생성 및 DB 삽입
         List<Player> players = new ArrayList<>();
         if (setup.getPlayerNames() != null) {
             for (String playerName : setup.getPlayerNames()) {
@@ -96,22 +103,28 @@ public class OlympicsController {
     }
 	
 	
-    // 올림픽 팀 삭제
+    /**
+     * 올림픽 팀 삭제 로직
+     * 
+     * @param olympicsId 삭제할 올림픽 ID
+     * @param session 현재 사용자 세션
+     * @return 삭제 결과 메시지 또는 상태 코드
+     */
 	@DeleteMapping("/{olympicId}")
-    @Operation(summary = "올림픽 팀 삭제", description = "session에 등록된 userId를 대조하여 해당 userId가 생성한 팀일 경우에만 팀을 삭제합니다.")
+    @Operation(summary = "올림픽 삭제", description = "사용자 세션과 대조하여 본인이 생성한 올림픽만 삭제할 수 있습니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "올림픽 팀 삭제 성공"),
+        @ApiResponse(responseCode = "204", description = "올림픽 삭제 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청: 본인이 생성한 팀이 아님"),
-        @ApiResponse(responseCode = "404", description = "올림픽 팀을 찾을 수 없음"),
+        @ApiResponse(responseCode = "404", description = "올림픽을 찾을 수 없음"),
         @ApiResponse(responseCode = "503", description = "데이터베이스 오류 발생"),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
-    @Parameter(name = "olympicId", description = "삭제할 올림픽 팀의 ID", required = true)
+    @Parameter(name = "olympicId", description = "삭제할 올림픽의 ID", required = true)
     public ResponseEntity<String> deleteOlympics(@PathVariable("olympicId") int olympicsId, HttpSession session) {
         
 		Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
         if(sessionUserId == null) {
-        	return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
 
         Integer creatorUserId = playerService.getOlympicCreatorUserId(olympicsId);

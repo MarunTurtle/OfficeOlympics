@@ -35,7 +35,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/accounts")
 @Tag(name="User Accounts Restful API", description = "계정관련 CRUD")
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class AccountController {
 	
 	private final UserService userService;
@@ -46,22 +46,25 @@ public class AccountController {
 		this.playerService=playerService;
 	}
 	
-	// 마이페이지 조회
+	
+	/**
+	 * 마이페이지 조회
+	 * 
+	 * @param userId 조회할 사용자의 ID
+	 * @return 사용자 정보와 올림픽 팀 정보
+	 */
 	@GetMapping("/{userId}")
-	@Operation(summary = "마이페이지 조회", description = "내 정보를 확인할 수 있습니다.")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "사용자 정보 반환"),
-	    @ApiResponse(responseCode = "204", description = "사용자 정보 없음")
-	})
-	@Parameter(name = "userId", description = "조회할 사용자의 ID", required = true)
+    @Operation(summary = "마이페이지 조회", description = "내 정보를 확인할 수 있습니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "사용자 정보 반환"),
+        @ApiResponse(responseCode = "204", description = "사용자 정보 없음")
+    })
 	public ResponseEntity<?> mypage(@PathVariable("userId") int userId) {
-	    // 주어진 ID로 사용자 정보, 올림픽 팀을 조회
 	    User user = userService.selectById(userId);
 	    if(user == null) {
 	    	return ResponseEntity.noContent().build();
 	    }
 
-	    // 사용자 닉네임 HTML 이스케이프 처리
 	    user.setNickname(HtmlUtils.htmlEscape(user.getNickname()));
 	    
 	    Map<String, Object> userData = new HashMap<>();
@@ -81,18 +84,22 @@ public class AccountController {
 	    return ResponseEntity.ok(myPageData);
 	}
 
-    // 정보 수정
-    @PutMapping("/{userId}")
+	
+	/**
+	 * 사용자 정보 수정
+	 * 
+	 * @param userId, nickname, profileImg 수정할 사용자의 ID, 닉네임, 프로필 이미지
+	 * @param olympicsName 올림픽 이름
+	 * @param playerNames 선수 목록
+	 * @param session 현재 사용자 세션
+	 * @return 수정 결과 메시지
+	 */
+	@PutMapping("/{userId}")
     @Operation(summary = "사용자 정보 수정", description = "내 정보를 수정할 수 있습니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "회원 정보 수정 성공"),
         @ApiResponse(responseCode = "401", description = "잘못된 접근"),
         @ApiResponse(responseCode = "400", description = "회원 정보 수정 실패")
-    })
-    @Parameters({
-        @Parameter(name = "userId", description = "수정할 사용자의 ID", required = true),
-        @Parameter(name = "nickname", description = "수정할 닉네임", required = true),
-        @Parameter(name = "profileImg", description = "업로드할 프로필 이미지 파일", required = false)
     })
     public ResponseEntity<String> modifyUser(@PathVariable("userId") int userId, 
     		@RequestParam("nickname") String nickname,
@@ -124,31 +131,32 @@ public class AccountController {
         	return ResponseEntity.ok(user.getName() + "님의 정보를 수정했습니다.");     	
         }
         
-        // 실패 시 처리
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 정보 수정 실패");
     }
 	
     
-    // 회원 탈퇴 (본인 확인)
+    /**
+     * 회원 탈퇴
+     * 
+     * @param userId 탈퇴할 사용자의 ID
+     * @param session 현재 사용자 세션
+     * @return 탈퇴 결과 메시지
+     */
     @DeleteMapping("/{userId}")
     @Operation(summary = "회원 탈퇴 로직 수행", description = "세션 인증 후 회원 탈퇴하는 기능입니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
-        @ApiResponse(responseCode = "401", description = "인증된 사용자만 탈퇴할 수 있음"),
+        @ApiResponse(responseCode = "401", description = "인증된 사용자만 탈퇴 가능"),
         @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패")
     })
-    @Parameter(name = "userId", description = "탈퇴할 사용자의 ID", required = true)
     public ResponseEntity<String> deleteUser(@PathVariable("userId") int userId, HttpSession session) {
     	
-        // 세션에서 로그인한 사용자 ID 확인
     	if (!isValidSessionUser(session, userId)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증된 사용자만 탈퇴할 수 있습니다.");
         }
 
-        // 탈퇴 처리
         boolean isDeleted = userService.deleteUser(userId);
         if (isDeleted) {
-        	// 회원 탈퇴 성공 시 세션 무효화
         	session.invalidate();
         	return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");        	
         }
@@ -157,24 +165,17 @@ public class AccountController {
     }
     
 	
-    // 세션 검증 로직
+    /**
+     * 세션 검증 로직
+     * 
+     * @param session 현재 사용자 세션
+     * @param userId 검증할 사용자 ID
+     * @return 세션 유효 여부
+     */
     public boolean isValidSessionUser(HttpSession session, int userId) {
     	Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
     	return sessionUserId != null && sessionUserId.equals(userId);
     }
     
-    
-    
-    
-    // 전체 회원 조회
-// 	@GetMapping("/admin")
-// 	@Operation(summary = "전체 회원 조회", description = "추가 기능으로 관리자 페이지에서 전체 회원 조회를 실행합니다.")
-// 	@ApiResponses({
-// 	    @ApiResponse(responseCode = "200", description = "전체 사용자 목록 반환")
-// 	})
-//	public ResponseEntity<List<User>> showAccounts(){
-//		List<User> users = userService.selectAccounts();
-//		return ResponseEntity.ok(users);
-//	}
 	
 }
