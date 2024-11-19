@@ -1,5 +1,6 @@
 package com.olympics.mvc.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,6 @@ public class AccountController {
 		this.userService = userService;
 		this.playerService=playerService;
 	}
-
-	
 	
 	// 마이페이지 조회
 	@GetMapping("/{userId}")
@@ -58,7 +57,6 @@ public class AccountController {
 	public ResponseEntity<?> mypage(@PathVariable("userId") int userId) {
 	    // 주어진 ID로 사용자 정보, 올림픽 팀을 조회
 	    User user = userService.selectById(userId);
-        
 	    if(user == null) {
 	    	return ResponseEntity.noContent().build();
 	    }
@@ -66,32 +64,23 @@ public class AccountController {
 	    // 사용자 닉네임 HTML 이스케이프 처리
 	    user.setNickname(HtmlUtils.htmlEscape(user.getNickname()));
 	    
-	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
-	    
 	    Map<String, Object> userData = new HashMap<>();
 	    userData.put("userId", userId);
 	    userData.put("email", user.getEmail());
 	    userData.put("name", user.getName());
 	    userData.put("nickname", user.getNickname());
 	    userData.put("profileImg", user.getProfileImg());
+
+	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
+	    List<Map<String, Object>> players = (olympicsId > 0) ? playerService.getPlayersByOlympicsId(olympicsId) : new ArrayList<>();
 	    
-	    if (olympicsId > 0) {
-	    	
-	    	List<Map<String, Object>> players = playerService.getPlayersByOlympicsId(olympicsId);
-	    	
-	    	Map<String, Object> userWithOlympic = new HashMap<>();
-	    	userWithOlympic.put("user", userData);
-	    	userWithOlympic.put("players", players);
-	    	
-	    	return ResponseEntity.ok(userWithOlympic);
-	    }
+	    Map<String, Object> myPageData = new HashMap<>();
+	    myPageData.put("user", userData);
+	    myPageData.put("players", players);
 	    
-		
-		return ResponseEntity.ok(userData);
+	    return ResponseEntity.ok(myPageData);
 	}
 
-	
-	
     // 정보 수정
     @PutMapping("/{userId}")
     @Operation(summary = "사용자 정보 수정", description = "내 정보를 수정할 수 있습니다.")
@@ -112,18 +101,13 @@ public class AccountController {
     		@RequestParam("playerNames") List<String> playerNames,
             HttpSession session) {
     	
-    	// 세션에서 로그인한 사용자 ID 확인
-        Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
-        if (sessionUserId == null || !sessionUserId.equals(userId)) {
+        if (!isValidSessionUser(session, userId)) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
         }
         
-        
-        // 수정할 User 객체 생성 및 초기화
         User user = userService.selectById(userId);
         user.setNickname(nickname);
         user.setUserId(userId);
-        System.out.println("user: " + user);
         
         if (profileImg != null && profileImg.isEmpty()) {
             profileImg = null;
@@ -131,16 +115,10 @@ public class AccountController {
  
         boolean isUserModified = userService.modifyUser(user, profileImg);
         
-        OlympicsSetup exOlympic = new OlympicsSetup();
-        exOlympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));
-        
-        
-        
         OlympicsSetup olympic = new OlympicsSetup(userId, olympicsName, playerNames);
         olympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));
         
         boolean isOlympicModified = playerService.modifyOlympics(olympic);
-        
         
         if (isUserModified && isOlympicModified) {
         	return ResponseEntity.ok(user.getName() + "님의 정보를 수정했습니다.");     	
@@ -150,7 +128,6 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 정보 수정 실패");
     }
 	
-    
     
     // 회원 탈퇴 (본인 확인)
     @DeleteMapping("/{userId}")
@@ -164,9 +141,7 @@ public class AccountController {
     public ResponseEntity<String> deleteUser(@PathVariable("userId") int userId, HttpSession session) {
     	
         // 세션에서 로그인한 사용자 ID 확인
-        Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
-        System.out.println(sessionUserId);
-        if (sessionUserId == null || !sessionUserId.equals(userId)) {
+    	if (!isValidSessionUser(session, userId)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증된 사용자만 탈퇴할 수 있습니다.");
         }
 
@@ -180,7 +155,15 @@ public class AccountController {
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 탈퇴 실패");
     }
+    
 	
+    // 세션 검증 로직
+    public boolean isValidSessionUser(HttpSession session, int userId) {
+    	Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
+    	return sessionUserId != null && sessionUserId.equals(userId);
+    }
+    
+    
     
     
     // 전체 회원 조회

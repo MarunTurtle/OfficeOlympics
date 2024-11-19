@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.HtmlUtils;
 
-import com.olympics.mvc.model.dao.PlayerDao;
 import com.olympics.mvc.model.dto.User;
 import com.olympics.mvc.model.service.PlayerService;
 import com.olympics.mvc.model.service.UserService;
@@ -76,33 +74,22 @@ public class AuthController {
 		
 		session.invalidate(); // 기존 세션 무효화
 		session = request.getSession(true); // 새로운 세션 생성 (세션 고정 공격 방지)
-		
-		// 사용자 정보 세션에 저장
 		session.setAttribute("loginUserId", loginUser.getUserId()); // 사용자 ID
 		session.setMaxInactiveInterval(60 * 60); // 세션 유효기간 : 1시간
 		
-		int olympicsId = playerService.findOlympicsIdByUserId(loginUser.getUserId());		
-		
-		// 닉네임 출력 시 HTML 이스케이프 처리
-		String safeNickname = HtmlUtils.htmlEscape(loginUser.getNickname());
+		Map<String, Object> data  = new HashMap<>();
+		data.put("loginUserId", session.getAttribute("loginUserId"));
+
+		int olympicsId = playerService.findOlympicsIdByUserId(loginUser.getUserId());
 		
 		if (olympicsId > 0) {
-			Map<String, Object> data  = new HashMap<>();
-			data.put("loginUserId", session.getAttribute("loginUserId"));
 			data.put("olympicsId", olympicsId);
-			
-			return ResponseEntity.ok(data);
 		}
-		else {
-			Map<String, Object> data  = new HashMap<>();
-			data.put("loginUserId", session.getAttribute("loginUserId"));
-			
-			return ResponseEntity.ok(data);
-		}
+		
+		return ResponseEntity.ok(data);
 
 	}
 	
-
 
 	// 로그아웃 처리
 	@PostMapping("/logout")
@@ -112,7 +99,6 @@ public class AuthController {
 		session.invalidate(); // 세션 무효화하여 로그아웃 처리
 		return ResponseEntity.ok("로그아웃 되었습니다.");
 	}
-	
 	
 	
 	// 회원가입 폼 반환
@@ -143,8 +129,7 @@ public class AuthController {
             @RequestParam("name") String name,
             @RequestParam("nickname") String nickname,
             @RequestParam(value = "profileImg", required = false) MultipartFile profileImg) {
-		try {
-		// 사용자 객체 생성 및 정보 설정
+		
 		User user = new User();
 		user.setName(name);
 		user.setNickname(nickname);
@@ -159,11 +144,7 @@ public class AuthController {
 		} else {
 			return ResponseEntity.badRequest().body("회원가입 실패 : 이미 존재하는 사용자입니다.");
 		}
-		
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
-}
 	
 }
 
