@@ -1,36 +1,66 @@
 <template>
-  <div class="card" style="width: 18rem;">
-    <img :src="imageUrl" class="card-img-top" alt="Challenge Image" />
+  <div class="challenge-card">
+    <img :src="thumbnailUrl" :alt="title" class="card-img-top">
     <div class="card-body">
       <h5 class="card-title">{{ title }}</h5>
-      <p class="card-text">{{ description }}</p>
-      <button @click="onDetails" class="btn btn-primary">Details</button>
+      <RouterLink :to="`/challenges/${id}`" class="btn btn-primary">
+        Join Challenge
+      </RouterLink>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { getImageUrl } from "@/services/api";
+import { computed } from 'vue';
 
-// Props are destructured at the top
-defineProps({
+const props = defineProps({
   id: {
     type: Number,
-    required: true,
+    required: true
   },
-  image: String,
-  title: String,
-  description: String,
+  title: {
+    type: String,
+    required: true
+  },
+  videoUrl: {
+    type: String,
+    required: true
+  }
 });
 
-// Router instance
-const router = useRouter();
-
-// Destructure `id` from props
-const onDetails = () => {
-  router.push({ name: 'ChallengeDetail', params: { id } });
-};
-
-const imageUrl = computed(() => (image ? getImageUrl(image) : ''));
+const thumbnailUrl = computed(() => {
+  const videoId = props.videoUrl.split('v=')[1];
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+});
 </script>
+
+<style scoped>
+.challenge-card {
+  width: 300px;
+  margin: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.challenge-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 15px;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+</style>

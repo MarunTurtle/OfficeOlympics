@@ -9,15 +9,9 @@
 
       <!-- Top 3 Players -->
       <div class="top-players row text-center">
-        <div
-          v-for="(player, index) in topPlayers"
-          :key="player.id"
-          class="col-md-4 mb-4"
-        >
-          <div
-            class="card h-100"
-            :class="{ 'bg-gold': index === 0, 'bg-silver': index === 1, 'bg-bronze': index === 2 }"
-          >
+        <div v-for="(player, index) in topPlayers" :key="player.id" class="col-md-4 mb-4">
+          <div class="card h-100"
+            :class="{ 'bg-gold': index === 0, 'bg-silver': index === 1, 'bg-bronze': index === 2 }">
             <div class="card-body">
               <h3 class="player-rank">#{{ index + 1 }}</h3>
               <h4 class="player-name">{{ formatName(player.name) }}</h4>
@@ -39,10 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(player, index) in sortedPlayers"
-              :key="player.id"
-            >
+            <tr v-for="(player, index) in sortedPlayers" :key="player.id">
               <td>{{ index + 1 }}</td>
               <td>{{ formatName(player.name) }}</td>
               <td>{{ formatScore(player.score) }}</td>
@@ -62,38 +53,38 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { capitalize, formatNumber } from '@/utils/formatter'; // Import formatter utilities
 
-// Challenge Store
+const route = useRoute();
 const challengeStore = useChallengeStore();
-
-// State
 const players = ref([]);
 const loading = ref(true);
 
-// Fetch Leaderboard Data
 onMounted(async () => {
-  const challengeId = 1; // Replace with actual ID from route params
-  await challengeStore.fetchChallengeLeaderboard(challengeId);
-  players.value = challengeStore.leaderboard;
-  loading.value = false;
+  const olympicId = route.params.olympicId;
+  try {
+    await challengeStore.fetchLeaderboard(olympicId);
+    players.value = challengeStore.leaderboard;
+  } catch (error) {
+    console.error('Failed to fetch leaderboard:', error);
+  } finally {
+    loading.value = false;
+  }
 });
 
-// Top Players (Top 3)
-const topPlayers = computed(() =>
-  [...players.value].sort((a, b) => b.score - a.score).slice(0, 3)
-);
+const topPlayers = computed(() => players.value.slice(0, 3));
+const otherPlayers = computed(() => players.value.slice(3));
 
-// Sorted Players (For Full Leaderboard)
 const sortedPlayers = computed(() =>
   [...players.value].sort((a, b) => b.score - a.score)
 );
 
 // Utility Methods
 const formatName = (name) => (name ? capitalize(name) : 'Unknown Player');
-const formatScore = (score) => (score ? formatNumber(score) : '0');
+const formatScore = (score) => new Intl.NumberFormat().format(score);
 </script>
 
 <style scoped>
@@ -109,15 +100,18 @@ const formatScore = (score) => (score ? formatNumber(score) : '0');
 }
 
 .bg-gold {
-  background-color: #f7c873; /* Gold color */
+  background-color: #f7c873;
+  /* Gold color */
 }
 
 .bg-silver {
-  background-color: #c0c0c0; /* Silver color */
+  background-color: #c0c0c0;
+  /* Silver color */
 }
 
 .bg-bronze {
-  background-color: #cd7f32; /* Bronze color */
+  background-color: #cd7f32;
+  /* Bronze color */
 }
 
 .player-rank {
