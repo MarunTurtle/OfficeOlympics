@@ -53,25 +53,22 @@ const formatScore = (score) => {
 onMounted(async () => {
   startSlideshow();
 
-  // Check if Olympic ID exists in store or localStorage
-  const olympicId = olympicStore.userOlympicId || localStorage.getItem('olympicsId');
+  try {
+    loading.value = true;
+    await challengeStore.fetchMainPageData();
 
-  if (olympicId) {
-    olympicStore.setUserOlympicId(olympicId); // Ensure store is updated
+    // Check if Olympic ID exists in store or localStorage
+    const olympicId = olympicStore.userOlympicId || localStorage.getItem('olympicsId');
 
-    // Fetch main page data if logged in and has Olympics
-    if (isLoggedIn.value) {
-      try {
-        loading.value = true;
-        await challengeStore.fetchMainPageData();
-        leaderboard.value = challengeStore.leaderboard;
-      } catch (err) {
-        console.error('Error loading main page data:', err);
-        errorMessage.value = err.response?.data?.message || "Failed to load leaderboard. Please try again later.";
-      } finally {
-        loading.value = false;
-      }
+    if (olympicId && isLoggedIn.value) {
+      olympicStore.setUserOlympicId(olympicId); // Ensure store is updated
+      leaderboard.value = challengeStore.leaderboard;
     }
+  } catch (err) {
+    console.error('Error loading main page data:', err);
+    errorMessage.value = err.response?.data?.message || "Failed to load data. Please try again later.";
+  } finally {
+    loading.value = false;
   }
 });
 
@@ -153,7 +150,15 @@ onBeforeUnmount(() => {
       <!-- Featured Challenges -->
       <div class="featured-challenges mt-5">
         <h2 class="text-center mb-4">Featured Challenges</h2>
-        <div class="challenges-grid">
+        <div v-if="loading" class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div v-else-if="challengeStore.challenges.length === 0" class="text-center">
+          No challenges available.
+        </div>
+        <div v-else class="challenges-grid">
           <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"
             :id="challenge.challengeId" :title="challenge.challengeName" :description="challenge.challengeDesc"
             :videoUrl="challenge.challengeUrl" />
