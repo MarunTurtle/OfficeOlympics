@@ -16,12 +16,12 @@
           </div>
 
           <div v-else class="score-form">
-            <div v-for="(player, index) in olympicStore.players" :key="index" class="mb-4">
+            <div v-for="(player, index) in players" :key="index" class="mb-4">
               <label :for="'player' + index" class="form-label">
-                {{ player.nickname }}
+                {{ player.name }}
               </label>
               <input type="number" class="form-control" v-model="scores[index]"
-                :placeholder="'Enter score for ' + player.nickname" min="0" step="1">
+                :placeholder="'Enter score for ' + player.name" min="0" step="1">
             </div>
 
             <div class="d-flex justify-content-center gap-3 mt-5">
@@ -52,6 +52,7 @@ const olympicStore = useOlympicStore();
 const challengeStore = useChallengeStore();
 
 const scores = ref([]);
+const players = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
@@ -64,8 +65,19 @@ onMounted(async () => {
     loading.value = true;
     error.value = null;
 
+    // Get the current Olympic ID from localStorage
+    const olympicId = localStorage.getItem('olympicsId');
+    if (!olympicId) {
+      error.value = 'No active Olympic found. Please create or join an Olympic first.';
+      return;
+    }
+
+    // Fetch Olympic details including players
+    await olympicStore.fetchOlympicDetails(olympicId);
+    players.value = olympicStore.players;
+
     // Initialize scores array based on number of players
-    scores.value = new Array(olympicStore.players.length).fill('');
+    scores.value = new Array(players.value.length).fill('');
 
   } catch (err) {
     console.error('Failed to initialize:', err);
@@ -79,7 +91,7 @@ const submitScores = async () => {
   if (!isValidSubmission.value) return;
 
   const scoreData = {
-    playerNames: olympicStore.players.map(p => p.nickname),
+    playerNames: players.value.map(p => p.name),
     scores: scores.value.map(Number)
   };
 
