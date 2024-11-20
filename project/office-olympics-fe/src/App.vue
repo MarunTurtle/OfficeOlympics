@@ -1,11 +1,13 @@
 <template>
-  <div id="app">
-    <!-- Display Navbar -->
-    <Navbar />
-    
-    <!-- Main Application Content -->
-    <RouterView />
-    
+  <div class="app-wrapper">
+    <div class="content-wrapper">
+      <!-- Display Navbar -->
+      <Navbar />
+
+      <!-- Main Application Content -->
+      <RouterView />
+    </div>
+
     <!-- Display Footer -->
     <Footer />
   </div>
@@ -19,13 +21,21 @@ import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 
-// Ensure the user's session is loaded when the app starts
 onMounted(() => {
   if (!authStore.user) {
-    authStore.loadUser(); // Restore session from localStorage
+    authStore.loadUser();
   }
 });
 </script>
 
-<style scoped>
+<style>
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  flex: 1 0 auto;
+}
 </style>
