@@ -1,19 +1,25 @@
 <template>
   <MainLayout>
     <div class="challenge-detail">
-      <div class="row">
+      <div v-if="loading" class="text-center my-5">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <div v-else-if="challenge" class="row">
         <!-- Main Content -->
         <div class="col-lg-8">
           <!-- Video Player -->
           <div class="video-container mb-4">
             <div class="video-wrapper">
-              <iframe v-if="challenge?.videoUrl" :src="challenge.videoUrl" frameborder="0"
+              <iframe v-if="challenge.videoUrl" :src="challenge.videoUrl" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
             </div>
           </div>
 
-          <h1 class="challenge-title mb-3">{{ challenge?.title }}</h1>
+          <h1 class="challenge-title mb-3">{{ challenge.title }}</h1>
 
           <div class="action-bar mb-4">
             <button class="btn btn-primary btn-lg" @click="startChallenge">
@@ -23,45 +29,13 @@
 
           <div class="challenge-description mb-4">
             <h3>Challenge Description</h3>
-            <p>{{ challenge?.description }}</p>
-          </div>
-
-          <!-- Comments Section -->
-          <div class="comments-section">
-            <h3>Comments</h3>
-            <div class="comment-form mb-4">
-              <textarea v-model="newComment" class="form-control mb-2" placeholder="Add a comment..."
-                rows="3"></textarea>
-              <button class="btn btn-primary" @click="addComment" :disabled="!newComment.trim()">
-                Post Comment
-              </button>
-            </div>
-
-            <div class="comments-list">
-              <div v-for="comment in comments" :key="comment.id" class="comment-item">
-                <div class="comment-header">
-                  <strong>{{ comment.user }}</strong>
-                </div>
-                <p>{{ comment.content }}</p>
-              </div>
-            </div>
+            <p>{{ challenge.description }}</p>
           </div>
         </div>
+      </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-          <h3>Other Challenges</h3>
-          <div class="other-challenges">
-            <div v-for="otherChallenge in otherChallenges" :key="otherChallenge.challenge_id"
-              class="challenge-card mb-3" @click="navigateToChallenge(otherChallenge.challenge_id)">
-              <img :src="getThumbnail(otherChallenge.challenge_url)" :alt="otherChallenge.challenge_name"
-                class="challenge-thumbnail">
-              <div class="challenge-info p-2">
-                <h5>{{ otherChallenge.challenge_name }}</h5>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div v-else class="text-center my-5">
+        <h2>Challenge not found</h2>
       </div>
     </div>
   </MainLayout>
@@ -84,18 +58,32 @@ const loading = ref(true);
 
 const challengeId = parseInt(route.params.id);
 
+const transformYoutubeUrl = (url) => {
+  if (!url) return '';
+  // Handle both youtu.be and youtube.com URLs
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1];
+    return `https://www.youtube.com/embed/${videoId}`;
+  } else if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url;
+};
+
 onMounted(async () => {
   try {
-    await challengeStore.fetchChallengeDetails(challengeId);
-    await challengeStore.fetchComments(challengeId);
+    loading.value = true;
+    const response = await challengeStore.fetchChallengeDetails(challengeId);
 
     challenge.value = {
-      id: challengeStore.challenge.challenge_id,
-      title: challengeStore.challenge.challenge_name,
-      description: challengeStore.challenge.challenge_desc,
-      videoUrl: challengeStore.challenge.challenge_url.replace('youtu.be/', 'youtube.com/embed/')
+      id: response.challengeId,
+      title: response.challengeName,
+      description: response.challengeDesc,
+      videoUrl: transformYoutubeUrl(response.challengeUrl)
     };
 
+    await challengeStore.fetchComments(challengeId);
     comments.value = challengeStore.comments;
   } catch (error) {
     console.error('Failed to fetch challenge details:', error);

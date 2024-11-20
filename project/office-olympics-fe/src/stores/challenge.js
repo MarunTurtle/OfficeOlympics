@@ -39,7 +39,7 @@ export const useChallengeStore = defineStore('challenge', {
       try {
         const response = await getChallengeDetails(challengeId);
         this.challenge = response.data;
-        return this.challenge;
+        return response.data;
       } catch (error) {
         console.error('Failed to fetch challenge details:', error);
         throw error;
