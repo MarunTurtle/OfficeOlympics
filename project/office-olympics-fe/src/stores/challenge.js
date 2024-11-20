@@ -11,11 +11,11 @@ import {
 
 export const useChallengeStore = defineStore('challenge', {
   state: () => ({
-    challenges: [], // Add this to store all challenges
-    challenge: null,
     leaderboard: [],
-    comments: [],
     loading: false,
+    challenges: [], // Add this to store all challenges
+    comments: [],
+    challenge: null,
   }),
 
   actions: {

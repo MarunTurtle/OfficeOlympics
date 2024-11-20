@@ -16,6 +16,7 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 
 const leaderboard = ref([]);
 const errorMessage = ref("");
+const loading = ref(false);
 
 // Slideshow functionality
 const images = Array.from(
@@ -54,7 +55,7 @@ onMounted(async () => {
       leaderboard.value = challengeStore.leaderboard;
     } catch (err) {
       console.error('Error loading main page data:', err);
-      errorMessage.value = "Failed to load leaderboard.";
+      errorMessage.value = err.response?.data?.message || "Failed to load leaderboard. Please try again later.";
     } finally {
       loading.value = false;
     }
@@ -119,11 +120,16 @@ onBeforeUnmount(() => {
                   <td class="text-center">
                     <span :class="getRankClass(index + 1)">{{ index + 1 }}</span>
                   </td>
-                  <td>{{ player.nickname }}</td>
+                  <td>{{ player.playerName }}</td>
                   <td class="text-center">{{ formatScore(player.score) }}</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div v-if="loading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </div>
       </template>
