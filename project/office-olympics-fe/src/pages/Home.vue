@@ -16,6 +16,7 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 
 const leaderboard = ref([]);
 const errorMessage = ref("");
+const loading = ref(false);
 
 // Slideshow functionality
 const images = Array.from(
@@ -26,9 +27,15 @@ const currentImageIndex = ref(Math.floor(Math.random() * images.length));
 const slideInterval = ref(null);
 
 const startSlideshow = () => {
-  slideInterval.value = setInterval(() => {
-    currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
-  }, 5000); // Change image every 5 seconds
+  // slideInterval.value = setInterval(() => {
+  //   currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+  // }, 5000); // Change image every 5 seconds
+  // Only start slideshow if user is not logged in or doesn't have Olympics
+  if (!isLoggedIn.value || !hasOlympics.value) {
+    slideInterval.value = setInterval(() => {
+      currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+    }, 5000);
+  }
 };
 
 const getRankClass = (rank) => {
@@ -39,19 +46,29 @@ const getRankClass = (rank) => {
 };
 
 const formatScore = (score) => {
+  if (score === undefined || score === null) return '0';
   return formatNumber(score);
 };
 
 onMounted(async () => {
   startSlideshow();
 
-  // Fetch leaderboard if needed
-  if (isLoggedIn.value && hasOlympics.value) {
-    try {
-      leaderboard.value = await challengeStore.loadLeaderboard(olympicStore.userOlympicId);
-    } catch (err) {
-      errorMessage.value = "Failed to load leaderboard.";
+  try {
+    loading.value = true;
+    await challengeStore.fetchMainPageData();
+
+    // Check if Olympic ID exists in store or localStorage
+    const olympicId = olympicStore.userOlympicId || localStorage.getItem('olympicsId');
+
+    if (olympicId && isLoggedIn.value) {
+      olympicStore.setUserOlympicId(olympicId); // Ensure store is updated
+      leaderboard.value = challengeStore.leaderboard;
     }
+  } catch (err) {
+    console.error('Error loading main page data:', err);
+    errorMessage.value = err.response?.data?.message || "Failed to load data. Please try again later.";
+  } finally {
+    loading.value = false;
   }
 });
 
@@ -65,35 +82,17 @@ onBeforeUnmount(() => {
 <template>
   <MainLayout>
     <div class="home-page">
-      <div class="slideshow-container">
-        <img :src="images[currentImageIndex]" alt="Slideshow Image" class="slideshow-image" />
-
-        <!-- Case 2: Logged In & No Olympics -->
-        <template v-if="isLoggedIn && !hasOlympics">
-          <div class="hero-content">
-            <h1 class="welcome-message">Get your team moving!</h1>
-            <button class="btn btn-warning mt-3" @click="$router.push('/olympic/create')">
-              Get Started
-            </button>
-          </div>
-        </template>
-
-        <!-- Case 3: Logged Out -->
-        <template v-else-if="!isLoggedIn">
-          <div class="hero-content">
-            <h1 class="welcome-message">Get your team moving!</h1>
-            <button class="btn nav-button mt-3" @click="$router.push('/login')">
-              Get Started
-            </button>
-          </div>
-        </template>
-      </div>
-
       <!-- Case 1: Logged In & Has Olympics -->
       <template v-if="isLoggedIn && hasOlympics">
         <div class="leaderboard-section">
           <h2 class="text-center mb-4">Current Rankings</h2>
-          <div class="table-responsive">
+          <div v-if="errorMessage" class="alert alert-danger text-center">
+            {{ errorMessage }}
+          </div>
+          <div v-else-if="leaderboard.length === 0" class="text-center">
+            No rankings available yet.
+          </div>
+          <div v-else class="table-responsive">
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
@@ -107,21 +106,62 @@ onBeforeUnmount(() => {
                   <td class="text-center">
                     <span :class="getRankClass(index + 1)">{{ index + 1 }}</span>
                   </td>
-                  <td>{{ player.player_name }}</td>
-                  <td class="text-center">{{ formatScore(player.total_score) }}</td>
+                  <td>{{ player.playerName }}</td>
+                  <td class="text-center">{{ formatScore(player.score) }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <div v-if="loading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Cases 2 & 3: Show slideshow for non-Olympics users -->
+      <template v-else>
+        <div class="slideshow-container">
+          <img :src="images[currentImageIndex]" alt="Slideshow Image" class="slideshow-image" />
+
+          <!-- Case 2: Logged In & No Olympics -->
+          <template v-if="isLoggedIn && !hasOlympics">
+            <div class="hero-content">
+              <h1 class="welcome-message">Get your team moving!</h1>
+              <button class="btn nav-button nav-button-yellow mt-3" @click="$router.push('/olympic/create')">
+                Get Started
+              </button>
+            </div>
+          </template>
+
+          <!-- Case 3: Logged Out -->
+          <template v-else>
+            <div class="hero-content">
+              <h1 class="welcome-message">Get your team moving!</h1>
+              <button class="btn nav-button mt-3" @click="$router.push('/login')">
+                Get Started
+              </button>
+            </div>
+          </template>
         </div>
       </template>
 
       <!-- Featured Challenges -->
       <div class="featured-challenges mt-5">
-        <h2 class="text-center">Featured Challenges</h2>
-        <div class="d-flex flex-wrap justify-content-center mt-3">
-          <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challenge_id"
-            :id="challenge.challenge_id" :title="challenge.challenge_name" :videoUrl="challenge.challenge_url" />
+        <h2 class="text-center mb-4">Featured Challenges</h2>
+        <div v-if="loading" class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div v-else-if="challengeStore.challenges.length === 0" class="text-center">
+          No challenges available.
+        </div>
+        <div v-else class="challenges-grid">
+          <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"
+            :id="challenge.challengeId" :title="challenge.challengeName" :description="challenge.challengeDesc"
+            :videoUrl="challenge.challengeUrl" />
         </div>
       </div>
     </div>
@@ -186,5 +226,33 @@ onBeforeUnmount(() => {
 .nav-button:hover {
   background-color: var(--interaction-hover-color);
   transform: scale(1.05);
+}
+
+.nav-button-yellow {
+  background-color: var(--warning-color) !important;
+}
+
+.featured-challenges {
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .challenges-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .challenges-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

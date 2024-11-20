@@ -24,9 +24,9 @@
       </div>
 
       <!-- Logout Button -->
-      <div class="logout-button text-center mt-5">
+      <!-- <div class="logout-button text-center mt-5">
         <button class="btn btn-danger" @click="logout">Log Out</button>
-      </div>
+      </div> -->
     </div>
   </MainLayout>
 </template>
@@ -36,7 +36,7 @@ import { ref, onMounted, computed } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
-import { capitalize } from '@/utils/formatter'; // Import formatter utilities
+import { capitalize } from '@/utils/formatters'; // Import formatter utilities
 import { useOlympicStore } from '@/stores/olympic';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -54,10 +54,16 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 // Fetch User Profile
 const fetchUserProfile = async () => {
   try {
-    await userStore.fetchUser(); // Fetch user data from store
-    user.value = userStore.user; // Set user data
+    const userId = route.params.userId;
+    if (!userId) {
+      throw new Error('No user ID available');
+    }
+    const response = await userStore.fetchUser(userId);
+    console.log('User profile response:', response);
+    user.value = response.userData;
   } catch (error) {
     console.error('Error fetching profile:', error);
+    router.push('/auth/login');
   }
 };
 
@@ -99,14 +105,8 @@ const deleteOlympic = async () => {
 const formatName = (name) => (name ? capitalize(name) : 'N/A');
 
 // Fetch Data on Mount
-onMounted(async () => {
-  try {
-    const userId = route.params.userId;
-    await userStore.fetchUser(userId);
-  } catch (error) {
-    console.error('Failed to fetch user profile:', error);
-    alert('Failed to load user profile');
-  }
+onMounted(() => {
+  fetchUserProfile();
 });
 </script>
 

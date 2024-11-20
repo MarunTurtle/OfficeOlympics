@@ -6,15 +6,16 @@ import {
   getChallengeComments,
   addChallengeComment,
   deleteChallengeComment,
+  getMainPageData,
 } from '@/services/challenge';
 
 export const useChallengeStore = defineStore('challenge', {
   state: () => ({
-    challenges: [], // Add this to store all challenges
-    challenge: null,
     leaderboard: [],
-    comments: [],
     loading: false,
+    challenges: [], // Add this to store all challenges
+    comments: [],
+    challenge: null,
   }),
 
   actions: {
@@ -38,7 +39,7 @@ export const useChallengeStore = defineStore('challenge', {
       try {
         const response = await getChallengeDetails(challengeId);
         this.challenge = response.data;
-        return this.challenge;
+        return response.data;
       } catch (error) {
         console.error('Failed to fetch challenge details:', error);
         throw error;
@@ -108,5 +109,31 @@ export const useChallengeStore = defineStore('challenge', {
         console.error('Failed to delete comment:', error);
       }
     },
+
+    async fetchMainPageData() {
+      this.loading = true;
+      try {
+        const response = await getMainPageData();
+        if (response.data) {
+          this.leaderboard = response.data.leaderBoard || [];
+          this.challenges = response.data.challengeList || [];
+
+          // Transform challenges if needed
+          this.challenges = this.challenges.map(challenge => ({
+            ...challenge,
+            challenge_id: challenge.challengeId,
+            challenge_name: challenge.challengeName,
+            challenge_desc: challenge.challengeDesc,
+            challenge_url: challenge.challengeUrl
+          }));
+        }
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch main page data:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    }
   },
 });
