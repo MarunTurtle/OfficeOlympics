@@ -154,8 +154,9 @@ onBeforeUnmount(() => {
       <div class="featured-challenges mt-5">
         <h2 class="text-center">Featured Challenges</h2>
         <div class="d-flex flex-wrap justify-content-center mt-3">
-          <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challenge_id"
-            :id="challenge.challenge_id" :title="challenge.challenge_name" :videoUrl="challenge.challenge_url" />
+          <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"
+            :id="challenge.challengeId" :title="challenge.challengeName" :description="challenge.challengeDesc"
+            :videoUrl="challenge.challengeUrl" />
         </div>
       </div>
     </div>

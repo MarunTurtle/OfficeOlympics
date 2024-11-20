@@ -3,6 +3,7 @@
     <img :src="thumbnailUrl" :alt="title" class="card-img-top">
     <div class="card-body">
       <h5 class="card-title">{{ title }}</h5>
+      <p class="card-description">{{ description }}</p>
       <RouterLink :to="`/challenges/${id}`" class="btn btn-primary">
         Join Challenge
       </RouterLink>
@@ -22,6 +23,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    required: true
+  },
   videoUrl: {
     type: String,
     required: true
@@ -29,7 +34,7 @@ const props = defineProps({
 });
 
 const thumbnailUrl = computed(() => {
-  const videoId = props.videoUrl.split('v=')[1];
+  const videoId = props.videoUrl.split('/').pop();
   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 });
 </script>
@@ -61,6 +66,17 @@ const thumbnailUrl = computed(() => {
 
 .card-title {
   font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: #666;
   margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

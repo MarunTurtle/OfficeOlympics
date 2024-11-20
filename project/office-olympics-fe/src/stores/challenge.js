@@ -110,7 +110,6 @@ export const useChallengeStore = defineStore('challenge', {
       }
     },
 
-    // Add this new action
     async fetchMainPageData() {
       this.loading = true;
       try {
@@ -118,6 +117,15 @@ export const useChallengeStore = defineStore('challenge', {
         if (response.data) {
           this.leaderboard = response.data.leaderBoard || [];
           this.challenges = response.data.challengeList || [];
+
+          // Transform challenges if needed
+          this.challenges = this.challenges.map(challenge => ({
+            ...challenge,
+            challenge_id: challenge.challengeId,
+            challenge_name: challenge.challengeName,
+            challenge_desc: challenge.challengeDesc,
+            challenge_url: challenge.challengeUrl
+          }));
         }
         return response.data;
       } catch (error) {
