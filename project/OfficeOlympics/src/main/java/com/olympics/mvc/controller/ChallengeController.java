@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.olympics.mvc.model.dto.Challenge;
 import com.olympics.mvc.model.dto.Comments;
+import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.dto.Rank;
 import com.olympics.mvc.model.dto.Score;
 
 import com.olympics.mvc.model.service.ChallengeScoreService;
 import com.olympics.mvc.model.service.CommentsService;
+import com.olympics.mvc.model.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,10 +39,12 @@ import jakarta.servlet.http.HttpSession;
 public class ChallengeController {
 	
 	private final ChallengeScoreService challengeService;
+	private final PlayerService playerService;
 	
-	public ChallengeController(ChallengeScoreService challengeService) {
+	public ChallengeController(ChallengeScoreService challengeService, PlayerService playerService) {
 		super();
 		this.challengeService = challengeService;
+		this.playerService = playerService;
 	}
 	
 	/**
@@ -76,8 +80,17 @@ public class ChallengeController {
      * @return 챌린지 점수 기록 페이지 문자열
      */
     @GetMapping("/{challengeId}/score")
-    public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId){
-    	return ResponseEntity.ok("챌린지 점수 기록 폼 반환");
+    public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId, HttpSession session ){
+    	// Map<String, Object> olympic players 
+    	int userId = (int) session.getAttribute("loginUserId");
+    	int olympicId = playerService.findOlympicsIdByUserId(userId);
+    	List<Map<String, Object>> players = playerService.getPlayersByOlympicsId(olympicId);
+    	
+    	Map<String, Object> Data = new HashMap<>();
+    	Data.put("message", "챌린지 점수 기록 폼 반환");
+    	Data.put("playerNames", players);
+    	
+    	return ResponseEntity.ok(Data);
     }
 	
     
