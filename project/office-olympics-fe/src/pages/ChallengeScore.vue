@@ -18,10 +18,10 @@
           <div v-else class="score-form">
             <div v-for="(player, index) in players" :key="index" class="mb-4">
               <label :for="'player' + index" class="form-label">
-                {{ player }}
+                {{ player.player_name }} (Total Score: {{ player.total_score }})
               </label>
               <input type="number" class="form-control" v-model="scores[index]"
-                :placeholder="'Enter score for ' + player" min="0" step="1">
+                :placeholder="'Enter score for ' + player.player_name" min="0" step="1">
             </div>
 
             <div class="d-flex justify-content-center gap-3 mt-5">
@@ -63,7 +63,6 @@ onMounted(async () => {
     loading.value = true;
     error.value = null;
 
-    // Fetch players from the challenge score form endpoint
     const response = await challengeStore.fetchChallengeScoreForm(route.params.id);
     players.value = response.playerNames;
     scores.value = new Array(players.value.length).fill('');
@@ -80,7 +79,7 @@ const submitScores = async () => {
   if (!isValidSubmission.value) return;
 
   const scoreData = {
-    playerNames: players.value,
+    playerNames: players.value.map(player => player.player_name),
     scores: scores.value.map(Number)
   };
 
@@ -89,6 +88,7 @@ const submitScores = async () => {
     router.push(`/challenges/${route.params.id}`);
   } catch (error) {
     console.error('Failed to submit scores:', error);
+    error.value = 'Failed to submit scores. Please try again.';
   }
 };
 
