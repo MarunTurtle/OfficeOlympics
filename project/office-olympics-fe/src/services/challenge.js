@@ -62,5 +62,5 @@ export const deleteChallengeComment = (challengeId, commentId) => {
  * @returns {Promise}
  */
 export const getMainPageData = () => {
-  return axios.get('/');
+  return api.get('/');
 };
