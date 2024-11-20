@@ -57,13 +57,8 @@ const isValidSubmission = computed(() => {
 
 onMounted(async () => {
   try {
-    const olympicId = localStorage.getItem('olympicsId');
-    if (!olympicId) {
-      throw new Error('No Olympic ID found');
-    }
-
-    // Use the existing fetchOlympicPlayers function
-    await olympicStore.fetchOlympicPlayers(olympicId);
+    // Get players from the current Olympic
+    await olympicStore.fetchPlayers();
     players.value = olympicStore.players;
     scores.value = new Array(players.value.length).fill('');
   } catch (error) {
