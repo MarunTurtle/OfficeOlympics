@@ -36,7 +36,7 @@ import { ref, onMounted, computed } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
-import { capitalize } from '@/utils/formatter'; // Import formatter utilities
+import { capitalize } from '@/utils/formatters'; // Import formatter utilities
 import { useOlympicStore } from '@/stores/olympic';
 import { useRouter, useRoute } from 'vue-router';
 
