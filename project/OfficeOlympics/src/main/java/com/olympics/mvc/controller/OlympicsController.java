@@ -56,7 +56,7 @@ public class OlympicsController {
 	/**
 	 * 올림픽 생성 로직
 	 * 
-	 * @param setup 올림픽 생성 정보 (사용자 ID, 올림픽 이름, 플레이어 이름 목록)
+	 * @param setup   올림픽 생성 정보 (사용자 ID, 올림픽 이름, 플레이어 이름 목록)
 	 * @param session 현재 사용자 세션
 	 * @return 생성된 올림픽 데이터 (메시지, 올림픽 ID, 플레이어 수)
 	 */
@@ -70,8 +70,6 @@ public class OlympicsController {
     public ResponseEntity<?> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
 
 		Integer userId = (Integer) session.getAttribute("loginUserId");
-		System.out.println("[1. SessionID: "+session.getId()+"]");
-		System.out.println("[2. loginUserId: "+session.getAttribute("loginUserId")+"]");
 		
 		if(userId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
@@ -94,7 +92,7 @@ public class OlympicsController {
         
         Map<String, Object> olympicsData = new HashMap<>();
         olympicsData.put("message", "Olympic 생성이 완료되었습니다.");
-        olympicsData.put("OlympicsId", olympicsId);
+        olympicsData.put("olympicsId", olympicsId);
         olympicsData.put("playerCount", players.size());
 
         return ResponseEntity.ok(olympicsData);
@@ -105,7 +103,7 @@ public class OlympicsController {
      * 올림픽 팀 삭제 로직
      * 
      * @param olympicsId 삭제할 올림픽 ID
-     * @param session 현재 사용자 세션
+     * @param session 	 현재 사용자 세션
      * @return 삭제 결과 메시지 또는 상태 코드
      */
 	@DeleteMapping("/{olympicId}")
