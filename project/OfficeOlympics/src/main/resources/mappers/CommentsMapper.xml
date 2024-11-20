@@ -4,11 +4,15 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.olympics.mvc.model.dao.CommentsDao">
 
-	<!-- 챌린지별 댓글 확인 -->
-	<select id="getComments" parameterType="int" resultType="Comments">
-		SELECT com.comment_id, u.user_id, com.challenge_id, u.nickname, com.comment_text, com.reg_date FROM comments com
-		INNER JOIN users u ON com.user_id = u.user_id
-		WHERE challenge_id = #{challengeId};
+	<!-- 챌린지별 댓글 확인 (페이징 포함) -->
+	<select id="getComments" parameterType="map" resultType="map">
+		SELECT c.comment_id, c.user_id, c.comment_depth, c.comment_group, c.comment_text,
+               c.reg_date, c.update_date, u.nickname, u.profile_img
+        FROM comments c
+        INNER JOIN users u ON c.user_id = u.user_id
+        WHERE c.challenge_id = #{challengeId}
+        ORDER BY c.comment_group ASC, c.comment_depth ASC
+        LIMIT #{offset}, #{pageSize};
 	</select>
 	
 	<!-- 작성한 댓글 확인 -->
@@ -17,23 +21,68 @@
 		WHERE challenge_id = #{challengeId};
 	</select>
 
-	<!-- 댓글 쓰기 -->
+	<!-- 댓글 작성 -->
 	<insert id="insertComment" parameterType="Comments" useGeneratedKeys="true" keyProperty="commentId">
-		INSERT INTO comments (user_id, challenge_id, comment_text, reg_date)
-		VALUES (#{userId}, #{challengeId}, #{commentText}, NOW());
+		INSERT INTO comments (user_id, challenge_id, comment_depth, comment_text, reg_date)
+		VALUES (#{userId}, #{challengeId}, 0, #{commentText}, NOW());
 	</insert>
+	
+	<!-- 댓글 작성 후 commentGroup 업데이트 -->
+	<update id="updateCommentGroup" parameterType="int">
+		UPDATE comments
+		SET comment_group = #{commentId}
+		WHERE comment_id = #{commentId};
+	</update>
+	
 	
 	<!-- 댓글 수정 -->
 	<update id="modifyComment" parameterType="Comments">
 		UPDATE comments
 		SET comment_text = #{commentText}, update_Date = NOW()
-		WHERE comment_id = #{commentId} AND challenge_id = #{challengeId};
+		WHERE comment_id = #{commentId}
+		AND user_id = #{userId};
 	</update>
 	
-	<!-- 댓글 삭제 -->
+	<!-- 대댓글 유무 확인 -->
+	<select id="hasReplies" parameterType="int" resultType="boolean">
+	    SELECT EXISTS (
+		    SELECT 1
+		    FROM comments
+		    WHERE comment_group = #{commentId}
+		      AND comment_id != #{commentId}
+		      AND comment_group IS NOT NULL
+		);
+	</select>
+	
+	<!-- 대댓이 있는 원댓글일 경우 삭제된 댓글로 업데이트 -->
+	<update id="softDeleteComment" parameterType="map">
+		UPDATE comments
+		SET comment_text = "삭제된 댓글입니다.", update_date = NOW()
+		WHERE comment_id = #{commentId}
+		AND user_id = #{userId};
+	</update>
+	
+	<!-- 댓글 실제 삭제 -->
 	<delete id="deleteComment" parameterType="map">
 		DELETE FROM comments
-		WHERE comment_id = #{commentId} AND challenge_id = #{challengeId};
+		WHERE comment_id = #{commentId}
+		AND user_id = #{userId};
 	</delete>
+	
+	<!-- 대댓글 작성 -->
+	<insert id="insertReply" parameterType="Comments" useGeneratedKeys="true" keyProperty="commentId">
+		INSERT INTO comments (user_id, challenge_id, comment_depth, comment_group, comment_text, reg_date)
+		VALUES (#{userId}, #{challengeId}, 1 , #{commentGroup}, #{commentText}, NOW());
+	</insert>
+
+	<!-- 대댓글 수정 -->
+	<update id="modifyReply" parameterType="Comments">
+        UPDATE comments
+        SET comment_text = #{commentText}, update_date = NOW()
+        WHERE comment_id = #{commentId}
+          AND user_id = #{userId}
+          AND comment_depth = 1
+          AND comment_group = #{commentGroup};
+    </update>
 
 </mapper>

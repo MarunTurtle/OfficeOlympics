@@ -1,7 +1,9 @@
 package com.olympics.mvc.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.olympics.mvc.model.dto.Comments;
@@ -25,7 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/challenges/{challengeId}/comments")
 @Tag(name="comments Restful API", description = "댓글 CRUD")
 public class CommentsController {
 	
@@ -36,13 +39,14 @@ public class CommentsController {
 		this.commentService = commentService;
 	}
 	
+	
 	/**
 	 * 챌린지별 댓글 확인
 	 * 
 	 * @param challengeId 대상 챌린지 ID
 	 * @return 댓글 문자열
 	 */
-	@GetMapping("/{challengeId}")
+	@GetMapping("")
 	@Operation(summary = "챌린지 세부 정보 조회", description = "각 챌린지의 세부 정보를 확인할 수 있습니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "챌린지 조회 성공"),
@@ -51,12 +55,16 @@ public class CommentsController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
 	@Parameter(name = "challengeId", description = "조회할 챌린지의 ID", required = true)
-	public ResponseEntity<?> getChallenge(@PathVariable("challengeId") int challengeId){
+	public ResponseEntity<?> getAllComments(@PathVariable("challengeId") int challengeId,
+											@RequestParam(defaultValue = "1") int page,
+											@RequestParam(defaultValue = "10") int size){
 		
-		List<Comments> commentList = commentService.getComments(challengeId);
+		int offset = (page - 1) * size; // 페이징 계산
 		
-		if(commentList == null || commentList.isEmpty() ){
-			return ResponseEntity.ok().build();			
+		List<Map<String, Object>> commentList = commentService.getComments(challengeId, offset, size);		
+		
+		if (commentList == null || commentList.isEmpty()) {
+		    return ResponseEntity.noContent().build();
 		}
 		
 		return ResponseEntity.ok(commentList);
@@ -70,7 +78,7 @@ public class CommentsController {
 	 * @param comments 작성 댓글 정보
 	 * @return 작성한 댓글 내용
 	 */
-	@PostMapping("/{challengeId}")
+	@PostMapping("")
 	@Operation(summary = "챌린지 댓글 작성", description = "선택한 챌린지 영상 하단에 댓글을 작성할 수 있습니다.")
 	@Parameters({
         @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
@@ -79,7 +87,14 @@ public class CommentsController {
 	public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId, 
 			HttpSession session, @RequestBody Comments comments){
 		
-		int userId = (int) session.getAttribute("loginUserId");
+		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+		}
+		
+		Integer userId = (Integer) session.getAttribute("loginUserId");
+		if (userId == null) {
+		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
 		comments.setChallengeId(challengeId);
 		comments.setUserId(userId);
 		
@@ -109,9 +124,17 @@ public class CommentsController {
         @Parameter(name = "commentText", description = "댓글내용", required = true)
     })
 	public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId, 
-			HttpSession session, @RequestBody Comments comments){
+			   									@PathVariable("commentId") int commentId, 
+			   									HttpSession session, @RequestBody Comments comments){
 		
-		int userId = (int) session.getAttribute("loginUserId");
+		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+		}
+		
+		Integer userId = (Integer) session.getAttribute("loginUserId");
+		if (userId == null) {
+		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
 		comments.setChallengeId(challengeId);
 		comments.setUserId(userId);
 		
@@ -137,58 +160,82 @@ public class CommentsController {
         @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
         @Parameter(name = "commentId", description = "댓글 고유 ID", required = true)
     })
-	public ResponseEntity<?> deleteComment(@PathVariable("challengeId") int challengeId, 
-										   @PathVariable("commentId") int commentId){
+	public ResponseEntity<?> deleteComment(@PathVariable int challengeId,
+	        @PathVariable int commentId, HttpSession session) {
 		
-		boolean comments = commentService.findUserComments(challengeId);
-
-		if (!comments) {
-			return ResponseEntity.badRequest().build();
+		Integer userId = (Integer) session.getAttribute("loginUserId");
+		if (userId == null) {
+		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
 		}
 		
-		boolean isDeleted = commentService.deleteComment(commentId, challengeId);
-		
-		if (isDeleted) {
-			return ResponseEntity.noContent().build();			
-		}
-		
-		return ResponseEntity.badRequest().build();
+	    boolean isDeleted = commentService.deleteCommentOrReply(commentId, userId);
+	    if (isDeleted) {
+	        return ResponseEntity.ok("삭제 성공");
+	    }
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제 실패");
 	}
 	
-	// 특정 댓글에 달린 대댓글 조회
-	@GetMapping("/{commentId}/replies")
-	public ResponseEntity<?> getReplies(){
-		return null;
-	}
 	
 	// 특정 댓글에 달린 대댓글 작성
 	@PostMapping("/{commentId}/replies")
-	public ResponseEntity<?> insertReplies(){
-		return null;
+	public ResponseEntity<?> insertReplies(@PathVariable("commentId") int commentId, 
+			@PathVariable("challengeId") int challengeId,
+			@RequestBody Comments comments,
+			HttpSession session){
+		
+		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+		}
+		
+		Integer userId = (Integer) session.getAttribute("loginUserId");
+		if (userId == null) {
+		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
+		
+		comments.setChallengeId(challengeId);
+		comments.setCommentGroup(commentId);
+		comments.setUserId(userId);
+		comments.setCommentDepth(1);
+		
+		boolean isInserted = commentService.insertReply(comments);
+		
+		if (isInserted)
+			return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
+		
+		return ResponseEntity.badRequest().build();
+
 	}
 	
 	// 대댓글 수정
 	@PutMapping("/{commentId}/replies/{replyId}")
-	public ResponseEntity<?> modifyReplies(){
-		return null;
+	public ResponseEntity<?> modifyReplies(@PathVariable("commentId") int commentId, 
+										   @PathVariable("challengeId") int challengeId,
+										   @PathVariable("replyId") int replyId,
+										   @RequestBody Comments comments,
+										   HttpSession session){
+		
+		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+		}
+		
+		
+		Integer userId = (Integer) session.getAttribute("loginUserId");
+		if (userId == null) {
+		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		}
+		
+		comments.setChallengeId(challengeId);
+		comments.setUserId(userId);
+		comments.setCommentGroup(commentId);
+		comments.setCommentId(replyId);
+		comments.setCommentDepth(1);
+		
+		boolean isModified = commentService.modifyReply(comments);
+		
+		if (isModified)
+			return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
+		
+		return ResponseEntity.badRequest().build();
 	}
-	
-	// 대댓글 삭제
-	@DeleteMapping("/{commentId}/replies/{replyId}")
-	public ResponseEntity<?> deleteReplies(){
-		return null;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

@@ -68,9 +68,9 @@
     	SELECT row_number() over(order by score desc) as 'rank', pl.player_name as 'playerName', cs.score as 'score'
 		FROM challenge_scores cs 
 		INNER JOIN players pl ON pl.player_id=cs.player_id
-		WHERE cs.challenge_id = #{challengeId}
-		LIMIT 3;
+		WHERE cs.challenge_id = #{challengeId};
     </select>
+    
     
     <!-- 올림픽 팀 내 순위 조회 -->
     <select id="selectFinalScore" parameterType="int" resultType="Rank">
