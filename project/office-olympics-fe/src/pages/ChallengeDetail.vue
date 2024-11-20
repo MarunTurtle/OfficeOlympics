@@ -31,6 +31,42 @@
             <h3>Challenge Description</h3>
             <p>{{ challenge.description }}</p>
           </div>
+
+          <!-- Comments Section -->
+          <div class="comments-section">
+            <h3>Comments</h3>
+
+            <!-- Add Comment Form -->
+            <div class="comment-form mb-4">
+              <div class="input-group">
+                <input type="text" class="form-control" v-model="newComment" placeholder="Add a comment...">
+                <button class="btn btn-primary" @click="addComment" :disabled="!newComment.trim()">
+                  Post
+                </button>
+              </div>
+            </div>
+
+            <!-- Comments List -->
+            <div class="comments-list">
+              <div v-if="!comments.length" class="text-center text-muted">
+                No comments yet. Be the first to comment!
+              </div>
+
+              <div v-else v-for="comment in comments" :key="comment.id" class="comment-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong class="comment-author">{{ comment.userName }}</strong>
+                    <p class="comment-content mb-1">{{ comment.content }}</p>
+                    <small class="text-muted">{{ new Date(comment.createdAt).toLocaleDateString() }}</small>
+                  </div>
+                  <button v-if="comment.userId === currentUserId" class="btn btn-sm btn-danger"
+                    @click="deleteComment(comment.id)">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -109,6 +145,18 @@ const addComment = async () => {
     }
   }
 };
+
+const deleteComment = async (commentId) => {
+  try {
+    await challengeStore.deleteComment(challengeId, commentId);
+    comments.value = comments.value.filter(c => c.id !== commentId);
+  } catch (error) {
+    console.error('Failed to delete comment:', error);
+  }
+};
+
+// Add currentUserId ref (near the top with other refs)
+const currentUserId = ref(null); // You'll need to get this from your auth store
 </script>
 
 <style scoped>
@@ -183,5 +231,28 @@ const addComment = async () => {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comment-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.comment-author {
+  color: var(--primary-color);
+  margin-right: 0.5rem;
+}
+
+.comment-content {
+  margin: 0.5rem 0;
+}
+
+.comments-list {
+  max-height: 500px;
+  overflow-y: auto;
 }
 </style>
