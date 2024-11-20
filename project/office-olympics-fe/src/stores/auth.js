@@ -14,21 +14,21 @@ export const useAuthStore = defineStore('auth', {
     async loginUser(credentials) {
       try {
         const { user, olympicsId } = await login(credentials);
-        this.user = user; // Store the user in state
-        this.token = null; // No token in use
-        localStorage.setItem('user', JSON.stringify(user)); // Save to localStorage
+        this.user = {
+          ...user,
+          id: user.nickname
+        };
+        localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('olympicsId', olympicsId || null);
-        
-        // Update Olympic store
+
         const olympicStore = useOlympicStore();
-        olympicStore.setUserOlympicId(olympicsId);        
-      
+        olympicStore.setUserOlympicId(olympicsId);
       } catch (error) {
         console.error('Login failed:', error);
         throw new Error('Invalid email or password.');
       }
     },
-    
+
     async registerUser(registerData) {
       try {
         const response = await register(registerData);

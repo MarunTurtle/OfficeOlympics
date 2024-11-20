@@ -4,8 +4,13 @@ import api from '@/services/api';
  * Fetch the current user's profile
  * @returns {Promise}
  */
-export const fetchUserProfile = (userId) => {
-  return api.get(`/accounts/${userId}`);
+export const fetchUserProfile = async (userId) => {
+  if (!userId) {
+    throw new Error('User ID is required');
+  }
+
+  const response = await fetch(`http://localhost:8080/accounts/${userId}`);
+  return response.json();
 };
 
 /**
