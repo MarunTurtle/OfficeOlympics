@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
         <template v-if="isLoggedIn && !hasOlympics">
           <div class="hero-content">
             <h1 class="welcome-message">Get your team moving!</h1>
-            <button class="btn btn-warning mt-3" @click="$router.push('/olympic/create')">
+            <button class="btn nav-button nav-button-yellow mt-3" @click="$router.push('/olympic/create')">
               Get Started
             </button>
           </div>
@@ -186,5 +186,9 @@ onBeforeUnmount(() => {
 .nav-button:hover {
   background-color: var(--interaction-hover-color);
   transform: scale(1.05);
+}
+
+.nav-button-yellow {
+  background-color: var(--warning-color) !important;
 }
 </style>
