@@ -10,8 +10,8 @@ import ErrorPage from '@/pages/Error.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
-  { path: '/login', name: 'Login', component: Login },
-  { path: '/register', name: 'Register', component: Register },
+  { path: '/auth/login', name: 'Login', component: Login },
+  { path: '/auth/register', name: 'Register', component: Register },
   {
     path: '/olympic/create',
     name: 'OlympicCreate',
@@ -30,6 +30,13 @@ const routes = [
     name: 'ChallengeScore',
     component: () => import('@/pages/ChallengeScore.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/accounts/:userId',
+    name: 'MyPage',
+    component: () => import('@/pages/MyPage.vue'),
+    meta: { requiresAuth: true },
+    props: true
   },
   { path: '/:pathMatch(.*)*', name: 'Error', component: ErrorPage },
 ];
