@@ -108,5 +108,23 @@ export const useChallengeStore = defineStore('challenge', {
         console.error('Failed to delete comment:', error);
       }
     },
+
+    // Add this new action
+    async fetchMainPageData() {
+      this.loading = true;
+      try {
+        const response = await api.get('/');
+        if (response.data) {
+          this.leaderboard = response.data.leaderBoard || [];
+          this.challenges = response.data.challengeList || [];
+        }
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch main page data:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    }
   },
 });

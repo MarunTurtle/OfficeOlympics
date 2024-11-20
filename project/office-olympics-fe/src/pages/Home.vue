@@ -16,6 +16,7 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 
 const leaderboard = ref([]);
 const errorMessage = ref("");
+const loading = ref(true);
 
 // Slideshow functionality
 const images = Array.from(
@@ -45,12 +46,17 @@ const formatScore = (score) => {
 onMounted(async () => {
   startSlideshow();
 
-  // Fetch leaderboard if needed
+  // Fetch main page data if logged in and has Olympics
   if (isLoggedIn.value && hasOlympics.value) {
     try {
-      leaderboard.value = await challengeStore.loadLeaderboard(olympicStore.userOlympicId);
+      loading.value = true;
+      await challengeStore.fetchMainPageData();
+      leaderboard.value = challengeStore.leaderboard;
     } catch (err) {
+      console.error('Error loading main page data:', err);
       errorMessage.value = "Failed to load leaderboard.";
+    } finally {
+      loading.value = false;
     }
   }
 });
@@ -93,7 +99,18 @@ onBeforeUnmount(() => {
       <template v-if="isLoggedIn && hasOlympics">
         <div class="leaderboard-section">
           <h2 class="text-center mb-4">Current Rankings</h2>
-          <div class="table-responsive">
+          <div v-if="loading" class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div v-else-if="errorMessage" class="alert alert-danger text-center">
+            {{ errorMessage }}
+          </div>
+          <div v-else-if="leaderboard.length === 0" class="text-center">
+            No rankings available yet.
+          </div>
+          <div v-else class="table-responsive">
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
@@ -107,7 +124,7 @@ onBeforeUnmount(() => {
                   <td class="text-center">
                     <span :class="getRankClass(index + 1)">{{ index + 1 }}</span>
                   </td>
-                  <td>{{ player.player_name }}</td>
+                  <td>{{ player.nickname }}</td>
                   <td class="text-center">{{ formatScore(player.total_score) }}</td>
                 </tr>
               </tbody>
