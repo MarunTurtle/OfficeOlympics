@@ -55,7 +55,7 @@ public class AuthController {
 	/**
 	 * 로그인 로직 수행
 	 * 
-	 * @param user 로그인 요청 사용자 정보 (email, password 포함)
+	 * @param user 	  로그인 요청 사용자 정보 (email, password 포함)
 	 * @param session 현재 사용자 세션
 	 * @param request HTTP 요청 객체
 	 * @return 로그인 결과 데이터 (사용자 정보)
@@ -87,8 +87,6 @@ public class AuthController {
 			data.put("olympicsId", olympicsId);
 		}
 		
-		System.out.println("[1. SessionID: "+session.getId()+"]");
-		System.out.println("[2. loginUserId: "+session.getAttribute("loginUserId")+"]");
 		return ResponseEntity.ok(data);
 	}
 	
@@ -103,7 +101,7 @@ public class AuthController {
 	@Operation(summary = "로그아웃 로직 수행", description = "로그아웃 클릭 시 세션을 무효화시킵니다.")
 	@ApiResponse(responseCode = "200", description = "로그아웃 성공")
 	public ResponseEntity<String> logout(HttpSession session){
-		session.invalidate(); // 세션 무효화하여 로그아웃 처리
+		session.invalidate();
 		return ResponseEntity.ok("로그아웃 되었습니다.");
 	}
 	
@@ -124,10 +122,10 @@ public class AuthController {
 	/**
 	 * 회원가입 로직 수행
 	 * 
-	 * @param email 회원가입할 사용자의 이메일
-	 * @param password 회원가입할 사용자의 비밀번호
-	 * @param name 회원가입할 사용자의 이름
-	 * @param nickname 회원가입할 사용자의 닉네임
+	 * @param email 	 회원가입할 사용자의 이메일
+	 * @param password   회원가입할 사용자의 비밀번호
+	 * @param name 		 회원가입할 사용자의 이름
+	 * @param nickname   회원가입할 사용자의 닉네임
 	 * @param profileImg 프로필 이미지 파일 (선택사항)
 	 * @return 회원가입 결과 메시지
 	 */
