@@ -41,14 +41,12 @@ const thumbnailUrl = computed(() => {
 
 <style scoped>
 .challenge-card {
-  width: calc(33.333% - 2rem);
-  margin: 1rem;
+  width: 100%;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
-  min-width: 280px;
-  max-width: 400px;
+  background: white;
 }
 
 .challenge-card:hover {

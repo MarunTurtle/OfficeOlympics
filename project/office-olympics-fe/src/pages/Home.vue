@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
       <!-- Featured Challenges -->
       <div class="featured-challenges mt-5">
         <h2 class="text-center mb-4">Featured Challenges</h2>
-        <div class="challenges-container">
+        <div class="challenges-grid">
           <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"
             :id="challenge.challengeId" :title="challenge.challengeName" :description="challenge.challengeDesc"
             :videoUrl="challenge.challengeUrl" />
@@ -228,40 +228,26 @@ onBeforeUnmount(() => {
 }
 
 .featured-challenges {
-  padding: 0 1rem;
+  padding: 0 2rem;
   max-width: 1400px;
-  /* Maximum width of the featured section */
   margin: 0 auto;
 }
 
-.challenges-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  margin: -1rem;
-  /* Compensate for card margins */
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 1200px) {
-  .challenges-container {
-    justify-content: center;
+  .challenges-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .challenge-card {
-    width: calc(50% - 2rem);
-    /* 2 cards per row on medium screens */
-  }
-}
-
-@media (max-width: 576px) {
-  .challenge-card {
-    width: 100%;
-    /* 1 card per row on small screens */
-    margin: 1rem 0;
+  .challenges-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
