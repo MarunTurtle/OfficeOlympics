@@ -56,7 +56,7 @@ public class AuthController {
 	 * 로그인 로직 수행
 	 * 
 	 * @param user 로그인 요청 사용자 정보 (email, password 포함)
-	 * @param session 현재 세션 객체
+	 * @param session 현재 사용자 세션
 	 * @param request HTTP 요청 객체
 	 * @return 로그인 결과 데이터 (사용자 정보)
 	 */
@@ -96,7 +96,7 @@ public class AuthController {
 	/**
 	 * 로그아웃 로직 수행
 	 * 
-	 * @param session 현재 세션 객체
+	 * @param session 현재 사용자 세션
 	 * @return 로그아웃 결과 메시지
 	 */
 	@PostMapping("/logout")
@@ -113,7 +113,7 @@ public class AuthController {
 	 * 
 	 * @return 회원가입 페이지 문자열
 	 */
-	@GetMapping("/regist")
+	@GetMapping("/register")
 	@Operation(summary = "회원가입 폼 반환", description = "회원가입 페이지로 이동합니다.")
 	@ApiResponse(responseCode = "200", description = "회원가입 페이지 반환")
 	public ResponseEntity<String> registform(){
@@ -131,7 +131,7 @@ public class AuthController {
 	 * @param profileImg 프로필 이미지 파일 (선택사항)
 	 * @return 회원가입 결과 메시지
 	 */
-	@PostMapping("/regist")
+	@PostMapping("/register")
     @Operation(summary = "회원가입 로직 수행", description = "회원가입을 수행합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "회원가입 성공"),
