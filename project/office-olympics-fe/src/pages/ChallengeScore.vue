@@ -11,8 +11,12 @@
             </div>
           </div>
 
+          <div v-else-if="error" class="alert alert-danger text-center">
+            {{ error }}
+          </div>
+
           <div v-else class="score-form">
-            <div v-for="(player, index) in players" :key="index" class="mb-4">
+            <div v-for="(player, index) in olympicStore.players" :key="index" class="mb-4">
               <label :for="'player' + index" class="form-label">
                 {{ player.nickname }}
               </label>
@@ -47,9 +51,9 @@ const router = useRouter();
 const olympicStore = useOlympicStore();
 const challengeStore = useChallengeStore();
 
-const players = ref([]);
 const scores = ref([]);
 const loading = ref(true);
+const error = ref(null);
 
 const isValidSubmission = computed(() => {
   return scores.value.every(score => score !== '' && score >= 0);
@@ -57,12 +61,15 @@ const isValidSubmission = computed(() => {
 
 onMounted(async () => {
   try {
-    // Get players from the current Olympic
-    await olympicStore.fetchPlayers();
-    players.value = olympicStore.players;
-    scores.value = new Array(players.value.length).fill('');
-  } catch (error) {
-    console.error('Failed to fetch players:', error);
+    loading.value = true;
+    error.value = null;
+
+    // Initialize scores array based on number of players
+    scores.value = new Array(olympicStore.players.length).fill('');
+
+  } catch (err) {
+    console.error('Failed to initialize:', err);
+    error.value = 'Failed to initialize score submission. Please try again.';
   } finally {
     loading.value = false;
   }
@@ -72,7 +79,7 @@ const submitScores = async () => {
   if (!isValidSubmission.value) return;
 
   const scoreData = {
-    playerNames: players.value.map(p => p.nickname),
+    playerNames: olympicStore.players.map(p => p.nickname),
     scores: scores.value.map(Number)
   };
 
