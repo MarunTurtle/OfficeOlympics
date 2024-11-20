@@ -54,11 +54,12 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 // Fetch User Profile
 const fetchUserProfile = async () => {
   try {
-    const userId = authStore.user?.id;
+    const userId = route.params.userId;
     if (!userId) {
       throw new Error('No user ID available');
     }
     const response = await userStore.fetchUser(userId);
+    console.log('User profile response:', response);
     user.value = response.userData;
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -104,14 +105,8 @@ const deleteOlympic = async () => {
 const formatName = (name) => (name ? capitalize(name) : 'N/A');
 
 // Fetch Data on Mount
-onMounted(async () => {
-  try {
-    const userId = route.params.userId;
-    await userStore.fetchUser(userId);
-  } catch (error) {
-    console.error('Failed to fetch user profile:', error);
-    alert('Failed to load user profile');
-  }
+onMounted(() => {
+  fetchUserProfile();
 });
 </script>
 
