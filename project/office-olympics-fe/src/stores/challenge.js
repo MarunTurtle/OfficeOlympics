@@ -6,6 +6,7 @@ import {
   getChallengeComments,
   addChallengeComment,
   deleteChallengeComment,
+  getMainPageData,
 } from '@/services/challenge';
 
 export const useChallengeStore = defineStore('challenge', {
@@ -113,7 +114,7 @@ export const useChallengeStore = defineStore('challenge', {
     async fetchMainPageData() {
       this.loading = true;
       try {
-        const response = await api.get('/');
+        const response = await getMainPageData();
         if (response.data) {
           this.leaderboard = response.data.leaderBoard || [];
           this.challenges = response.data.challengeList || [];

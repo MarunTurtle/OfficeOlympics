@@ -1,4 +1,5 @@
 import api from '@/services/api';
+import axios from '@/plugins/axios';
 
 /**
  * Fetch challenge details by ID
@@ -55,4 +56,12 @@ export const addChallengeComment = (challengeId, commentData) => {
  */
 export const deleteChallengeComment = (challengeId, commentId) => {
   return api.delete(`/challenges/${challengeId}/comments/${commentId}`);
+};
+
+/**
+ * Fetch main page data
+ * @returns {Promise}
+ */
+export const getMainPageData = () => {
+  return axios.get('/');
 };
