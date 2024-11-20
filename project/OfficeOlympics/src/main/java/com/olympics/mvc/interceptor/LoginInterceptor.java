@@ -1,5 +1,8 @@
 package com.olympics.mvc.interceptor;
 
-public class LoginInterceptor {
+import org.springframework.web.servlet.HandlerInterceptor;
 
+public class LoginInterceptor implements HandlerInterceptor{
+	
+	
 }
