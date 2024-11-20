@@ -68,6 +68,17 @@
             </div>
           </div>
         </div>
+
+        <!-- Right Panel -->
+        <div class="col-lg-4">
+          <div class="recommended-challenges">
+            <h4 class="mb-3">Recommended Challenges</h4>
+            <div class="recommended-list">
+              <RecommendedChallengeCard v-for="rec in recommendedChallenges" :key="rec.challengeId"
+                :id="rec.challengeId" :title="rec.challengeName" :videoUrl="rec.challengeUrl" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-else class="text-center my-5">
@@ -78,10 +89,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 import MainLayout from '@/layouts/MainLayout.vue';
+import RecommendedChallengeCard from '@/components/RecommendedChallengeCard.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -162,6 +174,12 @@ const deleteComment = async (commentId) => {
 
 // Add currentUserId ref (near the top with other refs)
 const currentUserId = ref(null); // You'll need to get this from your auth store
+
+const recommendedChallenges = computed(() => {
+  return challengeStore.challenges
+    .filter(c => c.challengeId !== challengeId)
+    .slice(0, 10); // Show only 5 recommendations
+});
 </script>
 
 <style scoped>
@@ -259,5 +277,20 @@ const currentUserId = ref(null); // You'll need to get this from your auth store
 .comments-list {
   max-height: 500px;
   overflow-y: auto;
+}
+
+.recommended-challenges {
+  position: sticky;
+  top: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recommended-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>
