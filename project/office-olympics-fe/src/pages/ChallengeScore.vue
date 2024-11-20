@@ -85,7 +85,7 @@ const submitScores = async () => {
 
   try {
     await challengeStore.submitScore(route.params.id, scoreData);
-    router.push(`/challenges/${route.params.id}`);
+    router.push(`/challenges/${route.params.id}/rank`);
   } catch (error) {
     console.error('Failed to submit scores:', error);
     error.value = 'Failed to submit scores. Please try again.';
