@@ -83,6 +83,8 @@ const submitScores = async () => {
     scores: scores.value.map(Number)
   };
 
+  console.log('Submitting score data:', scoreData);
+
   try {
     await challengeStore.submitScore(route.params.id, scoreData);
     router.push(`/challenges/${route.params.id}`);

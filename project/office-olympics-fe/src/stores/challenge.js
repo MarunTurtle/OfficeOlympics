@@ -67,10 +67,13 @@ export const useChallengeStore = defineStore('challenge', {
     // Submit a score for a challenge
     async submitScore(challengeId, scoreData) {
       try {
-        await submitChallengeScore(challengeId, scoreData);
+        const response = await submitChallengeScore(challengeId, scoreData);
         console.log('Score submitted successfully!');
+        console.log('Request data:', scoreData); // Debug log
+        return response.data;
       } catch (error) {
-        console.error('Failed to submit score:', error);
+        console.error('Failed to submit score:', error.response?.data || error);
+        throw error;
       }
     },
 
