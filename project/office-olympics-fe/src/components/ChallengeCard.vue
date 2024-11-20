@@ -41,12 +41,14 @@ const thumbnailUrl = computed(() => {
 
 <style scoped>
 .challenge-card {
-  width: 300px;
-  margin: 15px;
+  width: calc(33.333% - 2rem);
+  margin: 1rem;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+  min-width: 280px;
+  max-width: 400px;
 }
 
 .challenge-card:hover {
@@ -60,22 +62,27 @@ const thumbnailUrl = computed(() => {
 }
 
 .card-body {
-  padding: 15px;
+  padding: 1.25rem;
   text-align: center;
 }
 
 .card-title {
   font-size: 1.2rem;
-  margin-bottom: 10px;
+  margin-bottom: 0.75rem;
+  height: 2.4rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .card-description {
   font-size: 0.9rem;
   color: #666;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+  height: 4.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

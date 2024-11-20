@@ -152,8 +152,8 @@ onBeforeUnmount(() => {
 
       <!-- Featured Challenges -->
       <div class="featured-challenges mt-5">
-        <h2 class="text-center">Featured Challenges</h2>
-        <div class="d-flex flex-wrap justify-content-center mt-3">
+        <h2 class="text-center mb-4">Featured Challenges</h2>
+        <div class="challenges-container">
           <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"
             :id="challenge.challengeId" :title="challenge.challengeName" :description="challenge.challengeDesc"
             :videoUrl="challenge.challengeUrl" />
@@ -225,5 +225,43 @@ onBeforeUnmount(() => {
 
 .nav-button-yellow {
   background-color: var(--warning-color) !important;
+}
+
+.featured-challenges {
+  padding: 0 1rem;
+  max-width: 1400px;
+  /* Maximum width of the featured section */
+  margin: 0 auto;
+}
+
+.challenges-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: -1rem;
+  /* Compensate for card margins */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .challenges-container {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .challenge-card {
+    width: calc(50% - 2rem);
+    /* 2 cards per row on medium screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .challenge-card {
+    width: 100%;
+    /* 1 card per row on small screens */
+    margin: 1rem 0;
+  }
 }
 </style>
