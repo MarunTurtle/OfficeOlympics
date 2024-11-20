@@ -17,17 +17,17 @@
           <!-- Case 1: Logged Out -->
           <template v-if="!isLoggedIn">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/login">Login</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/login">Login</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/register">Register</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/register">Register</RouterLink>
             </li>
           </template>
 
           <!-- Case 2: Logged In & Created Olympic -->
           <template v-else-if="isLoggedIn && hasOlympics">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/mypage">My Page</RouterLink>
+              <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">My Page</RouterLink>
             </li>
             <li class="nav-item">
               <button class="nav-button btn" @click="onLogout">Sign Out</button>
