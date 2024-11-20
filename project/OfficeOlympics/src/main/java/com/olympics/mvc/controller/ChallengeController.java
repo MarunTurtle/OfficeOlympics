@@ -67,7 +67,20 @@ public class ChallengeController {
 		
 		return ResponseEntity.ok(challenge);
 	}
+    
+    
+    /**
+     * 챌린지 점수 기록 폼 반환
+     * 
+     * @param challengeId 챌린지 고유 ID
+     * @return 챌린지 점수 기록 페이지 문자열
+     */
+    @GetMapping("/{challengeId}/score")
+    public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId){
+    	return ResponseEntity.ok("챌린지 점수 기록 폼 반환");
+    }
 	
+    
     /**
      * 챌린지 기록 제출
      *
