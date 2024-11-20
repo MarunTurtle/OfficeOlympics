@@ -73,7 +73,7 @@ public class AccountController {
 	    List<Map<String, Object>> players = (olympicsId > 0) ? playerService.getPlayersByOlympicsId(olympicsId) : new ArrayList<>();
 	    
 	    Map<String, Object> myPageData = new HashMap<>();
-	    myPageData.put("user", userData);
+	    myPageData.put("userData", userData);
 	    myPageData.put("players", players);
 	    
 	    return ResponseEntity.ok(myPageData);
@@ -85,8 +85,8 @@ public class AccountController {
 	 * 
 	 * @param userId, nickname, profileImg 수정할 사용자의 ID, 닉네임, 프로필 이미지
 	 * @param olympicsName 올림픽 이름
-	 * @param playerNames 선수 목록
-	 * @param session 현재 사용자 세션
+	 * @param playerNames  선수 목록
+	 * @param session 	   현재 사용자 세션
 	 * @return 수정 결과 메시지
 	 */
 	@PutMapping("/{userId}")
@@ -133,7 +133,7 @@ public class AccountController {
     /**
      * 회원 탈퇴
      * 
-     * @param userId 탈퇴할 사용자의 ID
+     * @param userId  탈퇴할 사용자의 ID
      * @param session 현재 사용자 세션
      * @return 탈퇴 결과 메시지
      */
@@ -164,7 +164,7 @@ public class AccountController {
      * 세션 검증 로직
      * 
      * @param session 현재 사용자 세션
-     * @param userId 검증할 사용자 ID
+     * @param userId  검증할 사용자 ID
      * @return 세션 유효 여부
      */
     public boolean isValidSessionUser(HttpSession session, int userId) {
