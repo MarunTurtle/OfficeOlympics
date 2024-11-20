@@ -27,9 +27,15 @@ const currentImageIndex = ref(Math.floor(Math.random() * images.length));
 const slideInterval = ref(null);
 
 const startSlideshow = () => {
-  slideInterval.value = setInterval(() => {
-    currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
-  }, 5000); // Change image every 5 seconds
+  // slideInterval.value = setInterval(() => {
+  //   currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+  // }, 5000); // Change image every 5 seconds
+  // Only start slideshow if user is not logged in or doesn't have Olympics
+  if (!isLoggedIn.value || !hasOlympics.value) {
+    slideInterval.value = setInterval(() => {
+      currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+    }, 5000);
+  }
 };
 
 const getRankClass = (rank) => {
@@ -72,30 +78,6 @@ onBeforeUnmount(() => {
 <template>
   <MainLayout>
     <div class="home-page">
-      <div class="slideshow-container">
-        <img :src="images[currentImageIndex]" alt="Slideshow Image" class="slideshow-image" />
-
-        <!-- Case 2: Logged In & No Olympics -->
-        <template v-if="isLoggedIn && !hasOlympics">
-          <div class="hero-content">
-            <h1 class="welcome-message">Get your team moving!</h1>
-            <button class="btn nav-button nav-button-yellow mt-3" @click="$router.push('/olympic/create')">
-              Get Started
-            </button>
-          </div>
-        </template>
-
-        <!-- Case 3: Logged Out -->
-        <template v-else-if="!isLoggedIn">
-          <div class="hero-content">
-            <h1 class="welcome-message">Get your team moving!</h1>
-            <button class="btn nav-button mt-3" @click="$router.push('/login')">
-              Get Started
-            </button>
-          </div>
-        </template>
-      </div>
-
       <!-- Case 1: Logged In & Has Olympics -->
       <template v-if="isLoggedIn && hasOlympics">
         <div class="leaderboard-section">
@@ -131,6 +113,33 @@ onBeforeUnmount(() => {
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
+        </div>
+      </template>
+
+      <!-- Cases 2 & 3: Show slideshow for non-Olympics users -->
+      <template v-else>
+        <div class="slideshow-container">
+          <img :src="images[currentImageIndex]" alt="Slideshow Image" class="slideshow-image" />
+
+          <!-- Case 2: Logged In & No Olympics -->
+          <template v-if="isLoggedIn && !hasOlympics">
+            <div class="hero-content">
+              <h1 class="welcome-message">Get your team moving!</h1>
+              <button class="btn nav-button nav-button-yellow mt-3" @click="$router.push('/olympic/create')">
+                Get Started
+              </button>
+            </div>
+          </template>
+
+          <!-- Case 3: Logged Out -->
+          <template v-else>
+            <div class="hero-content">
+              <h1 class="welcome-message">Get your team moving!</h1>
+              <button class="btn nav-button mt-3" @click="$router.push('/login')">
+                Get Started
+              </button>
+            </div>
+          </template>
         </div>
       </template>
 
