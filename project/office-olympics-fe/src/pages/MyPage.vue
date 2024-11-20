@@ -24,9 +24,9 @@
       </div>
 
       <!-- Logout Button -->
-      <div class="logout-button text-center mt-5">
+      <!-- <div class="logout-button text-center mt-5">
         <button class="btn btn-danger" @click="logout">Log Out</button>
-      </div>
+      </div> -->
     </div>
   </MainLayout>
 </template>
