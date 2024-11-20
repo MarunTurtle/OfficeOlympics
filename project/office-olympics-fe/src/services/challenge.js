@@ -75,3 +75,12 @@ export const deleteChallengeComment = (challengeId, commentId) => {
 export const getMainPageData = () => {
   return api.get('/');
 };
+
+/**
+ * Fetch challenge score form for a specific challenge
+ * @param {number} challengeId
+ * @returns {Promise}
+ */
+export const getChallengeScoreForm = (challengeId) => {
+  return api.get(`/challenges/${challengeId}/score`);
+};

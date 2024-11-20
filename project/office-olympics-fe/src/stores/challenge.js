@@ -7,6 +7,7 @@ import {
   addChallengeComment,
   deleteChallengeComment,
   getMainPageData,
+  getChallengeScoreForm,
 } from '@/services/challenge';
 
 export const useChallengeStore = defineStore('challenge', {
@@ -130,6 +131,19 @@ export const useChallengeStore = defineStore('challenge', {
         return response.data;
       } catch (error) {
         console.error('Failed to fetch main page data:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchChallengeScoreForm(challengeId) {
+      this.loading = true;
+      try {
+        const response = await getChallengeScoreForm(challengeId);
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch score form:', error);
         throw error;
       } finally {
         this.loading = false;
