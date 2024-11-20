@@ -122,13 +122,17 @@ const transformYoutubeUrl = (url) => {
 onMounted(async () => {
   try {
     loading.value = true;
-    const response = await challengeStore.fetchChallengeDetails(challengeId);
+    // Fetch both challenge details and main page data in parallel
+    const [challengeResponse, mainPageResponse] = await Promise.all([
+      challengeStore.fetchChallengeDetails(challengeId),
+      challengeStore.fetchMainPageData()
+    ]);
 
     challenge.value = {
-      id: response.challengeId,
-      title: response.challengeName,
-      description: response.challengeDesc,
-      videoUrl: transformYoutubeUrl(response.challengeUrl)
+      id: challengeResponse.challengeId,
+      title: challengeResponse.challengeName,
+      description: challengeResponse.challengeDesc,
+      videoUrl: transformYoutubeUrl(challengeResponse.challengeUrl)
     };
 
     await challengeStore.fetchComments(challengeId);
