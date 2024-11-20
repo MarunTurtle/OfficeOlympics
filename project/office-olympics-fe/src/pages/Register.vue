@@ -60,7 +60,7 @@
 
       <p class="text-center mt-3">
         Already have an account?
-        <RouterLink to="/login">Login here</RouterLink>.
+        <RouterLink to="/auth/login">Login here</RouterLink>.
       </p>
     </div>
   </AuthLayout>
