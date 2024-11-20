@@ -21,8 +21,10 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('olympicsId', olympicsId || null);
 
+        // Update Olympic store
         const olympicStore = useOlympicStore();
         olympicStore.setUserOlympicId(olympicsId);
+
       } catch (error) {
         console.error('Login failed:', error);
         throw new Error('Invalid email or password.');

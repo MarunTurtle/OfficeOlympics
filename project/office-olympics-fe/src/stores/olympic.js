@@ -10,7 +10,7 @@ export const useOlympicStore = defineStore('olympic', {
   state: () => ({
     olympic: null, // Current Olympic event details
     players: [], // List of players in the Olympic event
-    userOlympicId: null, // Olympic ID for the logged-in user
+    userOlympicId: localStorage.getItem('olympicsId') || null, // Initialize from localStorage
     loading: false, // Loading state for API calls
   }),
 
@@ -19,6 +19,11 @@ export const useOlympicStore = defineStore('olympic', {
     // Set user Olympic ID
     setUserOlympicId(olympicId) {
       this.userOlympicId = olympicId;
+      if (olympicId) {
+        localStorage.setItem('olympicsId', olympicId);
+      } else {
+        localStorage.removeItem('olympicsId');
+      }
     },
 
     // Clear Olympic data (called upon logout)
@@ -26,13 +31,14 @@ export const useOlympicStore = defineStore('olympic', {
       this.olympic = null;
       this.players = [];
       this.userOlympicId = null;
-    },    
+      localStorage.removeItem('olympicsId');
+    },
 
     // Create a new Olympic event
     async createOlympicEvent(olympicData) {
       this.loading = true;
       let retries = 3;
-      
+
       while (retries > 0) {
         try {
           const response = await createOlympic(olympicData);

@@ -53,17 +53,24 @@ const formatScore = (score) => {
 onMounted(async () => {
   startSlideshow();
 
-  // Fetch main page data if logged in and has Olympics
-  if (isLoggedIn.value && hasOlympics.value) {
-    try {
-      loading.value = true;
-      await challengeStore.fetchMainPageData();
-      leaderboard.value = challengeStore.leaderboard;
-    } catch (err) {
-      console.error('Error loading main page data:', err);
-      errorMessage.value = err.response?.data?.message || "Failed to load leaderboard. Please try again later.";
-    } finally {
-      loading.value = false;
+  // Check if Olympic ID exists in store or localStorage
+  const olympicId = olympicStore.userOlympicId || localStorage.getItem('olympicsId');
+
+  if (olympicId) {
+    olympicStore.setUserOlympicId(olympicId); // Ensure store is updated
+
+    // Fetch main page data if logged in and has Olympics
+    if (isLoggedIn.value) {
+      try {
+        loading.value = true;
+        await challengeStore.fetchMainPageData();
+        leaderboard.value = challengeStore.leaderboard;
+      } catch (err) {
+        console.error('Error loading main page data:', err);
+        errorMessage.value = err.response?.data?.message || "Failed to load leaderboard. Please try again later.";
+      } finally {
+        loading.value = false;
+      }
     }
   }
 });
