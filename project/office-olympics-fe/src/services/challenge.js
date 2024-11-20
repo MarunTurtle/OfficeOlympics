@@ -48,6 +48,17 @@ export const addChallengeComment = (challengeId, commentData) => {
 };
 
 /**
+ * Update a comment for a challenge
+ * @param {number} challengeId
+ * @param {number} commentId
+ * @param {object} commentData
+ * @returns {Promise}
+ */
+export const updateChallengeComment = (challengeId, commentId, commentData) => {
+  return api.put(`/challenges/${challengeId}/comments/${commentId}`, commentData);
+};
+
+/**
  * Delete a comment for a challenge
  * @param {number} challengeId
  * @param {number} commentId

@@ -135,7 +135,12 @@ const startChallenge = () => {
 const addComment = async () => {
   if (newComment.value.trim()) {
     try {
-      await challengeStore.addComment(challengeId, { content: newComment.value });
+      const commentData = {
+        challengeId: challengeId,
+        commentText: newComment.value.trim()
+      };
+
+      await challengeStore.addComment(challengeId, commentData);
       newComment.value = '';
       // Refresh comments after adding
       await challengeStore.fetchComments(challengeId);
