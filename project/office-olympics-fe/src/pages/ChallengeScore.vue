@@ -79,6 +79,7 @@ const submitScores = async () => {
   if (!isValidSubmission.value) return;
 
   const scoreData = {
+    challengeId: Number(route.params.id),
     playerNames: players.value.map(player => player.player_name),
     scores: scores.value.map(Number)
   };
