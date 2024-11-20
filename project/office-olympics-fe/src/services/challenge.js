@@ -1,5 +1,4 @@
 import api from '@/services/api';
-import axios from '@/plugins/axios';
 
 /**
  * Fetch challenge details by ID
