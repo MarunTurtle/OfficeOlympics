@@ -21,12 +21,8 @@ public class CommentsServiceImpl implements CommentsService{
 
 	// 챌린지별 댓글 확인
 	@Override
-	public List<Map<String, Object>> getComments(int challengeId, int offset, int limit) {
-		Map<String, Object> params = new HashMap<>();
-	    params.put("challengeId", challengeId);
-	    params.put("offset", offset);
-	    params.put("limit", limit);
-		return commentsDao.getComments(params);
+	public List<Map<String, Object>> getComments(int challengeId) {
+		return commentsDao.getComments(challengeId);
 	}
 
 	// 사용자가 작성한 댓글이 있는지 확인

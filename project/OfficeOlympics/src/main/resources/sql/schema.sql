@@ -63,9 +63,15 @@ CREATE TABLE comments (
   comment_id INT AUTO_INCREMENT PRIMARY KEY, -- 댓글 ID (자동 증가)
   user_id INT, -- 사용자 ID (외래키)
   challenge_id INT, -- 챌린지 ID (외래키)
-  comment_text TEXT NOT NULL, -- 댓글 내용
+  comment_depth INT DEFAULT 0, -- 0 이면 댓글, 1이면 대댓글
+  comment_group INT, -- 댓글 그룹 (원댓글 ID)
+  comment_text VARCHAR(255) NOT NULL, -- 댓글 내용
   reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 등록 날짜 (기본값: 현재 시간)
   update_date TIMESTAMP DEFAULT NULL, -- 수정 날짜 (NULL 가능)
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE NO ACTION, -- 사용자 삭제 시 연쇄 삭제
   FOREIGN KEY (challenge_id) REFERENCES challenges(challenge_id) ON DELETE CASCADE ON UPDATE NO ACTION -- 챌린지 삭제 시 연쇄 삭제
 );
+
+CREATE INDEX idx_comments_challenge_id ON comments(challenge_id);
+CREATE INDEX idx_comments_user_id ON comments(user_id);
+CREATE INDEX idx_users_user_id ON users(user_id);

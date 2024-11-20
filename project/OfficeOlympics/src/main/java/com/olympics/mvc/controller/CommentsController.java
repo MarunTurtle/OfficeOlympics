@@ -55,13 +55,10 @@ public class CommentsController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
 	@Parameter(name = "challengeId", description = "조회할 챌린지의 ID", required = true)
-	public ResponseEntity<?> getAllComments(@PathVariable("challengeId") int challengeId,
-											@RequestParam(defaultValue = "1") int page,
-											@RequestParam(defaultValue = "10") int size){
+	public ResponseEntity<?> getAllComments(@PathVariable("challengeId") int challengeId){
 		
-		int offset = (page - 1) * size; // 페이징 계산
-		
-		List<Map<String, Object>> commentList = commentService.getComments(challengeId, offset, size);		
+	
+		List<Map<String, Object>> commentList = commentService.getComments(challengeId);		
 		
 		if (commentList == null || commentList.isEmpty()) {
 		    return ResponseEntity.noContent().build();
