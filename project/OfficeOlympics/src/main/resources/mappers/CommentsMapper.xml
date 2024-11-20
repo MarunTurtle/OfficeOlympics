@@ -5,14 +5,13 @@
 <mapper namespace="com.olympics.mvc.model.dao.CommentsDao">
 
 	<!-- 챌린지별 댓글 확인 (페이징 포함) -->
-	<select id="getComments" parameterType="map" resultType="map">
+	<select id="getComments" parameterType="int" resultType="map">
 		SELECT c.comment_id, c.user_id, c.comment_depth, c.comment_group, c.comment_text,
                c.reg_date, c.update_date, u.nickname, u.profile_img
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
         WHERE c.challenge_id = #{challengeId}
-        ORDER BY c.comment_group ASC, c.comment_depth ASC
-        LIMIT #{offset}, #{pageSize};
+        ORDER BY c.comment_group ASC, c.comment_depth ASC;
 	</select>
 	
 	<!-- 작성한 댓글 확인 -->

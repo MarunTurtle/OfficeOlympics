@@ -8,7 +8,7 @@ import com.olympics.mvc.model.dto.Comments;
 public interface CommentsDao {
 	
 	// 챌린지별 댓글 확인
-	List<Map<String, Object>> getComments(Map<String, Object> params);
+	List<Map<String, Object>> getComments(int challengeId);
 	
 	// 사용자가 작성한 댓글이 있는지 확인
 	int findUserComments(int challengeId);
