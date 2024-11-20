@@ -16,7 +16,6 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 
 const leaderboard = ref([]);
 const errorMessage = ref("");
-const loading = ref(true);
 
 // Slideshow functionality
 const images = Array.from(
@@ -40,6 +39,7 @@ const getRankClass = (rank) => {
 };
 
 const formatScore = (score) => {
+  if (score === undefined || score === null) return '0';
   return formatNumber(score);
 };
 
@@ -99,12 +99,7 @@ onBeforeUnmount(() => {
       <template v-if="isLoggedIn && hasOlympics">
         <div class="leaderboard-section">
           <h2 class="text-center mb-4">Current Rankings</h2>
-          <div v-if="loading" class="loading-spinner">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-          <div v-else-if="errorMessage" class="alert alert-danger text-center">
+          <div v-if="errorMessage" class="alert alert-danger text-center">
             {{ errorMessage }}
           </div>
           <div v-else-if="leaderboard.length === 0" class="text-center">
@@ -125,7 +120,7 @@ onBeforeUnmount(() => {
                     <span :class="getRankClass(index + 1)">{{ index + 1 }}</span>
                   </td>
                   <td>{{ player.nickname }}</td>
-                  <td class="text-center">{{ formatScore(player.total_score) }}</td>
+                  <td class="text-center">{{ formatScore(player.score) }}</td>
                 </tr>
               </tbody>
             </table>
