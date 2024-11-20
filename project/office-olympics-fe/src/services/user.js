@@ -4,8 +4,8 @@ import api from '@/services/api';
  * Fetch the current user's profile
  * @returns {Promise}
  */
-export const fetchUserProfile = () => {
-  return api.get('/accounts/:user_id'); // Replace `:user_id` dynamically in store or component
+export const fetchUserProfile = (userId) => {
+  return api.get(`/accounts/${userId}`);
 };
 
 /**

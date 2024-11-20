@@ -8,15 +8,15 @@ export const useUserStore = defineStore('user', {
   }),
 
   actions: {
-    async fetchUser() {
+    async fetchUser(userId) {
       this.loading = true;
       try {
-        const response = await fetchUserProfile();
+        const response = await fetchUserProfile(userId);
         this.user = response.data;
         console.log('User profile fetched:', this.user);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
-        // Consider adding user feedback here, e.g., a notification
+        throw error;
       } finally {
         this.loading = false;
       }

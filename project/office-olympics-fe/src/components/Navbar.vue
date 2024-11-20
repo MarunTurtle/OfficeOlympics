@@ -27,7 +27,7 @@
           <!-- Case 2: Logged In & Created Olympic -->
           <template v-else-if="isLoggedIn && hasOlympics">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/mypage">My Page</RouterLink>
+              <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">My Page</RouterLink>
             </li>
             <li class="nav-item">
               <button class="nav-button btn" @click="onLogout">Sign Out</button>
@@ -40,7 +40,7 @@
               <RouterLink class="nav-button btn btn-warning" to="/olympic/create">Create Olympics</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/mypage">My Page</RouterLink>
+              <RouterLink class="nav-button btn" to="/accounts/{{ authStore.user.id }}">My Page</RouterLink>
             </li>
             <li class="nav-item">
               <button class="nav-button btn" @click="onLogout">Sign Out</button>

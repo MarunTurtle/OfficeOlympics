@@ -38,12 +38,15 @@ import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
 import { capitalize } from '@/utils/formatter'; // Import formatter utilities
 import { useOlympicStore } from '@/stores/olympic';
+import { useRouter, useRoute } from 'vue-router';
 
 // Store and State
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const user = ref(null); // Current user data
 const olympicStore = useOlympicStore();
+const router = useRouter();
+const route = useRoute();
 
 // Add computed property for Olympic status
 const hasOlympics = computed(() => !!olympicStore.userOlympicId);
@@ -70,8 +73,7 @@ const logout = async () => {
   try {
     await authStore.logoutUser();
     alert('You have been logged out.');
-    // Redirect to login page
-    window.location.href = '/login';
+    router.push('/auth/login');
   } catch (error) {
     console.error('Logout failed:', error);
   }
@@ -97,8 +99,14 @@ const deleteOlympic = async () => {
 const formatName = (name) => (name ? capitalize(name) : 'N/A');
 
 // Fetch Data on Mount
-onMounted(() => {
-  fetchUserProfile();
+onMounted(async () => {
+  try {
+    const userId = route.params.userId;
+    await userStore.fetchUser(userId);
+  } catch (error) {
+    console.error('Failed to fetch user profile:', error);
+    alert('Failed to load user profile');
+  }
 });
 </script>
 
