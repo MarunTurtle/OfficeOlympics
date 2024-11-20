@@ -17,10 +17,10 @@
           <!-- Case 1: Logged Out -->
           <template v-if="!isLoggedIn">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/auth/login">Login</RouterLink>
+              <RouterLink class="nav-button btn" to="/login">Login</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/auth/register">Register</RouterLink>
+              <RouterLink class="nav-button btn" to="/register">Register</RouterLink>
             </li>
           </template>
 
