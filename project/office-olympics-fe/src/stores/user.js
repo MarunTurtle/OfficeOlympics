@@ -12,8 +12,8 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         const response = await fetchUserProfile(userId);
-        this.user = response.data;
-        console.log('User profile fetched:', this.user);
+        this.user = response.userData;
+        return response;
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
         throw error;

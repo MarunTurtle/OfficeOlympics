@@ -54,15 +54,15 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 // Fetch User Profile
 const fetchUserProfile = async () => {
   try {
-    const userId = authStore.user?.id; // Get userId from auth store
+    const userId = authStore.user?.id;
     if (!userId) {
       throw new Error('No user ID available');
     }
-    await userStore.fetchUser(userId);
-    user.value = userStore.user;
+    const response = await userStore.fetchUser(userId);
+    user.value = response.userData;
   } catch (error) {
     console.error('Error fetching profile:', error);
-    router.push('/auth/login'); // Redirect to login if there's an error
+    router.push('/auth/login');
   }
 };
 
@@ -105,7 +105,13 @@ const formatName = (name) => (name ? capitalize(name) : 'N/A');
 
 // Fetch Data on Mount
 onMounted(async () => {
-  await fetchUserProfile();
+  try {
+    const userId = route.params.userId;
+    await userStore.fetchUser(userId);
+  } catch (error) {
+    console.error('Failed to fetch user profile:', error);
+    alert('Failed to load user profile');
+  }
 });
 </script>
 
