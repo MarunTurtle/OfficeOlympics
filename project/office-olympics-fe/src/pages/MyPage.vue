@@ -35,7 +35,7 @@
         <div class="col-md-8">
           <div class="card">
             <div class="card-header">
-              <h4 class="mb-0">Olympic Team Members</h4>
+              <h4 class="mb-0">{{ players[0]?.olympics_name || 'Olympic Team Members' }}</h4>
             </div>
             <div class="card-body">
               <div v-if="players.length === 0" class="text-center text-muted">
@@ -47,16 +47,12 @@
                     <tr>
                       <th>Name</th>
                       <th>Score</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="player in players" :key="player.playerId">
-                      <td>{{ player.playerName }}</td>
-                      <td>{{ player.totalScore || 0 }}</td>
-                      <td>
-                        <span class="badge bg-success">Active</span>
-                      </td>
+                    <tr v-for="player in players" :key="player.player_name">
+                      <td>{{ player.player_name }}</td>
+                      <td>{{ player.total_score }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -114,7 +110,7 @@ const fetchUserProfile = async () => {
     console.log('Profile Response:', response);
 
     userData.value = response.data.userData;
-    players.value = response.data.players || [];
+    players.value = response.data.players;
 
   } catch (err) {
     console.error('Error fetching profile:', err);
