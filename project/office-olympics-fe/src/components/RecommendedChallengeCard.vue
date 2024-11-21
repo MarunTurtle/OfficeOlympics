@@ -68,9 +68,9 @@ const thumbnailUrl = computed(() => {
 
 .card-title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.2;
-  height: 2.2em;
+  height: 2.4em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
