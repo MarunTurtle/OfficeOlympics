@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
           <template v-else>
             <div class="hero-content">
               <h1 class="welcome-message">Get your team moving!</h1>
-              <button class="btn nav-button mt-3" @click="$router.push('/login')">
+              <button class="btn nav-button mt-3" @click="$router.push('/auth/login')">
                 Get Started
               </button>
             </div>
