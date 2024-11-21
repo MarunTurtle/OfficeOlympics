@@ -28,9 +28,9 @@
               <div class="card-body">
                 <h2 class="card-title">Profile Details</h2>
                 <div class="profile-info">
-                  <p><strong>Name:</strong> {{ formatName(user?.name) }}</p>
-                  <p><strong>Email:</strong> {{ user?.email }}</p>
-                  <p><strong>Nickname:</strong> {{ formatName(user?.nickname) }}</p>
+                  <p><strong>Name:</strong> {{ user?.name ? formatName(user.name) : 'N/A' }}</p>
+                  <p><strong>Email:</strong> {{ user?.email || 'N/A' }}</p>
+                  <p><strong>Nickname:</strong> {{ user?.nickname ? formatName(user.nickname) : 'N/A' }}</p>
                   <div class="mt-3">
                     <button class="btn btn-primary me-2" @click="showEditModal">
                       Edit Profile
@@ -49,8 +49,8 @@
             <div class="card">
               <div class="card-body">
                 <h2 class="card-title">Olympic Details</h2>
-                <div v-if="players && players.length > 0">
-                  <h3 class="text-center mb-3">{{ players[0].olympics_name }}</h3>
+                <div v-if="players?.length > 0">
+                  <h3 class="text-center mb-3">{{ players[0]?.olympics_name || 'Unnamed Olympic' }}</h3>
                   <div class="table-responsive">
                     <table class="table table-hover">
                       <thead>
@@ -60,9 +60,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="player in players" :key="player.player_name">
-                          <td>{{ player.player_name }}</td>
-                          <td class="text-end">{{ formatNumber(player.total_score) }}</td>
+                        <tr v-for="player in players" :key="player.player_name || Math.random()">
+                          <td>{{ player.player_name || 'Unnamed Player' }}</td>
+                          <td class="text-end">{{ player.total_score ? formatNumber(player.total_score) : '0' }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -155,15 +155,22 @@ const fetchUserProfile = async () => {
     error.value = null;
     const userId = route.params.userId;
     const response = await userStore.fetchUser(userId);
+
+    if (!response || !response.userData) {
+      throw new Error('No user data received');
+    }
+
     user.value = response.userData;
     players.value = response.players || [];
 
-    // Initialize edit form
-    if (players.value.length > 0) {
-      editForm.value.olympicsName = players.value[0].olympics_name;
-      editForm.value.playerNames = players.value.map(p => p.player_name);
-    }
-    editForm.value.nickname = user.value.nickname;
+    // Initialize edit form with safe defaults
+    editForm.value = {
+      nickname: user.value?.nickname || '',
+      profileImg: null,
+      olympicsName: players.value[0]?.olympics_name || '',
+      playerNames: players.value.map(p => p.player_name || '') || []
+    };
+
   } catch (error) {
     console.error('Error fetching profile:', error);
     error.value = 'Failed to load profile data. Please try again.';
@@ -184,18 +191,31 @@ const handleImageChange = (event) => {
 
 const handleEditSubmit = async () => {
   try {
+    if (!user.value?.userId) {
+      throw new Error('User ID not found');
+    }
+
+    if (!editForm.value) {
+      throw new Error('Form data is missing');
+    }
+
     const formData = new FormData();
-    formData.append('nickname', editForm.value.nickname);
+    formData.append('nickname', editForm.value.nickname || '');
     if (editForm.value.profileImg) {
       formData.append('profileImg', editForm.value.profileImg);
     }
-    formData.append('olympicsName', editForm.value.olympicsName);
-    editForm.value.playerNames.forEach(name => {
-      formData.append('playerNames', name);
-    });
+    formData.append('olympicsName', editForm.value.olympicsName || '');
+    if (Array.isArray(editForm.value.playerNames)) {
+      editForm.value.playerNames.forEach(name => {
+        if (name) formData.append('playerNames', name);
+      });
+    }
 
     await userStore.updateUser(user.value.userId, formData);
-    Modal.getInstance(editModal.value).hide();
+    const modalInstance = Modal.getInstance(editModal.value);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
     await fetchUserProfile();
   } catch (error) {
     console.error('Failed to update profile:', error);
@@ -204,6 +224,11 @@ const handleEditSubmit = async () => {
 };
 
 const confirmDeleteOlympic = async () => {
+  if (!olympicStore.userOlympicId) {
+    alert('No Olympic event found to delete');
+    return;
+  }
+
   if (confirm('Are you sure you want to delete this Olympic event? This action cannot be undone.')) {
     try {
       await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
@@ -217,6 +242,11 @@ const confirmDeleteOlympic = async () => {
 };
 
 const confirmDeleteAccount = async () => {
+  if (!user.value?.userId) {
+    alert('User information not found');
+    return;
+  }
+
   if (confirm('WARNING: This will permanently delete your account and all associated data. This action cannot be undone. Are you sure?')) {
     try {
       await userStore.deleteAccount(user.value.userId);
