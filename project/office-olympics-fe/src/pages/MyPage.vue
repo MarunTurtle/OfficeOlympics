@@ -20,7 +20,7 @@
           <div class="card">
             <div class="card-body text-center">
               <img
-                :src="userData?.profileImg || '/default-avatar.png'"
+                :src="userData?.profileImg || '/images/default_profile.png'"
                 class="rounded-circle mb-3 profile-image"
                 alt="Profile Image"
               >
