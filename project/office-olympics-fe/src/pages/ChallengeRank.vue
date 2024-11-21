@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <div class="container py-4">
-      <h1 class="text-center mb-5">Current Challenge Rankings</h1>
+      <h1 class="text-center mb-5 text-primary">Current Challenge Rankings</h1>
 
       <div class="row justify-content-center">
         <div class="col-md-8">
@@ -22,9 +22,13 @@
                    class="rank-card mb-3"
                    :class="getRankClass(index)">
                 <div class="rank-content">
-                  <span class="rank-position">{{ index + 1 }}{{ getOrdinal(index + 1) }}</span>
-                  {{ player.playerName }}
-                  <span class="score">Score: {{ formatScore(player.score) }}</span>
+                  <div class="player-info">
+                    <span class="rank-position">{{ index + 1 }}</span>
+                    <span class="player-name">{{ player.playerName || 'Unknown Player' }}</span>
+                  </div>
+                  <div class="score">
+                    Score: {{ formatScore(player.score || 0) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -34,9 +38,13 @@
               <div v-for="(player, index) in otherPlayers" :key="index + 3"
                    class="player-row">
                 <div class="player-content">
-                  <span class="rank-number">{{ index + 4 }}</span>
-                  {{ player.playerName }}
-                  <span class="score">Score: {{ formatScore(player.score) }}</span>
+                  <div class="player-info">
+                    <span class="rank-number">{{ index + 4 }}</span>
+                    <span class="player-name">{{ player.playerName || 'Unknown Player' }}</span>
+                  </div>
+                  <div class="score">
+                    Score: {{ formatScore(player.score || 0) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -75,13 +83,8 @@ const topThreePlayers = computed(() => rankings.value.slice(0, 3));
 const otherPlayers = computed(() => rankings.value.slice(3));
 
 const formatScore = (score) => {
+  if (!score && score !== 0) return 'N/A';
   return new Intl.NumberFormat().format(score);
-};
-
-const getOrdinal = (number) => {
-  const suffixes = ['th', 'st', 'nd', 'rd'];
-  const v = number % 100;
-  return suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
 };
 
 const getRankClass = (index) => {
@@ -102,7 +105,8 @@ onMounted(async () => {
     loading.value = true;
     error.value = null;
     const response = await challengeStore.fetchChallengeRank(route.params.id);
-    rankings.value = response;
+    console.log('Rankings response:', response); // Debug log
+    rankings.value = response || [];
   } catch (err) {
     console.error('Failed to fetch rankings:', err);
     error.value = 'Failed to load rankings. Please try again.';
@@ -122,12 +126,13 @@ const endOlympics = () => {
 
 <style scoped>
 .rank-card {
-  padding: 1rem 2rem;
+  padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1rem;
   color: white;
   font-size: 1.2rem;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .rank-card-gold {
@@ -148,14 +153,24 @@ const endOlympics = () => {
   align-items: center;
 }
 
-.rank-position {
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rank-position, .rank-number {
   font-weight: bold;
-  margin-right: 1rem;
+  min-width: 2rem;
+}
+
+.player-name {
+  font-size: 1.1rem;
 }
 
 .player-row {
   background: white;
-  padding: 1rem 2rem;
+  padding: 1.2rem;
   border-radius: 8px;
   margin-bottom: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -167,15 +182,11 @@ const endOlympics = () => {
   align-items: center;
 }
 
-.rank-number {
-  margin-right: 1rem;
-  font-weight: 600;
-  color: #666;
-}
-
 .score {
   color: var(--primary-color);
   font-weight: 600;
+  min-width: 120px;
+  text-align: right;
 }
 
 button {
