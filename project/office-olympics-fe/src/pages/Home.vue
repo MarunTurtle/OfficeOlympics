@@ -27,9 +27,6 @@ const currentImageIndex = ref(Math.floor(Math.random() * images.length));
 const slideInterval = ref(null);
 
 const startSlideshow = () => {
-  // slideInterval.value = setInterval(() => {
-  //   currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
-  // }, 5000); // Change image every 5 seconds
   // Only start slideshow if user is not logged in or doesn't have Olympics
   if (!isLoggedIn.value || !hasOlympics.value) {
     slideInterval.value = setInterval(() => {
@@ -139,7 +136,7 @@ onBeforeUnmount(() => {
           <template v-else>
             <div class="hero-content">
               <h1 class="welcome-message">Get your team moving!</h1>
-              <button class="btn nav-button mt-3" @click="$router.push('/login')">
+              <button class="btn nav-button mt-3" @click="$router.push('/auth/login')">
                 Get Started
               </button>
             </div>

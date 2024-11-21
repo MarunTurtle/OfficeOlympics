@@ -4,7 +4,7 @@
       <img :src="thumbnailUrl" :alt="title" class="card-img">
     </div>
     <div class="card-body">
-      <h6 class="card-title">{{ title }}</h6>
+      <h4 class="card-title">{{ title }}</h4>
       <RouterLink :to="`/challenges/${id}`" class="stretched-link">
       </RouterLink>
     </div>
@@ -68,9 +68,9 @@ const thumbnailUrl = computed(() => {
 
 .card-title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.2;
-  height: 2.2em;
+  height: 2.4em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -85,5 +85,9 @@ const thumbnailUrl = computed(() => {
   left: 0;
   z-index: 1;
   content: "";
+}
+
+.recommended-challenge-card:hover {
+  transform: translateY(-3px);
 }
 </style>

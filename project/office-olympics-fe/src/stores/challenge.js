@@ -8,6 +8,8 @@ import {
   deleteChallengeComment,
   getMainPageData,
   getChallengeScoreForm,
+  getChallengeRank,
+  getFinalRank,
 } from '@/services/challenge';
 
 export const useChallengeStore = defineStore('challenge', {
@@ -17,6 +19,8 @@ export const useChallengeStore = defineStore('challenge', {
     challenges: [], // Add this to store all challenges
     comments: [],
     challenge: null,
+    currentChallenge: null,
+    rankings: []
   }),
 
   actions: {
@@ -147,6 +151,29 @@ export const useChallengeStore = defineStore('challenge', {
         return response.data;
       } catch (error) {
         console.error('Failed to fetch score form:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchChallengeRank(challengeId) {
+      try {
+        const response = await getChallengeRank(challengeId);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching challenge rank:', error);
+        throw error;
+      }
+    },
+
+    async fetchFinalRank(challengeId) {
+      this.loading = true;
+      try {
+        const response = await getFinalRank(challengeId);
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch final rank:', error);
         throw error;
       } finally {
         this.loading = false;

@@ -4,7 +4,7 @@
     <div class="card-body">
       <h5 class="card-title">{{ title }}</h5>
       <p class="card-description">{{ description }}</p>
-      <RouterLink :to="`/challenges/${id}`" class="btn btn-primary">
+      <RouterLink :to="`/challenges/${id}`" class="btn card-button mt-3">
         Join Challenge
       </RouterLink>
     </div>
@@ -84,5 +84,23 @@ const thumbnailUrl = computed(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-button {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  margin: 0 5px;
+  color: #fff;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.card-button:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.05);
 }
 </style>
