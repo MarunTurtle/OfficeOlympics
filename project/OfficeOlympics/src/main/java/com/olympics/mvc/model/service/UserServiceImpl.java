@@ -1,10 +1,14 @@
 package com.olympics.mvc.model.service;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +24,9 @@ import com.olympics.mvc.util.HashUtil;
 public class UserServiceImpl implements UserService{
 	
 	private final UserDao userDao;
-	private final ResourceLoader resourceLoader;
 	
 	public UserServiceImpl(UserDao userDao,  ResourceLoader resourceLoader) {
 		this.userDao = userDao;
-		this.resourceLoader = resourceLoader;
 	}
 	
 	///////////////////////////////////회원가입///////////////////////////////////
@@ -47,24 +49,26 @@ public class UserServiceImpl implements UserService{
 				    throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
 				}
 				
-				// 파일명과 확장자 설정
-				String fileName = profileImg.getOriginalFilename();
-				String fileSrc = UUID.randomUUID().toString();
-				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
+				String orgImg = profileImg.getOriginalFilename();
+				String img = LocalDate.now()+"_"+orgImg;
 				
-				user.setProfileImg(fileName);
-				user.setImgSrc(fileSrc + extension);
+				String staticPath = "src/main/resources/static/uploads/profile";
+				File uploadDir = new File(staticPath);
 				
-				// 저장 경로 설정
-				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
-				File uploadDir = resource.getFile(); // Resource를 File로 변환
-				if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
-                
-                // 파일 저장
-				profileImg.transferTo(new File(uploadDir, fileSrc + extension));
-                
+				if(!uploadDir.exists()) {
+					uploadDir.mkdirs();
+				}
+				
+				Path filePath = Paths.get(staticPath, img);
+				
+				try (InputStream inputStream = profileImg.getInputStream()) {
+				    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+				}
+				
+				String prefix = "http://localhost:8080/uploads/profile/";
+				user.setProfileImg(prefix+img);
+				user.setImgSrc(orgImg);
+				
 			} catch (Exception e){
 				e.printStackTrace();
 			}
@@ -129,23 +133,26 @@ public class UserServiceImpl implements UserService{
 					throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
 				}
 				
-				// 파일명과 확장자 설정
-				String fileName = profileImg.getOriginalFilename();
-				String fileId = UUID.randomUUID().toString();
-				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase(); // "." 포함 확장자
+				String orgImg = profileImg.getOriginalFilename();
+				String img = LocalDate.now()+"_"+orgImg;
 				
-				user.setProfileImg(fileName);
-				user.setImgSrc(fileId+extension);
+				String staticPath = "src/main/resources/static/uploads/profile";
+				File uploadDir = new File(staticPath);
 				
-				// 저장 경로 설정
-				Resource resource = resourceLoader.getResource("classpath:/static/upload/profile");
-				File uploadDir = resource.getFile(); // Resource를 File로 변환
-				if (!uploadDir.exists()) {
+				if(!uploadDir.exists()) {
 					uploadDir.mkdirs();
 				}
 				
-				// 파일 저장
-				profileImg.transferTo(new File(uploadDir, fileId));
+				Path filePath = Paths.get(staticPath, img);
+				
+				try (InputStream inputStream = profileImg.getInputStream()) {
+				    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+				}
+				
+				String prefix = "http://localhost:8080/uploads/profile/";
+				user.setProfileImg(prefix+img);
+				user.setImgSrc(orgImg);
+				
 				
 			} catch (Exception e){
 				e.printStackTrace();
