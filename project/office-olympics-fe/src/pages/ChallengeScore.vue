@@ -64,17 +64,8 @@ onMounted(async () => {
     error.value = null;
 
     const response = await challengeStore.fetchChallengeScoreForm(route.params.id);
-    console.log('Response from backend:', response);
-
-    if (response && response.playerNames && Array.isArray(response.playerNames)) {
-      players.value = response.playerNames.map(player => ({
-        player_name: player.PLAYER_NAME || player.player_name,
-        total_score: parseInt(player.TOTAL_SCORE || player.total_score) || 0
-      }));
-      scores.value = new Array(players.value.length).fill('');
-    } else {
-      throw new Error('Invalid response format from server');
-    }
+    players.value = response.playerNames;
+    scores.value = new Array(players.value.length).fill('');
 
   } catch (err) {
     console.error('Failed to initialize:', err);
