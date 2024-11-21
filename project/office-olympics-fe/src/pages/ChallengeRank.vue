@@ -97,11 +97,10 @@ onMounted(async () => {
     error.value = null;
     const response = await challengeStore.fetchChallengeRank(route.params.id);
 
-    if (response && response.playerNames) {
-      rankings.value = response.playerNames.map(player => ({
-        playerName: player.player_name,
-        score: player.total_score,
-        olympicsName: player.olympics_name
+    if (Array.isArray(response)) {
+      rankings.value = response.map(player => ({
+        playerName: player.playerName,
+        score: player.score
       }));
     } else {
       throw new Error('Invalid response format from server');
