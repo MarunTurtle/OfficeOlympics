@@ -96,7 +96,16 @@ onMounted(async () => {
     loading.value = true;
     error.value = null;
     const response = await challengeStore.fetchChallengeRank(route.params.id);
-    rankings.value = response;
+
+    if (response && response.playerNames) {
+      rankings.value = response.playerNames.map(player => ({
+        playerName: player.player_name,
+        score: player.total_score,
+        olympicsName: player.olympics_name
+      }));
+    } else {
+      throw new Error('Invalid response format from server');
+    }
   } catch (err) {
     console.error('Failed to fetch rankings:', err);
     error.value = 'Failed to load rankings. Please try again.';
