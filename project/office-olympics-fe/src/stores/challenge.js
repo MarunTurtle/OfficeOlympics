@@ -9,6 +9,7 @@ import {
   getMainPageData,
   getChallengeScoreForm,
 } from '@/services/challenge';
+import axios from 'axios';
 
 export const useChallengeStore = defineStore('challenge', {
   state: () => ({
@@ -17,6 +18,8 @@ export const useChallengeStore = defineStore('challenge', {
     challenges: [], // Add this to store all challenges
     comments: [],
     challenge: null,
+    currentChallenge: null,
+    rankings: []
   }),
 
   actions: {
@@ -150,6 +153,16 @@ export const useChallengeStore = defineStore('challenge', {
         throw error;
       } finally {
         this.loading = false;
+      }
+    },
+
+    async fetchChallengeRank(challengeId) {
+      try {
+        const response = await axios.get(`/api/challenges/${challengeId}/rank`);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching challenge rank:', error);
+        throw error;
       }
     }
   },
