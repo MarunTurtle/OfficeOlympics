@@ -27,9 +27,6 @@ const currentImageIndex = ref(Math.floor(Math.random() * images.length));
 const slideInterval = ref(null);
 
 const startSlideshow = () => {
-  // slideInterval.value = setInterval(() => {
-  //   currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
-  // }, 5000); // Change image every 5 seconds
   // Only start slideshow if user is not logged in or doesn't have Olympics
   if (!isLoggedIn.value || !hasOlympics.value) {
     slideInterval.value = setInterval(() => {
