@@ -58,7 +58,7 @@
                   @click="removePlayer(index)"
                   v-if="formData.playerNames.length > 1"
                 >
-                  ×
+                  X
                 </button>
               </div>
               <button type="button" class="btn btn-secondary mt-2" @click="addPlayer">
@@ -107,9 +107,9 @@ const loading = ref(false);
 
 const formData = ref({
   nickname: '',
+  profileImg: null,
   olympicsName: '',
-  playerNames: [''],
-  profileImg: null
+  playerNames: ['']
 });
 
 watch(() => props.userData, (newData) => {
