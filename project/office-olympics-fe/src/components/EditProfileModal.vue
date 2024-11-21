@@ -140,13 +140,18 @@ const removePlayer = (index) => {
 const handleSubmit = async () => {
   try {
     loading.value = true;
-
     const submitData = new FormData();
+
+    // Required fields
     submitData.append('nickname', formData.value.nickname);
     submitData.append('olympicsName', formData.value.olympicsName);
+
+    // Add player names as separate entries
     formData.value.playerNames.forEach(name => {
       submitData.append('playerNames', name);
     });
+
+    // Optional profile image
     if (formData.value.profileImg) {
       submitData.append('profileImg', formData.value.profileImg);
     }
@@ -154,8 +159,8 @@ const handleSubmit = async () => {
     await userStore.updateUser(props.userData.userId, submitData);
     modal.value.hide();
     emit('update');
-  } catch (err) {
-    console.error('Failed to update profile', err);
+  } catch (error) {
+    console.error('Failed to update profile:', error);
   } finally {
     loading.value = false;
   }

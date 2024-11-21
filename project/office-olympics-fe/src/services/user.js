@@ -15,11 +15,15 @@ export const fetchUserProfile = async (userId) => {
 /**
  * Update user profile information
  * @param {number} userId - User ID
- * @param {object} updatedData - Updated user data
+ * @param {object} formData - Updated user data
  * @returns {Promise}
  */
-export const updateUserProfile = (userId, updatedData) => {
-  return api.put(`/accounts/${userId}`, updatedData);
+export const updateUserProfile = (userId, formData) => {
+  return api.put(`/accounts/${userId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 };
 
 /**
