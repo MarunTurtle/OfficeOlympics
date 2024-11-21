@@ -64,10 +64,7 @@ onMounted(async () => {
     error.value = null;
 
     const response = await challengeStore.fetchChallengeScoreForm(route.params.id);
-    players.value = response.playerNames.map(player => ({
-      player_name: player.player_name,
-      player_id: player.player_id
-    }));
+    players.value = response.playerNames;
     scores.value = new Array(players.value.length).fill('');
 
   } catch (err) {
@@ -83,9 +80,10 @@ const submitScores = async () => {
 
   const scoreData = {
     playerNames: players.value.map(player => player.player_name),
-    playerId: players.value.map(player => player.player_id),
     scores: scores.value.map(Number)
   };
+
+  console.log('Submitting score data:', scoreData);
 
   try {
     await challengeStore.submitScore(route.params.id, scoreData);
