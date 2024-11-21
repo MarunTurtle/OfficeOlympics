@@ -74,6 +74,12 @@
         </div>
       </div>
     </div>
+    <EditProfileModal
+      ref="editProfileModal"
+      :userData="userData"
+      :players="players"
+      @update="fetchUserProfile"
+    />
   </MainLayout>
 </template>
 
@@ -84,6 +90,7 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
 import defaultProfileImage from '@/assets/images/default_profile.png';
+import EditProfileModal from '@/components/EditProfileModal.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -93,6 +100,7 @@ const userData = ref(null);
 const players = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const editProfileModal = ref(null);
 
 const fetchUserProfile = async () => {
   try {
@@ -122,7 +130,7 @@ const fetchUserProfile = async () => {
 };
 
 const editProfile = () => {
-  router.push('/profile/edit');
+  editProfileModal.value.show();
 };
 
 const confirmDelete = async () => {
