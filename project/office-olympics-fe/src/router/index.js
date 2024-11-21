@@ -38,6 +38,11 @@ const routes = [
     meta: { requiresAuth: true },
     props: true
   },
+  {
+    path: '/challenges/:id/rank',
+    name: 'ChallengeRank',
+    component: () => import('@/pages/ChallengeRank.vue')
+  },
   { path: '/:pathMatch(.*)*', name: 'Error', component: ErrorPage },
 ];
 
