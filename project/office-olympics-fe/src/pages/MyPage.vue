@@ -1,67 +1,82 @@
 <template>
   <MainLayout>
     <div class="my-page container py-4">
-      <!-- Header -->
-      <div class="profile-header text-center mb-5">
-        <h1>My Profile</h1>
-        <p class="text-muted">Manage your profile and account settings</p>
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
 
-      <!-- Profile Information -->
-      <div class="row">
-        <div class="col-md-6 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h2 class="card-title">Profile Details</h2>
-              <div class="profile-info">
-                <p><strong>Name:</strong> {{ formatName(user?.name) }}</p>
-                <p><strong>Email:</strong> {{ user?.email }}</p>
-                <p><strong>Nickname:</strong> {{ formatName(user?.nickname) }}</p>
-                <div class="mt-3">
-                  <button class="btn btn-primary me-2" @click="showEditModal">
-                    Edit Profile
-                  </button>
-                  <button class="btn btn-danger" @click="confirmDeleteAccount">
-                    Delete Account
-                  </button>
+      <!-- Error State -->
+      <div v-else-if="error" class="alert alert-danger text-center">
+        {{ error }}
+      </div>
+
+      <!-- Content -->
+      <div v-else>
+        <!-- Header -->
+        <div class="profile-header text-center mb-5">
+          <h1>My Profile</h1>
+          <p class="text-muted">Manage your profile and account settings</p>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title">Profile Details</h2>
+                <div class="profile-info">
+                  <p><strong>Name:</strong> {{ formatName(user?.name) }}</p>
+                  <p><strong>Email:</strong> {{ user?.email }}</p>
+                  <p><strong>Nickname:</strong> {{ formatName(user?.nickname) }}</p>
+                  <div class="mt-3">
+                    <button class="btn btn-primary me-2" @click="showEditModal">
+                      Edit Profile
+                    </button>
+                    <button class="btn btn-danger" @click="confirmDeleteAccount">
+                      Delete Account
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Olympic Information -->
-        <div class="col-md-6 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h2 class="card-title">Olympic Details</h2>
-              <div v-if="players.length > 0">
-                <h3 class="text-center mb-3">{{ players[0].olympics_name }}</h3>
-                <div class="table-responsive">
-                  <table class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Player Name</th>
-                        <th class="text-end">Total Score</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="player in players" :key="player.player_name">
-                        <td>{{ player.player_name }}</td>
-                        <td class="text-end">{{ formatNumber(player.total_score) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+          <!-- Olympic Information -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title">Olympic Details</h2>
+                <div v-if="players && players.length > 0">
+                  <h3 class="text-center mb-3">{{ players[0].olympics_name }}</h3>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Player Name</th>
+                          <th class="text-end">Total Score</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="player in players" :key="player.player_name">
+                          <td>{{ player.player_name }}</td>
+                          <td class="text-end">{{ formatNumber(player.total_score) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <button class="btn btn-danger mt-3" @click="confirmDeleteOlympic">
+                    Delete Olympic
+                  </button>
                 </div>
-                <button class="btn btn-danger mt-3" @click="confirmDeleteOlympic">
-                  Delete Olympic
-                </button>
-              </div>
-              <div v-else class="text-center">
-                <p>No Olympic data available</p>
-                <RouterLink to="/olympic/create" class="btn btn-primary">
-                  Create Olympic
-                </RouterLink>
+                <div v-else class="text-center">
+                  <p>No Olympic data available</p>
+                  <RouterLink to="/olympic/create" class="btn btn-primary">
+                    Create Olympic
+                  </RouterLink>
+                </div>
               </div>
             </div>
           </div>
@@ -130,13 +145,18 @@ const editForm = ref({
   playerNames: []
 });
 
+const loading = ref(true);
+const error = ref(null);
+
 // Fetch user profile data
 const fetchUserProfile = async () => {
   try {
+    loading.value = true;
+    error.value = null;
     const userId = route.params.userId;
     const response = await userStore.fetchUser(userId);
     user.value = response.userData;
-    players.value = response.players;
+    players.value = response.players || [];
 
     // Initialize edit form
     if (players.value.length > 0) {
@@ -146,7 +166,9 @@ const fetchUserProfile = async () => {
     editForm.value.nickname = user.value.nickname;
   } catch (error) {
     console.error('Error fetching profile:', error);
-    router.push('/auth/login');
+    error.value = 'Failed to load profile data. Please try again.';
+  } finally {
+    loading.value = false;
   }
 };
 
