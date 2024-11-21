@@ -31,7 +31,7 @@ public interface ChallengeScoreDao {
     int updateTotalScore();
     
     // 현재 챌린지에서의 순위 조회
-    List<Rank> selectChallengeScore(int challengeId);
+    List<Rank> selectChallengeScore(Map<String, Object> params);
     
     // 올림픽 팀 내 순위 조회
     List<Rank> selectFinalScore(int olympicsId);

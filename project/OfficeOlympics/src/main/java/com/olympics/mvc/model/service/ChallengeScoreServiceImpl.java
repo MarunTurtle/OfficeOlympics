@@ -75,8 +75,12 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 
 	// 현재 챌린지에서의 순위 조회
 	@Override
-	public List<Rank> selectChallengeScore(int challengeId) {
-		return challengeDao.selectChallengeScore(challengeId);
+	public List<Rank> selectChallengeScore(int challengeId, int olympicsId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("challengeId", challengeId);
+		params.put("olympicsId", olympicsId);
+		
+		return challengeDao.selectChallengeScore(params);
 	}
 
 	// 올림픽 팀 내 순위 조회

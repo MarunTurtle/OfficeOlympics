@@ -64,11 +64,12 @@
     </update>
 
     <!-- 현재 챌린지에서의 순위 조회 -->
-    <select id="selectChallengeScore" parameterType="int" resultType="Rank">
+    <select id="selectChallengeScore" parameterType="map" resultType="Rank">
     	SELECT row_number() over(order by score desc) as 'rank', pl.player_name as 'playerName', cs.score as 'score'
 		FROM challenge_scores cs 
 		INNER JOIN players pl ON pl.player_id=cs.player_id
-		WHERE cs.challenge_id = #{challengeId};
+		WHERE cs.challenge_id = #{challengeId}
+		AND pl.olympics_id = #{olympicsId};
     </select>
     
     
