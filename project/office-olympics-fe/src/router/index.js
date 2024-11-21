@@ -43,6 +43,11 @@ const routes = [
     name: 'ChallengeRank',
     component: () => import('@/pages/ChallengeRank.vue')
   },
+  {
+    path: '/challenges/:id/final-rank',
+    name: 'FinalRank',
+    component: () => import('@/pages/FinalRank.vue')
+  },
   { path: '/:pathMatch(.*)*', name: 'Error', component: ErrorPage },
 ];
 

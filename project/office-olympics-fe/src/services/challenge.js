@@ -98,3 +98,21 @@ export const getChallengeScoreForm = (challengeId) => {
 export const getChallengeRank = (challengeId) => {
   return api.get(`/challenges/${challengeId}/rank`);
 };
+
+/**
+ * Fetch final rank for a specific challenge
+ * @param {number} challengeId
+ * @returns {Promise}
+ */
+export const getFinalRank = (challengeId) => {
+  return api.get(`/challenges/${challengeId}/final-rank`);
+};
+
+/**
+ * Delete an Olympic for a specific user
+ * @param {number} olympicId
+ * @returns {Promise}
+ */
+export const deleteOlympic = (olympicId) => {
+  return api.delete(`/olympics/${olympicId}`);
+};

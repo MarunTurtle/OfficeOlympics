@@ -9,6 +9,7 @@ import {
   getMainPageData,
   getChallengeScoreForm,
   getChallengeRank,
+  getFinalRank,
 } from '@/services/challenge';
 
 export const useChallengeStore = defineStore('challenge', {
@@ -163,6 +164,19 @@ export const useChallengeStore = defineStore('challenge', {
       } catch (error) {
         console.error('Error fetching challenge rank:', error);
         throw error;
+      }
+    },
+
+    async fetchFinalRank(challengeId) {
+      this.loading = true;
+      try {
+        const response = await getFinalRank(challengeId);
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch final rank:', error);
+        throw error;
+      } finally {
+        this.loading = false;
       }
     }
   },

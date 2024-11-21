@@ -44,7 +44,7 @@
 
       <!-- Navigation Buttons -->
       <div class="navigation mt-4 text-center">
-        <RouterLink to="/main" class="btn btn-primary">Back to Home</RouterLink>
+        <RouterLink to="/" class="btn btn-primary">Back to Home</RouterLink>
         <RouterLink to="/olympic/create" class="btn btn-secondary ms-3">Create New Olympic</RouterLink>
       </div>
     </div>
