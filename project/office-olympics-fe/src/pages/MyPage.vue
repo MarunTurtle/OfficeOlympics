@@ -154,26 +154,44 @@ const fetchUserProfile = async () => {
     loading.value = true;
     error.value = null;
     const userId = route.params.userId;
-    const response = await userStore.fetchUser(userId);
 
-    if (!response || !response.userData) {
-      throw new Error('No user data received');
+    if (!userId) {
+      throw new Error('User ID is required');
     }
 
-    user.value = response.userData;
-    players.value = response.players || [];
+    const response = await userStore.fetchUser(userId);
 
-    // Initialize edit form with safe defaults
-    editForm.value = {
-      nickname: user.value?.nickname || '',
-      profileImg: null,
-      olympicsName: players.value[0]?.olympics_name || '',
-      playerNames: players.value.map(p => p.player_name || '') || []
+    // Check if response exists
+    if (!response) {
+      throw new Error('No response received from server');
+    }
+
+    // The backend returns userData and players separately
+    const userData = {
+      userId: response.userData?.userId,
+      email: response.userData?.email,
+      name: response.userData?.name,
+      nickname: response.userData?.nickname,
+      profileImg: response.userData?.profileImg
     };
+
+    // Update user and players data
+    user.value = userData;
+    players.value = Array.isArray(response.players) ? response.players : [];
+
+    // Initialize edit form only if user data exists
+    if (userData) {
+      editForm.value = {
+        nickname: userData.nickname || '',
+        profileImg: null,
+        olympicsName: players.value[0]?.olympics_name || '',
+        playerNames: players.value.map(p => p.player_name || '')
+      };
+    }
 
   } catch (error) {
     console.error('Error fetching profile:', error);
-    error.value = 'Failed to load profile data. Please try again.';
+    error.value = error.message || 'Failed to load profile data. Please try again.';
   } finally {
     loading.value = false;
   }
