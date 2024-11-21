@@ -25,12 +25,7 @@ export const getChallengeLeaderboard = (challengeId) => {
  * @returns {Promise}
  */
 export const submitChallengeScore = (challengeId, scoreData) => {
-  return api.post(`/challenges/${challengeId}/score`, scoreData, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
+  return api.post(`/challenges/${challengeId}/score`, scoreData);
 };
 
 /**
