@@ -22,7 +22,7 @@
                    class="rank-card mb-3"
                    :class="getRankClass(index)">
                 <div class="rank-content">
-                  <span class="rank-position">{{ index + 1 }}st</span>
+                  <span class="rank-position">{{ index + 1 }}{{ getOrdinal(index + 1) }}</span>
                   {{ player.playerName }}
                   <span class="score">Score: {{ formatScore(player.score) }}</span>
                 </div>
@@ -34,6 +34,7 @@
               <div v-for="(player, index) in otherPlayers" :key="index + 3"
                    class="player-row">
                 <div class="player-content">
+                  <span class="rank-number">{{ index + 4 }}</span>
                   {{ player.playerName }}
                   <span class="score">Score: {{ formatScore(player.score) }}</span>
                 </div>
@@ -77,8 +78,13 @@ const formatScore = (score) => {
   return new Intl.NumberFormat().format(score);
 };
 
+const getOrdinal = (number) => {
+  const suffixes = ['th', 'st', 'nd', 'rd'];
+  const v = number % 100;
+  return suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0];
+};
+
 const getRankClass = (index) => {
-  const classes = ['rank-card'];
   switch (index) {
     case 0:
       return 'rank-card-gold';
@@ -96,16 +102,7 @@ onMounted(async () => {
     loading.value = true;
     error.value = null;
     const response = await challengeStore.fetchChallengeRank(route.params.id);
-
-    if (response && response.playerNames && Array.isArray(response.playerNames)) {
-      rankings.value = response.playerNames.map(player => ({
-        playerName: player.player_name,
-        score: player.total_score,
-        olympicsName: player.olympics_name
-      }));
-    } else {
-      throw new Error('Invalid response format from server');
-    }
+    rankings.value = response;
   } catch (err) {
     console.error('Failed to fetch rankings:', err);
     error.value = 'Failed to load rankings. Please try again.';
@@ -168,6 +165,12 @@ const endOlympics = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.rank-number {
+  margin-right: 1rem;
+  font-weight: 600;
+  color: #666;
 }
 
 .score {
