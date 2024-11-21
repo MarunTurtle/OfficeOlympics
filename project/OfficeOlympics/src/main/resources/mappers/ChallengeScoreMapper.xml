@@ -72,7 +72,6 @@
 		AND pl.olympics_id = #{olympicsId};
     </select>
     
-    
     <!-- 올림픽 팀 내 순위 조회 -->
     <select id="selectFinalScore" parameterType="int" resultType="Rank">
     	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
@@ -82,10 +81,4 @@
 		LIMIT 3;
     </select>
     
-    <!-- 리더보드에서 전체 순위 조회 -->
-    <select id="selectMainScore" resultType="Rank">
-    	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
-		FROM players
-		LIMIT 3;
-    </select>
 </mapper>

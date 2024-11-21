@@ -89,11 +89,6 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 		return challengeDao.selectFinalScore(olympicsId);
 	}
 
-	// 리더보드에서 전체 순위 조회
-	@Override
-	public List<Rank> selectMainScore() {
-		return challengeDao.selectMainScore();
-	}
 
 
 }

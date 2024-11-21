@@ -26,6 +26,4 @@ public interface ChallengeScoreService {
     // 올림픽 팀 내 순위 조회
     List<Rank> selectFinalScore(int olympicsId);
     
-    // 리더보드에서 전체 순위 조회
-    List<Rank> selectMainScore();
 }
