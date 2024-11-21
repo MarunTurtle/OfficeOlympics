@@ -4,7 +4,7 @@
       <img :src="thumbnailUrl" :alt="title" class="card-img">
     </div>
     <div class="card-body">
-      <h6 class="card-title">{{ title }}</h6>
+      <h4 class="card-title">{{ title }}</h4>
       <RouterLink :to="`/challenges/${id}`" class="stretched-link">
       </RouterLink>
     </div>
