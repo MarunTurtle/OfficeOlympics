@@ -20,7 +20,7 @@
           <div class="card">
             <div class="card-body text-center">
               <img
-                :src="userData?.profileImg || '/images/default_profile.png'"
+                :src="userData?.profileImg || defaultProfileImage"
                 class="rounded-circle mb-3 profile-image"
                 alt="Profile Image"
               >
@@ -83,6 +83,7 @@ import { useRouter } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
 import { useAuthStore } from '@/stores/auth';
+import defaultProfileImage from '@/assets/images/default_profile.png';
 
 const router = useRouter();
 const userStore = useUserStore();
