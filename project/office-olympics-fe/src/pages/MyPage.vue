@@ -16,10 +16,10 @@
       <!-- Raw Data Display -->
       <div v-else>
         <h2>User Data</h2>
-        <pre>{{ JSON.stringify(user, null, 2) }}</pre>
+        <pre>{{ JSON.stringify(userData, null, 2) }}</pre>
 
         <h2 class="mt-4">Players Data</h2>
-        <pre>{{ JSON.stringify(players, null, 2) }}</pre>
+        <pre>{{ JSON.stringify(playersData, null, 2) }}</pre>
       </div>
     </div>
   </MainLayout>
@@ -27,15 +27,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
 
-const route = useRoute();
 const userStore = useUserStore();
 
-const user = ref(null);
-const players = ref([]);
+const userData = ref(null);
+const playersData = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
@@ -43,21 +41,17 @@ const fetchUserProfile = async () => {
   try {
     loading.value = true;
     error.value = null;
-    const userId = route.params.userId;
 
-    if (!userId) {
-      throw new Error('User ID is required');
-    }
-
-    const response = await userStore.fetchUser(userId);
+    const response = await userStore.fetchUser(1); // Hardcoded ID for testing
     console.log('Raw response:', response);
 
-    user.value = response.userData;
-    players.value = response.players || [];
+    // Store the entire response data
+    userData.value = response.userData;
+    playersData.value = response.players;
 
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    error.value = error.message || 'Failed to load profile data';
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    error.value = err.message || 'Failed to load profile data';
   } finally {
     loading.value = false;
   }
