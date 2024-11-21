@@ -14,10 +14,12 @@ export const useAuthStore = defineStore('auth', {
     async loginUser(credentials) {
       try {
         const { user, olympicsId } = await login(credentials);
+        console.log('Login Response:', { user, olympicsId });
         this.user = {
           ...user,
           id: user.nickname
         };
+        console.log('Stored User Data:', this.user);
         localStorage.setItem('user', JSON.stringify(this.user));
         localStorage.setItem('olympicsId', olympicsId || null);
 

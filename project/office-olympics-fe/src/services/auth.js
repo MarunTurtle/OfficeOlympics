@@ -3,6 +3,7 @@ import api from './api';
 // Function for logging in a user
 export const login = async (credentials) => {
   const response = await api.post('/auth/login', credentials);
+  console.log('Raw API Response:', response.data);
 
   return {
     user: {

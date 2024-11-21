@@ -12,7 +12,8 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         const response = await fetchUserProfile(userId);
-        this.user = response.userData;
+        this.user = response.data.userData;
+        console.log('Response from server:', response);
         return response;
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
@@ -22,20 +23,15 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async updateUser(updatedData) {
-      if (!this.user?.id) {
-        console.error('No user ID available to update.');
-        return;
-      }
-
+    async updateUser(userId, formData) {
       this.loading = true;
       try {
-        const response = await updateUserProfile(this.user.id, updatedData);
+        const response = await updateUserProfile(userId, formData);
         this.user = response.data;
-        console.log('User profile updated:', this.user);
+        return response;
       } catch (error) {
         console.error('Failed to update user profile:', error);
-        // Consider adding user feedback here
+        throw error;
       } finally {
         this.loading = false;
       }
