@@ -37,30 +37,28 @@ public class MainController {
 	 */
 	@GetMapping("")
 	@Operation(summary = "메인페이지", description = "전체 챌린지 정보와 리더보드 정보를 반환합니다.")
-	public ResponseEntity<?> mainPage(HttpSession session) {
+	public ResponseEntity<Map<String, Object>> mainPage(HttpSession session) {
+		
+	    Map<String, Object> response = new HashMap<>();
+
+	    List<Challenge> challengeList = challengeService.getChallenges();
+	    response.put("challengeList", challengeList != null ? challengeList : Collections.emptyList());
 
 	    Integer userId = (Integer) session.getAttribute("loginUserId");
-	    List<Challenge> challengeList = challengeService.getChallenges();
-
-	    // 유저가 로그인하지 않은 경우, 챌린지 리스트만 반환
-	    if (userId == null) {
-	        return challengeList.isEmpty() 
-	            ? ResponseEntity.noContent().build() 
-	            : ResponseEntity.ok(challengeList);
+	    if (userId != null) {
+	        
+	        List<Rank> leaderBoard = challengeService.selectFinalScore(userId);
+	        response.put("leaderBoard", leaderBoard != null ? leaderBoard : Collections.emptyList());
+	    } else {
+	        
+	        response.put("leaderBoard", Collections.emptyList());
 	    }
 
-	    List<Rank> leaderBoard = challengeService.selectFinalScore(userId);
 
-	    // 챌린지 리스트와 리더보드가 모두 비어있는 경우
-	    if ((challengeList == null || challengeList.isEmpty()) &&
-	        (leaderBoard == null || leaderBoard.isEmpty())) {
+	    if (((List<?>) response.get("challengeList")).isEmpty() &&
+	        ((List<?>) response.get("leaderBoard")).isEmpty()) {
 	        return ResponseEntity.noContent().build();
 	    }
-
-	    // 결과 데이터를 담을 Map 초기화
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("challengeList", challengeList != null ? challengeList : Collections.emptyList());
-	    response.put("leaderBoard", leaderBoard != null ? leaderBoard : Collections.emptyList());
 
 	    return ResponseEntity.ok(response);
 	}
