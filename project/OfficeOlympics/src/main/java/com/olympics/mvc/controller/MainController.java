@@ -1,5 +1,6 @@
 package com.olympics.mvc.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,31 +32,38 @@ public class MainController {
 	
 	/**
 	 * 메인 페이지 반환
-	 * 
+	 *
 	 * @return 전체 챌린지 및 리더보드 정보
 	 */
 	@GetMapping("")
 	@Operation(summary = "메인페이지", description = "전체 챌린지 정보와 리더보드 정보를 반환합니다.")
 	public ResponseEntity<?> mainPage(HttpSession session) {
-		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		
-	    List<Rank> leaderBoard = challengeService.selectFinalScore(userId);
 
+	    Integer userId = (Integer) session.getAttribute("loginUserId");
 	    List<Challenge> challengeList = challengeService.getChallenges();
 
-	    if ((leaderBoard == null || leaderBoard.isEmpty()) && (challengeList == null || challengeList.isEmpty())) {
-	        return ResponseEntity.noContent().build();
-	    } 
-
-	    if (leaderBoard != null && !leaderBoard.isEmpty() && challengeList != null && !challengeList.isEmpty()) {
-	        Map<String, Object> boardList = new HashMap<>();
-	        boardList.put("leaderBoard", leaderBoard);
-	        boardList.put("challengeList", challengeList);
-	        return ResponseEntity.ok(boardList);
+	    // 유저가 로그인하지 않은 경우, 챌린지 리스트만 반환
+	    if (userId == null) {
+	        return challengeList.isEmpty() 
+	            ? ResponseEntity.noContent().build() 
+	            : ResponseEntity.ok(challengeList);
 	    }
-	    
-	    return ResponseEntity.accepted().body(leaderBoard != null && !leaderBoard.isEmpty() ? leaderBoard : challengeList);
+
+	    List<Rank> leaderBoard = challengeService.selectFinalScore(userId);
+
+	    // 챌린지 리스트와 리더보드가 모두 비어있는 경우
+	    if ((challengeList == null || challengeList.isEmpty()) &&
+	        (leaderBoard == null || leaderBoard.isEmpty())) {
+	        return ResponseEntity.noContent().build();
+	    }
+
+	    // 결과 데이터를 담을 Map 초기화
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("challengeList", challengeList != null ? challengeList : Collections.emptyList());
+	    response.put("leaderBoard", leaderBoard != null ? leaderBoard : Collections.emptyList());
+
+	    return ResponseEntity.ok(response);
 	}
+
 
 }

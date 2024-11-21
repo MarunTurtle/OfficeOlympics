@@ -59,10 +59,10 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	    // 있으면 update, 없으면 insert 진행
 	    if(isExist > 0) {
 	    	int isUpdated = challengeDao.updateScore(scoreData);
-	    	return isUpdated == 1;
+	    	return isUpdated > 0;
 	    } else {
 	    	int isInserted = challengeDao.insertScore(scoreData);
-	    	return isInserted == 1;
+	    	return isInserted > 0;
 	    }
 	}
 	

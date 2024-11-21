@@ -26,8 +26,11 @@
     
     <!-- score_id 존재 여부 확인 -->
     <select id="findScoreId" parameterType="list" resultType="int">
-    	SELECT count(*) FROM challenge_scores
-    	WHERE
+    	SELECT 
+		CASE WHEN count(*) > 1 THEN 1
+		ELSE 0 
+		END AS countScore FROM challenge_scores
+		WHERE
     	<foreach collection="list" item="score" separator="OR">
         (challenge_id = #{score.challengeId} AND player_id = #{score.playerId})
     	</foreach>
