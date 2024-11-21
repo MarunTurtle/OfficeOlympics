@@ -89,3 +89,12 @@ export const getMainPageData = () => {
 export const getChallengeScoreForm = (challengeId) => {
   return api.get(`/challenges/${challengeId}/score`);
 };
+
+/**
+ * Fetch rank for a specific challenge
+ * @param {number} challengeId
+ * @returns {Promise}
+ */
+export const getChallengeRank = (challengeId) => {
+  return api.get(`/challenges/${challengeId}/rank`);
+};

@@ -8,8 +8,8 @@ import {
   deleteChallengeComment,
   getMainPageData,
   getChallengeScoreForm,
+  getChallengeRank,
 } from '@/services/challenge';
-import axios from 'axios';
 
 export const useChallengeStore = defineStore('challenge', {
   state: () => ({
@@ -158,7 +158,7 @@ export const useChallengeStore = defineStore('challenge', {
 
     async fetchChallengeRank(challengeId) {
       try {
-        const response = await axios.get(`/api/challenges/${challengeId}/rank`);
+        const response = await getChallengeRank(challengeId);
         return response.data;
       } catch (error) {
         console.error('Error fetching challenge rank:', error);
