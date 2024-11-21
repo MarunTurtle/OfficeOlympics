@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.olympics.mvc.model.dto.Comments;
 
 import com.olympics.mvc.model.service.CommentsService;
+import com.olympics.mvc.util.Validate;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +36,6 @@ public class CommentsController {
 	private final CommentsService commentService;
 	
 	public CommentsController(CommentsService commentService) {
-		super();
 		this.commentService = commentService;
 	}
 	
@@ -44,7 +44,7 @@ public class CommentsController {
 	 * 챌린지별 댓글 확인
 	 * 
 	 * @param challengeId 대상 챌린지 ID
-	 * @return 댓글 문자열
+	 * @return 댓글 목록
 	 */
 	@GetMapping("")
 	@Operation(summary = "챌린지 세부 정보 조회", description = "각 챌린지의 세부 정보를 확인할 수 있습니다.")
@@ -56,8 +56,7 @@ public class CommentsController {
     })
 	@Parameter(name = "challengeId", description = "조회할 챌린지의 ID", required = true)
 	public ResponseEntity<?> getAllComments(@PathVariable("challengeId") int challengeId){
-		
-	
+			
 		List<Map<String, Object>> commentList = commentService.getComments(challengeId);		
 		
 		if (commentList == null || commentList.isEmpty()) {
@@ -68,171 +67,170 @@ public class CommentsController {
 	}
 	
 	/**
-	 * 댓글 작성
-	 * 
-	 * @param challengeId 대상 챌린지 ID
-	 * @param session 현재 사용자 세션
-	 * @param comments 작성 댓글 정보
-	 * @return 작성한 댓글 내용
-	 */
-	@PostMapping("")
-	@Operation(summary = "챌린지 댓글 작성", description = "선택한 챌린지 영상 하단에 댓글을 작성할 수 있습니다.")
-	@Parameters({
-        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
-        @Parameter(name = "commentText", description = "댓글내용", required = true)
+     * 댓글 작성
+     *
+     * @param challengeId 대상 챌린지 ID
+     * @param session     현재 사용자 세션
+     * @param comments    작성 댓글 정보
+     * @return 작성한 댓글 상태 메시지
+     */
+    @PostMapping("")
+    @Operation(summary = "챌린지 댓글 작성", description = "선택한 챌린지에 댓글을 작성합니다.")
+    @Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 ID", required = true),
+        @Parameter(name = "commentText", description = "댓글 내용", required = true)
     })
-	public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId, 
-			HttpSession session, @RequestBody Comments comments){
-		
-		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
-		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
-		}
-		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		if (userId == null) {
-		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
-		comments.setChallengeId(challengeId);
-		comments.setUserId(userId);
-		
-		boolean isInserted = commentService.insertComment(comments);
-		
-		if (isInserted)
-			return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
-		
-		return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId,
+                                                HttpSession session, @RequestBody Comments comments) {
 
-	}
-	
-	
-	/**
-	 * 댓글 수정
-	 * 
-	 * @param challengeId 대상 챌린지 ID
-	 * @param session 	  현재 사용자 세션
-	 * @param comments 	  수정 댓글 정보
-	 * @return 수정한 댓글 내용
-	 */
-	@PutMapping("/{commentId}")
-	@Operation(summary = "댓글 수정", description = "작성한 댓글을 수정할 수 있습니다.")
-	@Parameters({
-        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
-        @Parameter(name = "commentId", description = "댓글 고유 ID", required = true),
-        @Parameter(name = "commentText", description = "댓글내용", required = true)
-    })
-	public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId, 
-			   									@PathVariable("commentId") int commentId, 
-			   									HttpSession session, @RequestBody Comments comments){
-		
-		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
-		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
-		}
-		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		if (userId == null) {
-		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
-		comments.setChallengeId(challengeId);
-		comments.setUserId(userId);
-		
-		boolean isModified = commentService.modifyComment(comments);
-		
-		if (isModified)
-			return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
-		
-		return ResponseEntity.badRequest().build();
-	}
-	
-	
-	/**
-	 * 댓글 삭제
-	 * 
-	 * @param challengeId 작성한 댓글 내용
-	 * @param commentId
-	 * @return
-	 */
-	@DeleteMapping("/{commentId}")
-	@Operation(summary = "댓글 삭제", description = "작성한 댓글을 삭제합니다.")
-	@Parameters({
-        @Parameter(name = "challengeId", description = "챌린지 고유 ID", required = true),
-        @Parameter(name = "commentId", description = "댓글 고유 ID", required = true)
-    })
-	public ResponseEntity<?> deleteComment(@PathVariable int challengeId,
-	        @PathVariable int commentId, HttpSession session) {
-		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		if (userId == null) {
-		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
-		
-	    boolean isDeleted = commentService.deleteCommentOrReply(commentId, userId);
-	    if (isDeleted) {
-	        return ResponseEntity.ok("삭제 성공");
-	    }
-	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("삭제 실패");
-	}
-	
-	
-	// 특정 댓글에 달린 대댓글 작성
-	@PostMapping("/{commentId}/replies")
-	public ResponseEntity<?> insertReplies(@PathVariable("commentId") int commentId, 
-			@PathVariable("challengeId") int challengeId,
-			@RequestBody Comments comments,
-			HttpSession session){
-		
-		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
-		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
-		}
-		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		if (userId == null) {
-		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
-		
-		comments.setChallengeId(challengeId);
-		comments.setCommentGroup(commentId);
-		comments.setUserId(userId);
-		comments.setCommentDepth(1);
-		
-		boolean isInserted = commentService.insertReply(comments);
-		
-		if (isInserted)
-			return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
-		
-		return ResponseEntity.badRequest().build();
+        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+            return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+        }
 
-	}
+        Integer userId = (Integer) session.getAttribute("loginUserId");
+        comments.setChallengeId(challengeId);
+        comments.setUserId(userId);
+
+        boolean isInserted = commentService.insertComment(comments);
+
+        return isInserted ? ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.")
+                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 	
-	// 대댓글 수정
-	@PutMapping("/{commentId}/replies/{replyId}")
-	public ResponseEntity<?> modifyReplies(@PathVariable("commentId") int commentId, 
-										   @PathVariable("challengeId") int challengeId,
-										   @PathVariable("replyId") int replyId,
-										   @RequestBody Comments comments,
-										   HttpSession session){
-		
-		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
-		    return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+	
+    /**
+     * 댓글 수정
+     *
+     * @param challengeId 대상 챌린지 ID
+     * @param commentId   댓글 ID
+     * @param session     현재 사용자 세션
+     * @param comments    수정할 댓글 정보
+     * @return 수정한 댓글 상태 메시지
+     */
+    @PutMapping("/{commentId}")
+    @Operation(summary = "댓글 수정", description = "작성한 댓글을 수정합니다.")
+    @Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 ID", required = true),
+        @Parameter(name = "commentId", description = "댓글 ID", required = true),
+        @Parameter(name = "commentText", description = "수정할 댓글 내용", required = true)
+    })
+    public ResponseEntity<String> modifyComment(@PathVariable("challengeId") int challengeId,
+                                                @PathVariable("commentId") int commentId,
+                                                HttpSession session, @RequestBody Comments comments) {
+
+        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+            return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+        }
+
+        int userId = commentService.findWriter(commentId);
+        if (!Validate.isValidSessionUser(session, userId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
+        }
+
+        comments.setChallengeId(challengeId);
+        comments.setUserId(userId);
+        comments.setCommentId(commentId);
+
+        boolean isModified = commentService.modifyComment(comments);
+
+        return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
+                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+	
+	
+    /**
+     * 댓글 삭제
+     *
+     * @param challengeId 대상 챌린지 ID
+     * @param commentId   삭제할 댓글 ID
+     * @return 삭제 상태 메시지
+     */
+    @DeleteMapping("/{commentId}")
+    @Operation(summary = "댓글 삭제", description = "작성한 댓글을 삭제합니다.")
+    @Parameters({
+        @Parameter(name = "challengeId", description = "챌린지 ID", required = true),
+        @Parameter(name = "commentId", description = "댓글 ID", required = true)
+    })
+    public ResponseEntity<?> deleteComment(@PathVariable("challengeId") int challengeId,
+            @PathVariable("commentId") int commentId,
+            HttpSession session) {
+
+		int userId = commentService.findWriter(commentId);
+		if (!Validate.isValidSessionUser(session, userId)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 삭제할 수 있습니다.");
 		}
 		
+		boolean isDeleted = commentService.deleteCommentOrReply(commentId, userId);
 		
-		Integer userId = (Integer) session.getAttribute("loginUserId");
-		if (userId == null) {
-		    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		return isDeleted ? ResponseEntity.ok("댓글이 정상적으로 삭제되었습니다.")
+               			 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 삭제 실패");
+	}
+	
+	
+    /**
+     * 대댓글 작성
+     *
+     * @param challengeId 대상 챌린지 ID
+     * @param commentId   부모 댓글 ID
+     * @param comments    작성할 대댓글 정보
+     * @param session     현재 사용자 세션
+     * @return 작성 상태 메시지
+     */
+    @PostMapping("/{commentId}/replies")
+    @Operation(summary = "대댓글 작성", description = "특정 댓글에 대댓글을 작성합니다.")
+    public ResponseEntity<?> insertReplies(@PathVariable("challengeId") int challengeId,
+                                           @PathVariable("commentId") int commentId,
+                                           @RequestBody Comments comments, HttpSession session) {
+
+        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+            return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+        }
+
+        Integer userId = (Integer) session.getAttribute("loginUserId");
+        comments.setChallengeId(challengeId);
+        comments.setCommentGroup(commentId);
+        comments.setUserId(userId);
+
+        boolean isInserted = commentService.insertReply(comments);
+
+        return isInserted ? ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.")
+                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+	
+    /**
+     * 대댓글 수정
+     *
+     * @param challengeId 대상 챌린지 ID
+     * @param commentId   부모 댓글 ID
+     * @param replyId     수정할 대댓글 ID
+     * @param comments    수정할 대댓글 정보
+     * @param session     현재 사용자 세션
+     * @return 수정 상태 메시지
+     */
+    @PutMapping("/{commentId}/replies/{replyId}")
+    @Operation(summary = "대댓글 수정", description = "특정 대댓글을 수정합니다.")
+    public ResponseEntity<?> modifyReplies(@PathVariable("challengeId") int challengeId,
+            @PathVariable("commentId") int commentId,
+            @PathVariable("replyId") int replyId,
+            @RequestBody Comments comments, HttpSession session) {
+
+		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+			return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
+		}
+		
+		int userId = commentService.findWriter(commentId);
+		if (!Validate.isValidSessionUser(session, userId)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
 		}
 		
 		comments.setChallengeId(challengeId);
 		comments.setUserId(userId);
 		comments.setCommentGroup(commentId);
 		comments.setCommentId(replyId);
-		comments.setCommentDepth(1);
 		
 		boolean isModified = commentService.modifyReply(comments);
 		
-		if (isModified)
-			return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
-		
-		return ResponseEntity.badRequest().build();
+		return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
+						  : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
-	
 }

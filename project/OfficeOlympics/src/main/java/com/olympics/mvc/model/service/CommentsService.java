@@ -13,6 +13,9 @@ public interface CommentsService {
 	// 사용자가 작성한 댓글이 있는지 확인
 	boolean findUserComments(int commentId);
 	
+	// 댓글 작성자 확인
+	int findWriter(int commentId);
+	
 	// 댓글 작성
 	boolean insertComment(Comments comments);
 	void updateCommentGroup (int commentId);

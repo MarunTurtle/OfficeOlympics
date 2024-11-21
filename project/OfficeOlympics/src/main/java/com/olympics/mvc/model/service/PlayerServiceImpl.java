@@ -13,6 +13,7 @@ import com.olympics.mvc.model.dto.OlympicsSetup;
 import com.olympics.mvc.model.dto.Player;
 
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class PlayerServiceImpl implements PlayerService{
 	
 	private final PlayerDao playerDao;

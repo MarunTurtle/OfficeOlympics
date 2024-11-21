@@ -13,6 +13,9 @@ public interface CommentsDao {
 	// 사용자가 작성한 댓글이 있는지 확인
 	int findUserComments(int challengeId);
 
+	// 댓글 작성자 확인
+	int findWriter(int commentId);
+	
 	// 댓글 작성
 	int insertComment(Comments comments);
 	int updateCommentGroup (int commentId);
@@ -34,5 +37,6 @@ public interface CommentsDao {
 	
 	// 대댓글 수정
 	int modifyReply(Comments comments);
+
 
 }

@@ -21,6 +21,7 @@ import com.olympics.mvc.model.dto.OlympicsSetup;
 import com.olympics.mvc.model.dto.User;
 import com.olympics.mvc.model.service.PlayerService;
 import com.olympics.mvc.model.service.UserService;
+import com.olympics.mvc.util.Validate;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,7 +55,12 @@ public class AccountController {
         @ApiResponse(responseCode = "200", description = "사용자 정보 반환"),
         @ApiResponse(responseCode = "204", description = "사용자 정보 없음")
     })
-	public ResponseEntity<?> mypage(@PathVariable("userId") int userId) {
+	public ResponseEntity<?> mypage(@PathVariable("userId") int userId, HttpSession session) {
+		
+		if (!Validate.isValidSessionUser(session, userId)) {
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
+        }
+		
 	    User user = userService.selectById(userId);
 	    if(user == null) {
 	    	return ResponseEntity.noContent().build();
@@ -102,9 +108,9 @@ public class AccountController {
     		@RequestParam("olympicsName") String olympicsName,
     		@RequestParam("playerNames") List<String> playerNames,
             HttpSession session) {
-    	
-        if (!isValidSessionUser(session, userId)) {
-        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 접근입니다.");
+
+        if (!Validate.isValidSessionUser(session, userId)) {
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인의 정보만 수정할 수 있습니다.");
         }
         
         User user = userService.selectById(userId);
@@ -146,7 +152,7 @@ public class AccountController {
     })
     public ResponseEntity<String> deleteUser(@PathVariable("userId") int userId, HttpSession session) {
     	
-    	if (!isValidSessionUser(session, userId)) {
+    	if (!Validate.isValidSessionUser(session, userId)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증된 사용자만 탈퇴할 수 있습니다.");
         }
 
@@ -157,19 +163,6 @@ public class AccountController {
         }
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 탈퇴 실패");
-    }
-    
-	
-    /**
-     * 세션 검증 로직
-     * 
-     * @param session 현재 사용자 세션
-     * @param userId  검증할 사용자 ID
-     * @return 세션 유효 여부
-     */
-    public boolean isValidSessionUser(HttpSession session, int userId) {
-    	Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
-    	return sessionUserId != null && sessionUserId.equals(userId);
     }
     
 	

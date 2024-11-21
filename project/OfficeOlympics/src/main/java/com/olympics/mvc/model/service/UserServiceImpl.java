@@ -16,6 +16,7 @@ import com.olympics.mvc.util.FileConfirm;
 import com.olympics.mvc.util.HashUtil;
 
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class UserServiceImpl implements UserService{
 	
 	private final UserDao userDao;

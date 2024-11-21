@@ -14,6 +14,7 @@ import com.olympics.mvc.model.dto.Rank;
 import com.olympics.mvc.model.dto.Score;
 
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	
 	private final ChallengeScoreDao challengeDao;

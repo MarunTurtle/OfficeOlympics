@@ -70,10 +70,7 @@ public class OlympicsController {
     public ResponseEntity<?> generateOlympics(@RequestBody OlympicsSetup setup, HttpSession session) {
 
 		Integer userId = (Integer) session.getAttribute("loginUserId");
-		
-		if(userId == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
+
         setup.setUserId(userId);
         
         int olympicsId = playerService.insertOlympics(setup.getUserId(), setup.getOlympicsName());
@@ -119,10 +116,7 @@ public class OlympicsController {
     public ResponseEntity<String> deleteOlympics(@PathVariable("olympicId") int olympicsId, HttpSession session) {
         
 		Integer sessionUserId = (Integer) session.getAttribute("loginUserId");
-        if(sessionUserId == null) {
-        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
-
+        
         Integer creatorUserId = playerService.getOlympicCreatorUserId(olympicsId);
         if(!sessionUserId.equals(creatorUserId)) {
         	return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
