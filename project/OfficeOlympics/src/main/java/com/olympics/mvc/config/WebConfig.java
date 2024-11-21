@@ -4,8 +4,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer{
+	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -15,4 +17,5 @@ public class WebConfig implements WebMvcConfigurer{
             .allowedHeaders("*") // 모든 헤더 허용
             .maxAge(3600); // preflight 요청 캐싱 시간
     }
+	
 }

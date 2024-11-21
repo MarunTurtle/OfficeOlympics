@@ -67,6 +67,7 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "로그인 실패: 이메일 또는 비밀번호 확인 필요")
     })
 	public ResponseEntity<?> login(@RequestBody User user, HttpSession session, HttpServletRequest request) {
+		
 		User loginUser = userService.selectUser(user.getEmail());
 		
 		if (loginUser == null || !userService.checkPassword(loginUser, user.getPassword())) {

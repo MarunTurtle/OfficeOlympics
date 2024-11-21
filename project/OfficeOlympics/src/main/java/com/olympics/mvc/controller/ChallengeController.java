@@ -24,6 +24,7 @@ import com.olympics.mvc.model.dto.Score;
 import com.olympics.mvc.model.service.ChallengeScoreService;
 import com.olympics.mvc.model.service.CommentsService;
 import com.olympics.mvc.model.service.PlayerService;
+import com.olympics.mvc.util.Validate;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,11 +66,8 @@ public class ChallengeController {
 		
 		Challenge challenge = challengeService.selectChallenge(challengeId);
 		
-		if(challenge == null) {
-			return ResponseEntity.noContent().build();
-		}
-		
-		return ResponseEntity.ok(challenge);
+		return challenge != null ? ResponseEntity.ok(challenge)
+								 : ResponseEntity.noContent().build();
 	}
     
     
@@ -80,9 +78,10 @@ public class ChallengeController {
      * @return 챌린지 점수 기록 페이지 문자열
      */
     @GetMapping("/{challengeId}/score")
-    public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId, HttpSession session ){
-    	// Map<String, Object> olympic players 
+    public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId, HttpSession session){
+
     	int userId = (int) session.getAttribute("loginUserId");
+    	
     	int olympicId = playerService.findOlympicsIdByUserId(userId);
     	List<Map<String, Object>> players = playerService.getPlayersByOlympicsId(olympicId);
     	
@@ -169,13 +168,8 @@ public class ChallengeController {
 	public ResponseEntity<?> endChallengesRank(HttpSession session) {
 	    Integer userId = (Integer) session.getAttribute("loginUserId");
 	    
-	    if (userId == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-	    }
-	    
 	    List<Rank> rank = challengeService.selectFinalScore(userId); 
 	    
-	    System.out.println(rank);
 	    return ResponseEntity.ok(rank);
 	}
 

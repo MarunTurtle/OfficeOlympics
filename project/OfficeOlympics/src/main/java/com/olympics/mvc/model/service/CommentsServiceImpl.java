@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.olympics.mvc.model.dao.CommentsDao;
 import com.olympics.mvc.model.dto.Comments;
 
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class CommentsServiceImpl implements CommentsService{
 	
 	private final CommentsDao commentsDao;
@@ -32,7 +34,14 @@ public class CommentsServiceImpl implements CommentsService{
 		return isExist > 0;
 	}
 
+	// 댓글 작성자 확인
+	@Override
+	public int findWriter(int commentId) {
+		return commentsDao.findWriter(commentId);
+	}
+	
 	// 댓글 쓰기
+	@Transactional
 	@Override
 	public boolean insertComment(Comments comments) {
 		int isInserted = commentsDao.insertComment(comments);
@@ -43,6 +52,7 @@ public class CommentsServiceImpl implements CommentsService{
 	}
 
 	// 댓글 수정
+	@Transactional
 	@Override
 	public boolean modifyComment(Comments comments) {
 		int isModified = commentsDao.modifyComment(comments);
@@ -50,6 +60,7 @@ public class CommentsServiceImpl implements CommentsService{
 	}
 
 	// 댓글 삭제
+	@Transactional
 	@Override
 	public boolean deleteCommentOrReply(int commentId, int userId) {
 	    // 댓글에 대댓글이 있는지 확인
@@ -60,34 +71,36 @@ public class CommentsServiceImpl implements CommentsService{
 	    params.put("userId", userId);
 
 	    if (hasReplies) {
-	        // 대댓글이 있는 경우: 소프트 삭제
 	        return commentsDao.softDeleteComment(params) > 0;
 	    } else {
-	        // 대댓글이 없는 경우: 진짜 삭제
-	        return commentsDao.deleteComment(params) > 0;
+	    		return commentsDao.deleteComment(params) > 0;
 	    }
 	}
 
-
-
+	
 	// 대댓글 작성
+	@Transactional
 	@Override
 	public boolean insertReply(Comments comments) {
 		int isInserted = commentsDao.insertReply(comments);
 		return isInserted == 1;
 	}
 
+	@Transactional
+	@Override
+	public void updateCommentGroup(int commentId) {
+		commentsDao.updateCommentGroup(commentId);
+	}
+
+	
 	// 대댓글 수정
+	@Transactional
 	@Override
 	public boolean modifyReply(Comments comments) {
 		int isModified = commentsDao.modifyReply(comments);
 		return isModified == 1;
 	}
 
-	@Override
-	public void updateCommentGroup(int commentId) {
-		commentsDao.updateCommentGroup(commentId);
-	}
 
 
 }
