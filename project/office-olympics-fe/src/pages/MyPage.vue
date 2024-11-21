@@ -9,17 +9,73 @@
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="alert alert-danger text-center">
+      <div v-else-if="error" class="alert alert-danger">
         {{ error }}
       </div>
 
-      <!-- Raw Data Display -->
-      <div v-else>
-        <h2>User Data</h2>
-        <pre>{{ JSON.stringify(userData, null, 2) }}</pre>
+      <!-- Content -->
+      <div v-else class="row">
+        <!-- User Profile Section -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body text-center">
+              <img
+                :src="userData?.profileImg || '/default-avatar.png'"
+                class="rounded-circle mb-3 profile-image"
+                alt="Profile Image"
+              >
+              <h3 class="card-title">{{ userData?.nickname }}</h3>
+              <p class="text-muted">{{ userData?.email }}</p>
+              <p class="text-muted">{{ userData?.name }}</p>
+            </div>
+          </div>
+        </div>
 
-        <h2 class="mt-4">Players Data</h2>
-        <pre>{{ JSON.stringify(playersData, null, 2) }}</pre>
+        <!-- Players Section -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="mb-0">Olympic Team Members</h4>
+            </div>
+            <div class="card-body">
+              <div v-if="players.length === 0" class="text-center text-muted">
+                No team members found
+              </div>
+              <div v-else class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Score</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="player in players" :key="player.playerId">
+                      <td>{{ player.playerName }}</td>
+                      <td>{{ player.totalScore || 0 }}</td>
+                      <td>
+                        <span class="badge bg-success">Active</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <button class="btn btn-primary me-2" @click="editProfile">
+            Edit Profile
+          </button>
+          <button class="btn btn-danger" @click="confirmDelete">
+            Delete Account
+          </button>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -27,13 +83,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
+import { useAuthStore } from '@/stores/auth';
 
+const router = useRouter();
 const userStore = useUserStore();
+const authStore = useAuthStore();
 
 const userData = ref(null);
-const playersData = ref([]);
+const players = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
@@ -42,18 +102,36 @@ const fetchUserProfile = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await userStore.fetchUser(1); // Hardcoded ID for testing
-    console.log('Raw response:', response);
+    const userId = authStore.user?.userId;
+    if (!userId) {
+      throw new Error('No user ID found');
+    }
 
-    // Store the entire response data
+    const response = await userStore.fetchUser(userId);
     userData.value = response.userData;
-    playersData.value = response.players;
+    players.value = response.players;
 
   } catch (err) {
     console.error('Error fetching profile:', err);
     error.value = err.message || 'Failed to load profile data';
   } finally {
     loading.value = false;
+  }
+};
+
+const editProfile = () => {
+  router.push('/profile/edit');
+};
+
+const confirmDelete = async () => {
+  if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    try {
+      await userStore.deleteUser();
+      await authStore.logout();
+      router.push('/login');
+    } catch (err) {
+      error.value = 'Failed to delete account. Please try again.';
+    }
   }
 };
 
@@ -66,14 +144,29 @@ onMounted(() => {
 .my-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
 }
 
-pre {
-  background: #f5f5f5;
-  padding: 15px;
-  border-radius: 5px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: none;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.badge {
+  font-weight: 500;
 }
 </style>
