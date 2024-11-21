@@ -113,8 +113,8 @@ const fetchUserProfile = async () => {
     const response = await userStore.fetchUser(userId);
     console.log('Profile Response:', response);
 
-    userData.value = response.userData;
-    players.value = response.players;
+    userData.value = response.data.userData;
+    players.value = response.data.players || [];
 
   } catch (err) {
     console.error('Error fetching profile:', err);

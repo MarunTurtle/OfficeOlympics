@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         const response = await fetchUserProfile(userId);
-        this.user = response.userData;
+        this.user = response.data.userData;
         console.log('Response from server:', response);
         return response;
       } catch (error) {
