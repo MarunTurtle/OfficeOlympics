@@ -98,4 +98,9 @@ const thumbnailUrl = computed(() => {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
+
+.card-button:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.05);
+}
 </style>
