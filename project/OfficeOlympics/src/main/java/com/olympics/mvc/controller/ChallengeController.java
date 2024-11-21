@@ -110,6 +110,7 @@ public class ChallengeController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
 	public ResponseEntity<?> recordScores(@PathVariable("challengeId") int challengeId, @RequestBody Score score){
+    	
 		score.setChallengeId(challengeId);
 	    boolean success = challengeService.upsertScores(score);
 	    
@@ -141,9 +142,13 @@ public class ChallengeController {
         @ApiResponse(responseCode = "503", description = "데이터베이스 오류 발생"),
         @ApiResponse(responseCode = "500", description = "서버 내부 오류 발생")
     })
-    public ResponseEntity<?> getChallengesRank(@PathVariable("challengeId") int challengeId){
-		List<Rank> rank = challengeService.selectChallengeScore(challengeId);
-		System.out.println(rank);
+    public ResponseEntity<?> getChallengesRank(@PathVariable("challengeId") int challengeId, HttpSession session){
+    	Integer userId = (Integer) session.getAttribute("loginUserId");
+    	
+    	int olympicsId = playerService.findOlympicsIdByUserId(userId);
+    	
+		List<Rank> rank = challengeService.selectChallengeScore(challengeId, olympicsId);
+		
 		return ResponseEntity.ok(rank);
 	}
 	
