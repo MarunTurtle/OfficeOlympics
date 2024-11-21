@@ -88,6 +88,6 @@ const thumbnailUrl = computed(() => {
 }
 
 .recommended-challenge-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 </style>
