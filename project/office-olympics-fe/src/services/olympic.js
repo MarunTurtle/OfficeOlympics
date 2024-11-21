@@ -8,12 +8,12 @@ import api from '@/services/api';
 export const createOlympic = async (olympicData) => {
   try {
     const response = await api.post('/olympics', olympicData);
-    
+
     // Validate response structure
     if (!response.data || !response.data.olympicsId) {
       throw new Error('Invalid response format from server');
     }
-    
+
     return response;
   } catch (error) {
     if (error.response?.status === 400) {
