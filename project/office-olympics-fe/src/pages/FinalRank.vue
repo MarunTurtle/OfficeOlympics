@@ -57,9 +57,6 @@
               <button class="btn btn-secondary" @click="goToMain">
                 Go to Main Page
               </button>
-              <button class="btn btn-danger" @click="logout">
-                Log Out
-              </button>
             </div>
           </div>
         </div>
@@ -72,14 +69,12 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
-import { useAuthStore } from '@/stores/auth';
 import { useOlympicStore } from '@/stores/olympic';
 import MainLayout from '@/layouts/MainLayout.vue';
 
 const route = useRoute();
 const router = useRouter();
 const challengeStore = useChallengeStore();
-const authStore = useAuthStore();
 const olympicStore = useOlympicStore();
 
 const rankings = ref([]);
@@ -105,25 +100,20 @@ const formatScore = (score) => new Intl.NumberFormat().format(score);
 const confirmNewOlympics = async () => {
   if (confirm('This will delete your current Olympic data. Are you sure?')) {
     try {
-      await olympicStore.deleteOlympic(olympicStore.userOlympicId);
-      router.push('/olympics');
+      await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
+      olympicStore.clearOlympicData();
+      alert('Olympic deleted successfully!');
+      router.push('/olympic/create');
     } catch (err) {
+      console.error('Failed to delete Olympics:', err);
       error.value = 'Failed to delete current Olympics.';
+      alert('Failed to delete Olympics. Please try again.');
     }
   }
 };
 
 const goToMain = () => {
   router.push('/');
-};
-
-const logout = async () => {
-  try {
-    await authStore.logout();
-    router.push('/');
-  } catch (err) {
-    error.value = 'Failed to logout.';
-  }
 };
 </script>
 
