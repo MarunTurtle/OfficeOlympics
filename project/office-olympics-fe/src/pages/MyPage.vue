@@ -1,110 +1,216 @@
 <template>
   <MainLayout>
-    <div class="my-page">
+    <div class="my-page container py-4">
       <!-- Header -->
-      <div class="profile-header text-center">
+      <div class="profile-header text-center mb-5">
         <h1>My Profile</h1>
-        <p class="text-muted">Manage your profile and account settings.</p>
+        <p class="text-muted">Manage your profile and account settings</p>
       </div>
 
       <!-- Profile Information -->
-      <div class="profile-info card">
-        <div class="card-body">
-          <h2>Profile Details</h2>
-          <p><strong>Name:</strong> {{ formatName(user?.name) }}</p>
-          <p><strong>Email:</strong> {{ user?.email }}</p>
-          <p><strong>Nickname:</strong> {{ formatName(user?.nickname) }}</p>
-          <button class="btn btn-primary mt-3 me-2" @click="editProfile">Edit Profile</button>
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Profile Details</h2>
+              <div class="profile-info">
+                <p><strong>Name:</strong> {{ formatName(user?.name) }}</p>
+                <p><strong>Email:</strong> {{ user?.email }}</p>
+                <p><strong>Nickname:</strong> {{ formatName(user?.nickname) }}</p>
+                <div class="mt-3">
+                  <button class="btn btn-primary me-2" @click="showEditModal">
+                    Edit Profile
+                  </button>
+                  <button class="btn btn-danger" @click="confirmDeleteAccount">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <!-- Add Delete Olympic button if user has an Olympic -->
-          <button v-if="hasOlympics" class="btn btn-danger mt-3" @click="deleteOlympic">
-            Delete Olympic
-          </button>
+        <!-- Olympic Information -->
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Olympic Details</h2>
+              <div v-if="players.length > 0">
+                <h3 class="text-center mb-3">{{ players[0].olympics_name }}</h3>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Player Name</th>
+                        <th class="text-end">Total Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="player in players" :key="player.player_name">
+                        <td>{{ player.player_name }}</td>
+                        <td class="text-end">{{ formatNumber(player.total_score) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <button class="btn btn-danger mt-3" @click="confirmDeleteOlympic">
+                  Delete Olympic
+                </button>
+              </div>
+              <div v-else class="text-center">
+                <p>No Olympic data available</p>
+                <RouterLink to="/olympic/create" class="btn btn-primary">
+                  Create Olympic
+                </RouterLink>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Logout Button -->
-      <!-- <div class="logout-button text-center mt-5">
-        <button class="btn btn-danger" @click="logout">Log Out</button>
-      </div> -->
+      <!-- Edit Profile Modal -->
+      <div class="modal fade" id="editProfileModal" tabindex="-1" ref="editModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form @submit.prevent="handleEditSubmit">
+                <div class="mb-3">
+                  <label class="form-label">Nickname</label>
+                  <input type="text" class="form-control" v-model="editForm.nickname" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Profile Image</label>
+                  <input type="file" class="form-control" @change="handleImageChange" accept="image/*">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Olympics Name</label>
+                  <input type="text" class="form-control" v-model="editForm.olympicsName" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Player Names</label>
+                  <div v-for="(player, index) in editForm.playerNames" :key="index">
+                    <input type="text" class="form-control mb-2" v-model="editForm.playerNames[index]" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useUserStore } from '@/stores/user';
-import { useAuthStore } from '@/stores/auth';
-import { capitalize } from '@/utils/formatters'; // Import formatter utilities
 import { useOlympicStore } from '@/stores/olympic';
-import { useRouter, useRoute } from 'vue-router';
+import { capitalize } from '@/utils/formatters';
+import { Modal } from 'bootstrap';
 
-// Store and State
-const userStore = useUserStore();
-const authStore = useAuthStore();
-const user = ref(null); // Current user data
-const olympicStore = useOlympicStore();
 const router = useRouter();
 const route = useRoute();
+const userStore = useUserStore();
+const olympicStore = useOlympicStore();
 
-// Add computed property for Olympic status
-const hasOlympics = computed(() => !!olympicStore.userOlympicId);
+const user = ref(null);
+const players = ref([]);
+const editModal = ref(null);
+const editForm = ref({
+  nickname: '',
+  profileImg: null,
+  olympicsName: '',
+  playerNames: []
+});
 
-// Fetch User Profile
+// Fetch user profile data
 const fetchUserProfile = async () => {
   try {
     const userId = route.params.userId;
-    if (!userId) {
-      throw new Error('No user ID available');
-    }
     const response = await userStore.fetchUser(userId);
-    console.log('User profile response:', response);
     user.value = response.userData;
+    players.value = response.players;
+
+    // Initialize edit form
+    if (players.value.length > 0) {
+      editForm.value.olympicsName = players.value[0].olympics_name;
+      editForm.value.playerNames = players.value.map(p => p.player_name);
+    }
+    editForm.value.nickname = user.value.nickname;
   } catch (error) {
     console.error('Error fetching profile:', error);
     router.push('/auth/login');
   }
 };
 
-// Edit Profile
-const editProfile = () => {
-  // Navigate to a profile editing page (e.g., /my-profile/edit)
-  console.log('Edit Profile clicked');
-  alert('Profile editing functionality coming soon!');
+// Modal handling
+const showEditModal = () => {
+  const modal = new Modal(editModal.value);
+  modal.show();
 };
 
-// Logout
-const logout = async () => {
+const handleImageChange = (event) => {
+  editForm.value.profileImg = event.target.files[0];
+};
+
+const handleEditSubmit = async () => {
   try {
-    await authStore.logoutUser();
-    alert('You have been logged out.');
-    router.push('/auth/login');
+    const formData = new FormData();
+    formData.append('nickname', editForm.value.nickname);
+    if (editForm.value.profileImg) {
+      formData.append('profileImg', editForm.value.profileImg);
+    }
+    formData.append('olympicsName', editForm.value.olympicsName);
+    editForm.value.playerNames.forEach(name => {
+      formData.append('playerNames', name);
+    });
+
+    await userStore.updateUser(user.value.userId, formData);
+    Modal.getInstance(editModal.value).hide();
+    await fetchUserProfile();
   } catch (error) {
-    console.error('Logout failed:', error);
+    console.error('Failed to update profile:', error);
+    alert('Failed to update profile. Please try again.');
   }
 };
 
-// Add delete Olympic handler
-const deleteOlympic = async () => {
-  if (!confirm('Are you sure you want to delete this Olympic event? This action cannot be undone.')) {
-    return;
-  }
-
-  try {
-    await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
-    alert('Olympic event deleted successfully.');
-    router.push('/olympic/create');
-  } catch (error) {
-    console.error('Failed to delete Olympic:', error);
-    alert('Failed to delete Olympic event.');
+const confirmDeleteOlympic = async () => {
+  if (confirm('Are you sure you want to delete this Olympic event? This action cannot be undone.')) {
+    try {
+      await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
+      alert('Olympic deleted successfully');
+      router.push('/olympic/create');
+    } catch (error) {
+      console.error('Failed to delete Olympic:', error);
+      alert('Failed to delete Olympic. Please try again.');
+    }
   }
 };
 
-// Utility Methods
-const formatName = (name) => (name ? capitalize(name) : 'N/A');
+const confirmDeleteAccount = async () => {
+  if (confirm('WARNING: This will permanently delete your account and all associated data. This action cannot be undone. Are you sure?')) {
+    try {
+      await userStore.deleteAccount(user.value.userId);
+      alert('Account deleted successfully');
+      router.push('/auth/login');
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      alert('Failed to delete account. Please try again.');
+    }
+  }
+};
 
-// Fetch Data on Mount
+// Utility functions
+const formatName = (name) => name ? capitalize(name) : 'N/A';
+const formatNumber = (num) => new Intl.NumberFormat().format(num);
+
 onMounted(() => {
   fetchUserProfile();
 });
@@ -112,24 +218,25 @@ onMounted(() => {
 
 <style scoped>
 .my-page {
-  margin-top: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.profile-header h1 {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-}
-
-.profile-info {
-  margin-top: 20px;
-  padding: 20px;
-  background: #fff;
+.card {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
-.logout-button button {
-  padding: 10px 20px;
-  font-size: 1.1rem;
+.card-title {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.modal-dialog {
+  max-width: 500px;
 }
 </style>
