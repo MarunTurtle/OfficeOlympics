@@ -1,7 +1,5 @@
 package com.olympics.mvc.model.dao;
 
-import java.util.List;
-
 import com.olympics.mvc.model.dto.User;
 
 public interface UserDao {
@@ -20,8 +18,5 @@ public interface UserDao {
 	
 	// 회원 정보 수정
 	int modifyUser(User user);
-	
-	// 전체 회원 정보 조회
-	List<User> selectAccounts();
 	
 }

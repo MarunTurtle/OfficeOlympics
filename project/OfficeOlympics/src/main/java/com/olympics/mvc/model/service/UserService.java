@@ -1,10 +1,7 @@
 package com.olympics.mvc.model.service;
 
-import java.util.List;
-
 import org.springframework.web.multipart.MultipartFile;
 
-import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.dto.User;
 
 public interface UserService {
@@ -27,6 +24,4 @@ public interface UserService {
 	// 회원 정보 수정
 	boolean modifyUser(User user, MultipartFile profileImg);
 	
-	// 전체 회원 정보 조회
-	List<User> selectAccounts();
 }

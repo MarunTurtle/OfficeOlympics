@@ -74,6 +74,7 @@ public class AccountController {
 	    userData.put("name", user.getName());
 	    userData.put("nickname", user.getNickname());
 	    userData.put("profileImg", user.getProfileImg());
+	    userData.put("ImgSrc", user.getImgSrc());
 
 	    int olympicsId = playerService.findOlympicsIdByUserId(userId);
 	    List<Map<String, Object>> players = (olympicsId > 0) ? playerService.getPlayersByOlympicsId(olympicsId) : new ArrayList<>();
@@ -108,7 +109,10 @@ public class AccountController {
     		@RequestParam("olympicsName") String olympicsName,
     		@RequestParam("playerNames") List<String> playerNames,
             HttpSession session) {
-
+		
+		// TODO 올림픽 구성 안했을 경우 고려
+		
+		
         if (!Validate.isValidSessionUser(session, userId)) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인의 정보만 수정할 수 있습니다.");
         }

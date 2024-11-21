@@ -6,29 +6,21 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.olympics.mvc.model.dto.Challenge;
-import com.olympics.mvc.model.dto.Comments;
-import com.olympics.mvc.model.dto.Player;
 import com.olympics.mvc.model.dto.Rank;
 import com.olympics.mvc.model.dto.Score;
 
 import com.olympics.mvc.model.service.ChallengeScoreService;
-import com.olympics.mvc.model.service.CommentsService;
 import com.olympics.mvc.model.service.PlayerService;
-import com.olympics.mvc.util.Validate;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;

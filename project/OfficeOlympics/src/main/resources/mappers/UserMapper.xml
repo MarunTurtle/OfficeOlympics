@@ -39,11 +39,5 @@
 		WHERE user_id = #{userId};
 	</update>
 	
-	<!-- 비밀번호 수정 -->
-	
-	<!-- 전체 회원 정보 조회 selectAccounts -->
-	<select id="selectAccounts" resultType="User">
-		SELECT email, name, nickname, reg_date FROM users;
-	</select>
 	
 </mapper>

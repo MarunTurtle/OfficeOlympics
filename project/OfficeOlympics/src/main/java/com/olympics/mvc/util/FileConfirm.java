@@ -1,10 +1,5 @@
 package com.olympics.mvc.util;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileConfirm {
