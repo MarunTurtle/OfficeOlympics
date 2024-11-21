@@ -102,12 +102,17 @@ const fetchUserProfile = async () => {
     loading.value = true;
     error.value = null;
 
-    const userId = authStore.user?.userId;
+    console.log('Auth Store User:', authStore.user);
+    const userId = authStore.user?.id || authStore.user?.userId;
+    console.log('Extracted User ID:', userId);
+
     if (!userId) {
       throw new Error('No user ID found');
     }
 
     const response = await userStore.fetchUser(userId);
+    console.log('Profile Response:', response);
+
     userData.value = response.userData;
     players.value = response.players;
 
