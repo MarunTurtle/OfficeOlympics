@@ -8,9 +8,8 @@ export const fetchUserProfile = async (userId) => {
   if (!userId) {
     throw new Error('User ID is required');
   }
-
-  const response = await api.get(`/accounts/${userId}`);
-  return response.data;
+  // const response = await api.get(`/accounts/${userId}`);
+  return api.get(`/accounts/${userId}`);
 };
 
 /**
