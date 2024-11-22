@@ -318,7 +318,7 @@ const deleteComment = async (commentId) => {
 
 const editComment = (comment) => {
   if (comment.userId !== authStore.userId) {
-    commentStore.setError('You can only edit your own comments');
+    commentStore.setError('본인이 작성한 댓글만 수정할 수 있습니다.');
     return;
   }
   editingComment.value = { ...comment };
