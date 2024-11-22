@@ -20,9 +20,9 @@
           <div class="card">
             <div class="card-body text-center">
               <img
-                :src="userData?.profileImg || defaultProfileImage"
+                :src="userData?.ImgSrc || defaultProfileImage"
                 class="rounded-circle mb-3 profile-image"
-                alt="Profile Image"
+                alt="userData?.profileImg "
               >
               <h3 class="card-title">{{ userData?.nickname }}</h3>
               <p class="text-muted">{{ userData?.email }}</p>
