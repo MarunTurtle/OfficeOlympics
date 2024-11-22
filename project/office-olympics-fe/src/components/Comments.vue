@@ -20,8 +20,8 @@
         <div class="comment-avatar">
           <div class="avatar-circle">
             <img
-              v-if="authStore.user?.imgSrc"
-              :src="authStore.user?.imgSrc"
+              v-if="authStore.user?.ImgSrc"
+              :src="authStore.user?.ImgSrc"
               :alt="authStore.user?.nickname"
               class="avatar-image"
             />
@@ -140,8 +140,8 @@
                   <div class="comment-avatar">
                     <div class="avatar-circle">
                       <img
-                        v-if="authStore.user?.imgSrc"
-                        :src="authStore.user.imgSrc"
+                        v-if="authStore.user?.ImgSrc"
+                        :src="authStore.user.ImgSrc"
                         :alt="authStore.user?.nickname"
                         class="avatar-image"
                       />
