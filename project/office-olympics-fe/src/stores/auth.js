@@ -16,24 +16,26 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async loginUser(credentials) {
       try {
-        const { user, olympicsId } = await login(credentials);
-        console.log('Login Response:', { user, olympicsId });
+        const { data } = await login(credentials);
+        console.log('Login Response:', data);
 
-        // Set both user and userId
+        // Set both user and userId with the correct property names
         this.user = {
-          ...user,
-          id: user.loginUserId  // Make sure this matches the backend response
+          ...data,
+          id: data.loginUserId,
+          nickname: data.nickname
         };
-        this.userId = user.loginUserId;  // Explicitly set userId
+        this.userId = data.loginUserId;
 
         console.log('Stored User Data:', this.user);
         localStorage.setItem('user', JSON.stringify(this.user));
-        localStorage.setItem('userId', user.loginUserId);  // Store userId separately
-        localStorage.setItem('olympicsId', olympicsId || null);
+        localStorage.setItem('userId', data.loginUserId);
 
-        // Update Olympic store
-        const olympicStore = useOlympicStore();
-        olympicStore.setUserOlympicId(olympicsId);
+        // Update Olympic store if needed
+        if (data.olympicsId) {
+          const olympicStore = useOlympicStore();
+          olympicStore.setUserOlympicId(data.olympicsId);
+        }
 
       } catch (error) {
         console.error('Login failed:', error);

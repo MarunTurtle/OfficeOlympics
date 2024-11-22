@@ -168,7 +168,8 @@ const showReplyForm = ref(null);
 const editingComment = ref(null);
 const currentUserId = computed(() => {
   console.log('Auth store state:', authStore.$state);
-  return authStore.userId || null;
+  console.log('Current user ID:', authStore.userId);
+  return authStore.userId;
 });
 
 const comments = computed(() => {
