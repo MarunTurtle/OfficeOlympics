@@ -96,20 +96,20 @@
                     <i class="fas fa-reply me-1"></i>Reply
                   </button>
 
-                  <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
-                    <button class="btn btn-link btn-sm p-0 three-dots" type="button" data-bs-toggle="dropdown">
-                      <span class="dot"></span>
-                      <span class="dot"></span>
-                      <span class="dot"></span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <button class="dropdown-item" @click="editComment(comment)">Edit</button>
-                      </li>
-                      <li>
-                        <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
-                      </li>
-                    </ul>
+                <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
+                  <button class="btn btn-link btn-sm p-0 three-dots" type="button" data-bs-toggle="dropdown">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button class="dropdown-item" @click="editComment(comment)">Edit</button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
+                    </li>
+                  </ul>
                   </div>
                 </div>
               </div>
