@@ -1,7 +1,7 @@
 <template>
   <div class="comments-section">
-    <!-- Debug info can be kept for development -->
-    <div class="debug-info" v-if="process.env.NODE_ENV === 'development'">
+    <!-- Add debug info -->
+    <div class="debug-info">
       Loading: {{ commentStore.loading }}
       Comments length: {{ comments.length }}
     </div>
