@@ -35,7 +35,7 @@
       </form>
       <p class="text-center mt-3">
         Don't have an account?
-        <RouterLink to="/register">Sign Up</RouterLink>
+        <RouterLink to="/auth/register">Sign Up</RouterLink>
       </p>
     </div>
   </AuthLayout>
@@ -100,10 +100,12 @@ const onLogin = async () => {
 }
 
 .is-invalid {
-  border-color: #f2668b; /* Alert/Emergency Color */
+  border-color: #f2668b;
+  /* Alert/Emergency Color */
 }
 
 .invalid-feedback {
-  color: #f2668b; /* Alert/Emergency Color */
+  color: #f2668b;
+  /* Alert/Emergency Color */
 }
 </style>
