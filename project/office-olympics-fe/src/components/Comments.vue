@@ -5,7 +5,7 @@
       Loading: {{ commentStore.loading }}
       Comments length: {{ comments.length }}
     </div>
-    
+
     <div v-if="commentStore.error" class="alert alert-danger">
       {{ commentStore.error }}
     </div>
@@ -196,6 +196,9 @@ const toggleReplyForm = (commentId) => {
 };
 
 const addComment = async () => {
+  console.log('Current user ID:', currentUserId.value);
+  console.log('Auth store state:', authStore.$state);
+
   if (!currentUserId.value) {
     commentStore.setError('로그인이 필요합니다.');
     return;

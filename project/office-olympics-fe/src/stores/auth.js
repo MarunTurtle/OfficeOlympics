@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia';
 import { login, logout, register } from '@/services/auth';
 import { useOlympicStore } from '@/stores/olympic';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
-    token: null,
+    userId: localStorage.getItem('userId') || null,
+    user: JSON.parse(localStorage.getItem('user')) || null,
   }),
   getters: {
     isAuthenticated: (state) => !!state.user,
@@ -69,5 +72,17 @@ export const useAuthStore = defineStore('auth', {
         this.user = null; // Clear user if not found in localStorage
       }
     },
+    setUser(userData) {
+      this.user = userData;
+      this.userId = userData.loginUserId;
+      localStorage.setItem('userId', userData.loginUserId);
+      localStorage.setItem('user', JSON.stringify(userData));
+    },
+    clearUser() {
+      this.user = null;
+      this.userId = null;
+      localStorage.removeItem('userId');
+      localStorage.removeItem('user');
+    }
   },
 });
