@@ -308,7 +308,7 @@ const updateComment = async () => {
     }
     editingComment.value = null;
   } catch (error) {
-    console.error('Failed to update comment:', error);
+    throw error;
   }
 };
 
