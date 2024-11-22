@@ -101,8 +101,12 @@
                     </svg>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
-                    <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button></li>
+                    <li v-if="canModifyComment(comment)">
+                      <button class="dropdown-item" @click="editComment(comment)">Edit</button>
+                    </li>
+                    <li v-if="canModifyComment(comment)">
+                      <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -179,8 +183,12 @@
                             </svg>
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end">
-                            <li><button class="dropdown-item" @click="editComment(reply)">Edit</button></li>
-                            <li><button class="dropdown-item text-danger" @click="deleteComment(reply.commentId)">Delete</button></li>
+                            <li v-if="canModifyComment(reply)">
+                              <button class="dropdown-item" @click="editComment(reply)">Edit</button>
+                            </li>
+                            <li v-if="canModifyComment(reply)">
+                              <button class="dropdown-item text-danger" @click="deleteComment(reply.commentId)">Delete</button>
+                            </li>
                           </ul>
                         </div>
                       </div>
@@ -276,6 +284,10 @@ const addReply = async (commentId) => {
 };
 
 const deleteComment = async (commentId) => {
+  if (!confirm('Are you sure you want to delete this comment?')) {
+    return;
+  }
+
   try {
     await commentStore.deleteComment(props.challengeId, commentId);
   } catch (error) {
@@ -333,6 +345,10 @@ const toggleReplies = (commentId) => {
   } else {
     expandedComments.value.add(commentId);
   }
+};
+
+const canModifyComment = (comment) => {
+  return comment.userId === authStore.userId;
 };
 </script>
 
