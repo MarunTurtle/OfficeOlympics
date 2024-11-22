@@ -52,7 +52,7 @@
           No comments yet. Be the first to comment!
         </div>
 
-        <div v-else v-for="comment in comments" :key="comment.commentId" class="comment-item">
+        <div v-else v-for="comment in comments.filter(c => c.commentDepth === 0)" :key="comment.commentId" class="comment-item">
           <!-- Main Comment -->
           <div class="d-flex gap-3">
             <div class="comment-avatar">
@@ -81,8 +81,10 @@
                 </button>
 
                 <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
-                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v"></i>
+                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                      <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                    </svg>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
@@ -157,8 +159,10 @@
                       <!-- Reply Actions -->
                       <div class="comment-actions-bar">
                         <div class="dropdown comment-menu" v-if="reply.userId === currentUserId">
-                          <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-ellipsis-v"></i>
+                          <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                            </svg>
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end">
                             <li><button class="dropdown-item" @click="editComment(reply)">Edit</button></li>
@@ -408,9 +412,13 @@ watch(() => commentStore.comments, (newComments) => {
   background-color: #f8f9fa;
 }
 
-.fa-ellipsis-v {
+.comment-menu .bi-three-dots-vertical {
   color: #666;
-  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.comment-menu:hover .bi-three-dots-vertical {
+  color: var(--primary-color);
 }
 
 .btn-link {
