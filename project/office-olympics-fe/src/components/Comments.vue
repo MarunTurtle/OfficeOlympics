@@ -244,11 +244,6 @@ const newComment = ref('');
 const replyText = ref('');
 const showReplyForm = ref(null);
 const editingComment = ref(null);
-const currentUserId = computed(() => {
-  console.log('Auth store state:', authStore.$state);
-  console.log('Current user ID:', authStore.userId);
-  return authStore.userId;
-});
 
 const comments = computed(() => {
   console.log('All comments:', commentStore.comments);
