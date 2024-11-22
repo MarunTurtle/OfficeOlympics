@@ -86,18 +86,35 @@
                 <button
                   class="btn btn-sm btn-link"
                   @click="toggleReplyForm(comment.commentId)"
-                  v-if="comment.commentDepth === 0"
                 >
-                  Reply
+                  <i class="fas fa-reply me-1"></i>Reply
                 </button>
 
-                <div class="dropdown comment-menu" v-if="comment.userId === currentUserId">
-                  <button class="btn btn-link btn-sm dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v"></i>
+                <button
+                  v-if="getRepliesForComment(comment.commentId).length > 0"
+                  class="btn btn-sm btn-link"
+                  @click="toggleReplies(comment.commentId)"
+                >
+                  <i :class="['fas', showRepliesFor === comment.commentId ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
+                  {{ getRepliesForComment(comment.commentId).length }}
+                  {{ getRepliesForComment(comment.commentId).length === 1 ? 'reply' : 'replies' }}
+                </button>
+
+                <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
+                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
-                    <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button></li>
+                    <li>
+                      <button class="dropdown-item" @click="editComment(comment)">
+                        <i class="fas fa-edit me-2"></i>Edit
+                      </button>
+                    </li>
+                    <li>
+                      <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">
+                        <i class="fas fa-trash-alt me-2"></i>Delete
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -145,7 +162,10 @@
               </div>
 
               <!-- Replies -->
-              <div class="replies mt-3" v-if="comment.commentDepth === 0">
+              <div
+                class="replies mt-3"
+                v-if="comment.commentDepth === 0 && showRepliesFor === comment.commentId"
+              >
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
                   :key="reply.commentId"
@@ -316,126 +336,118 @@ onMounted(async () => {
 watch(() => commentStore.comments, (newComments) => {
   console.log('Comments updated:', newComments);
 }, { deep: true });
+
+const showRepliesFor = ref(null);
+
+const toggleReplies = (commentId) => {
+  showRepliesFor.value = showRepliesFor.value === commentId ? null : commentId;
+};
 </script>
 
 <style scoped>
 .comments-section {
-  margin-top: 2rem;
+  margin-top: 30px;
 }
 
-.comments-header {
-  font-size: 1.25rem;
-  margin-bottom: 1.5rem;
-  color: var(--primary-color);
-}
-
-.comment-count {
-  color: #666;
-  font-size: 0.9em;
-}
-
-.comment-avatar {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
+.profile-img {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: var(--secondary-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  color: var(--primary-color);
-}
-
-.comment-input {
-  border-radius: 4px;
-  resize: none;
-  min-height: 40px;
+  margin-right: 8px;
 }
 
 .comment-header {
-  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
 }
 
-.comment-author {
-  font-weight: 500;
+.reply-form {
+  margin: 8px 0;
+}
+
+.comment-actions, .reply-actions {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.comment-item:hover .comment-actions,
+.reply-item:hover .reply-actions {
+  opacity: 1;
+}
+
+/* Reuse existing styles from ChallengeDetail.vue */
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comments-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.comment-author, .reply-author {
+  color: var(--primary-color);
   margin-right: 0.5rem;
 }
 
-.comment-date {
-  font-size: 0.875rem;
-  color: #666;
+.input-group {
+  display: flex;
+  gap: 8px;
 }
 
-.comment-text {
-  margin-bottom: 0.5rem;
-  white-space: pre-wrap;
+.input-group .btn {
+  border-radius: 4px;
+  height: 38px;
+  padding: 0 16px;
+}
+
+.input-group .form-control {
+  border-radius: 4px;
+}
+
+.comment-menu .btn-link {
+  color: #666;
+  padding: 4px 8px;
+}
+
+.comment-menu .btn-link:hover {
+  color: var(--primary-color);
+}
+
+.dropdown-item i {
+  width: 16px;
+}
+
+.fa-ellipsis-vertical {
+  font-size: 1.2rem;
 }
 
 .comment-toolbar {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.comment-menu {
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.comment-item:hover .comment-menu,
-.reply-item:hover .comment-menu {
-  opacity: 1;
-}
-
-.dropdown-toggle.no-arrow::after {
-  display: none;
-}
-
-.replies {
-  margin-left: 1rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--secondary-color);
-}
-
-.reply-item {
-  margin-top: 1rem;
-}
-
-.edit-form,
-.reply-form {
-  margin-top: 1rem;
-}
-
-/* Bootstrap overrides */
 .btn-link {
-  text-decoration: none;
-  padding: 0;
   color: #666;
+  text-decoration: none;
+  padding: 4px 8px;
 }
 
 .btn-link:hover {
   color: var(--primary-color);
 }
 
-.dropdown-item {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+.replies {
+  margin-top: 1rem;
+  padding-left: 2rem;
+  border-left: 2px solid var(--secondary-color);
 }
 
-.dropdown-item:hover {
-  background-color: var(--secondary-color);
+.fa-chevron-down,
+.fa-chevron-up {
+  margin-right: 4px;
 }
 </style>
