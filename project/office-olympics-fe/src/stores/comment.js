@@ -32,7 +32,7 @@ export const useCommentStore = defineStore('comment', {
           updateDate: comment.updateDate,
           nickname: comment.nickname,
           commentId: comment.commentId,
-          commentGroup: comment.commentId,
+          commentGroup: comment.commentGroup,
           regDate: comment.regDate,
           profileImg: comment.profileImg,
           userId: comment.userId,
