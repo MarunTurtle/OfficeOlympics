@@ -308,9 +308,7 @@ const updateComment = async () => {
     }
     editingComment.value = null;
   } catch (error) {
-    // The error is already being set in the store's setError method
-    // Just close the edit form
-    editingComment.value = null;
+    console.error('Failed to update comment:', error);
   }
 };
 
