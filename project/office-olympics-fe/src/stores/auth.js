@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
         console.log('Login Response:', { user, olympicsId });
         this.user = {
           ...user,
-          id: user.nickname
+          id: user.id
         };
         console.log('Stored User Data:', this.user);
         localStorage.setItem('user', JSON.stringify(this.user));
