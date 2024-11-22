@@ -1,7 +1,7 @@
 <template>
   <div class="comments-section">
-    <!-- Add debug info -->
-    <div class="debug-info">
+    <!-- Debug info can be kept for development -->
+    <div class="debug-info" v-if="process.env.NODE_ENV === 'development'">
       Loading: {{ commentStore.loading }}
       Comments length: {{ comments.length }}
     </div>
@@ -10,32 +10,48 @@
       {{ commentStore.error }}
     </div>
 
-    <!-- Add loading spinner -->
     <div v-if="commentStore.loading" class="text-center">
-      <div class="spinner-border" role="status">
+      <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
-    <h3>Comments</h3>
+    <h3 class="comments-header">
+      Comments <span class="comment-count">{{ comments.length }}</span>
+    </h3>
 
     <!-- Add Comment Form -->
     <div class="comment-form mb-4">
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          v-model="newComment"
-          placeholder="Add a comment..."
-        >
-        <button
-          class="btn btn-primary btn-sm"
-          @click="addComment"
-          :disabled="!newComment.trim()"
-          style="width: 80px;"
-        >
-          Post
-        </button>
+      <div class="d-flex gap-3">
+        <div class="comment-avatar">
+          <!-- Placeholder avatar if no profile image -->
+          <div class="avatar-placeholder">
+            {{ authStore.user?.nickname?.charAt(0) || 'U' }}
+          </div>
+        </div>
+        <div class="flex-grow-1">
+          <input
+            type="text"
+            class="form-control comment-input"
+            v-model="newComment"
+            placeholder="Add a comment..."
+          >
+          <div class="comment-actions mt-2" v-if="newComment.trim()">
+            <button
+              class="btn btn-secondary me-2"
+              @click="newComment = ''"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              @click="addComment"
+              :disabled="!newComment.trim()"
+            >
+              Comment
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -48,97 +64,124 @@
 
         <div v-else v-for="comment in comments" :key="comment.commentId" class="comment-item">
           <!-- Main Comment -->
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="comment-content">
-              <div class="comment-header">
-                <img :src="comment.profileImg" alt="Profile" class="profile-img" v-if="comment.profileImg">
-                <strong class="comment-author">{{ comment.nickname }}</strong>
-                <small class="text-muted">{{ formatDate(comment.regDate) }}</small>
+          <div class="d-flex gap-3">
+            <div class="comment-avatar">
+              <img v-if="comment.profileImg" :src="comment.profileImg" alt="Profile" class="avatar-img">
+              <div v-else class="avatar-placeholder">
+                {{ comment.nickname?.charAt(0) || 'U' }}
               </div>
-              <p class="comment-text mb-1" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
+            </div>
+            <div class="flex-grow-1">
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.nickname }}</span>
+                <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
+              </div>
+
+              <p class="comment-text" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
                 {{ comment.commentText }}
               </p>
 
-              <!-- Reply Button -->
-              <button
-                class="btn btn-sm btn-link"
-                @click="toggleReplyForm(comment.commentId)"
-                v-if="comment.commentDepth === 0"
-              >
-                Reply
-              </button>
-            </div>
+              <!-- Comment Actions -->
+              <div class="comment-toolbar">
+                <button
+                  class="btn btn-sm btn-link"
+                  @click="toggleReplyForm(comment.commentId)"
+                  v-if="comment.commentDepth === 0"
+                >
+                  Reply
+                </button>
 
-            <!-- Comment Actions -->
-            <div class="comment-actions" v-if="comment.userId === currentUserId">
-              <button class="btn btn-sm btn-outline-primary me-2" @click="editComment(comment)">
-                Edit
-              </button>
-              <button class="btn btn-sm btn-outline-danger" @click="deleteComment(comment.commentId)">
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <!-- Reply Form -->
-          <div class="reply-form ms-4 mt-2" v-if="showReplyForm === comment.commentId">
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                v-model="replyText"
-                placeholder="Write a reply..."
-              >
-              <button
-                class="btn btn-primary"
-                @click="addReply(comment.commentId)"
-                :disabled="!replyText.trim()"
-              >
-                Reply
-              </button>
-            </div>
-          </div>
-
-          <!-- Replies -->
-          <div class="replies ms-4" v-if="comment.commentDepth === 0">
-            <div
-              v-for="reply in getRepliesForComment(comment.commentId)"
-              :key="reply.commentId"
-              class="reply-item mt-2"
-            >
-              <div class="d-flex justify-content-between align-items-start">
-                <div class="reply-content">
-                  <div class="reply-header">
-                    <img :src="reply.profileImg" alt="Profile" class="profile-img" v-if="reply.profileImg">
-                    <strong class="reply-author">{{ reply.nickname }}</strong>
-                    <small class="text-muted">{{ formatDate(reply.regDate) }}</small>
-                  </div>
-                  <p class="reply-text mb-1">{{ reply.commentText }}</p>
-                </div>
-
-                <!-- Reply Actions -->
-                <div class="reply-actions" v-if="reply.userId === currentUserId">
-                  <button class="btn btn-sm btn-outline-primary me-2" @click="editReply(reply)">
-                    Edit
+                <div class="dropdown comment-menu" v-if="comment.userId === currentUserId">
+                  <button class="btn btn-link btn-sm dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-danger" @click="deleteComment(reply.commentId)">
-                    Delete
-                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
+                    <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button></li>
+                  </ul>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Add this inside the comment-item div, when editing -->
-          <div v-if="editingComment && editingComment.commentId === comment.commentId" class="edit-form mb-2">
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                v-model="editingComment.commentText"
-              >
-              <button class="btn btn-primary" @click="updateComment">Save</button>
-              <button class="btn btn-secondary" @click="editingComment = null">Cancel</button>
+              <!-- Edit Form -->
+              <div v-if="editingComment && editingComment.commentId === comment.commentId" class="edit-form mt-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="editingComment.commentText"
+                >
+                <div class="edit-actions mt-2">
+                  <button class="btn btn-secondary btn-sm me-2" @click="editingComment = null">Cancel</button>
+                  <button class="btn btn-primary btn-sm" @click="updateComment">Save</button>
+                </div>
+              </div>
+
+              <!-- Reply Form -->
+              <div class="reply-form mt-2" v-if="showReplyForm === comment.commentId">
+                <div class="d-flex gap-3">
+                  <div class="comment-avatar">
+                    <div class="avatar-placeholder">
+                      {{ authStore.user?.nickname?.charAt(0) || 'U' }}
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="replyText"
+                      placeholder="Write a reply..."
+                    >
+                    <div class="reply-actions mt-2">
+                      <button class="btn btn-secondary btn-sm me-2" @click="toggleReplyForm(null)">Cancel</button>
+                      <button
+                        class="btn btn-primary btn-sm"
+                        @click="addReply(comment.commentId)"
+                        :disabled="!replyText.trim()"
+                      >
+                        Reply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Replies -->
+              <div class="replies mt-3" v-if="comment.commentDepth === 0">
+                <div
+                  v-for="reply in getRepliesForComment(comment.commentId)"
+                  :key="reply.commentId"
+                  class="reply-item"
+                >
+                  <div class="d-flex gap-3">
+                    <div class="comment-avatar">
+                      <img v-if="reply.profileImg" :src="reply.profileImg" alt="Profile" class="avatar-img">
+                      <div v-else class="avatar-placeholder">
+                        {{ reply.nickname?.charAt(0) || 'U' }}
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="comment-header">
+                        <span class="comment-author">{{ reply.nickname }}</span>
+                        <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
+                      </div>
+
+                      <p class="comment-text">{{ reply.commentText }}</p>
+
+                      <!-- Reply Actions -->
+                      <div class="comment-toolbar">
+                        <div class="dropdown comment-menu" v-if="reply.userId === currentUserId">
+                          <button class="btn btn-link btn-sm dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" @click="editComment(reply)">Edit</button></li>
+                            <li><button class="dropdown-item text-danger" @click="deleteComment(reply.commentId)">Delete</button></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -277,63 +320,122 @@ watch(() => commentStore.comments, (newComments) => {
 
 <style scoped>
 .comments-section {
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
-.profile-img {
-  width: 32px;
-  height: 32px;
+.comments-header {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+}
+
+.comment-count {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.comment-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  margin-right: 8px;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.comment-input {
+  border-radius: 4px;
+  resize: none;
+  min-height: 40px;
 }
 
 .comment-header {
+  margin-bottom: 0.25rem;
+}
+
+.comment-author {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.comment-date {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.comment-text {
+  margin-bottom: 0.5rem;
+  white-space: pre-wrap;
+}
+
+.comment-toolbar {
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
+  gap: 1rem;
 }
 
-.reply-form {
-  margin: 8px 0;
-}
-
-.comment-actions, .reply-actions {
+.comment-menu {
   opacity: 0;
   transition: opacity 0.2s;
 }
 
-.comment-item:hover .comment-actions,
-.reply-item:hover .reply-actions {
+.comment-item:hover .comment-menu,
+.reply-item:hover .comment-menu {
   opacity: 1;
 }
 
-/* Reuse existing styles from ChallengeDetail.vue */
-.comment-form {
-  margin-bottom: 2rem;
+.dropdown-toggle.no-arrow::after {
+  display: none;
 }
 
-.comments-list {
-  max-height: 500px;
-  overflow-y: auto;
+.replies {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--secondary-color);
 }
 
-.comment-author, .reply-author {
+.reply-item {
+  margin-top: 1rem;
+}
+
+.edit-form,
+.reply-form {
+  margin-top: 1rem;
+}
+
+/* Bootstrap overrides */
+.btn-link {
+  text-decoration: none;
+  padding: 0;
+  color: #666;
+}
+
+.btn-link:hover {
   color: var(--primary-color);
-  margin-right: 0.5rem;
 }
 
-.input-group {
-  display: flex;
-  gap: 8px;
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
-.input-group .btn {
-  border-radius: 4px;
-  height: 38px;
-  padding: 0 16px;
-}
-
-.input-group .form-control {
-  border-radius: 4px;
+.dropdown-item:hover {
+  background-color: var(--secondary-color);
 }
 </style>
