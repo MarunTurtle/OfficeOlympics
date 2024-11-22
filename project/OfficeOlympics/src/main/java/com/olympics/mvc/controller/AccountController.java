@@ -106,12 +106,9 @@ public class AccountController {
     public ResponseEntity<String> modifyUser(@PathVariable("userId") int userId, 
     		@RequestParam("nickname") String nickname,
     		@RequestParam(value = "profileImg", required = false) MultipartFile profileImg, 
-    		@RequestParam("olympicsName") String olympicsName,
-    		@RequestParam("playerNames") List<String> playerNames,
+    		@RequestParam(value = "olympicsName", required = false) String olympicsName,
+    		@RequestParam(value = "playerNames", required = false) List<String> playerNames,
             HttpSession session) {
-		
-		// TODO 올림픽 구성 안했을 경우 고려
-		
 		
         if (!Validate.isValidSessionUser(session, userId)) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인의 정보만 수정할 수 있습니다.");
@@ -127,8 +124,13 @@ public class AccountController {
  
         boolean isUserModified = userService.modifyUser(user, profileImg);
         
+        int olympicsId = playerService.findOlympicsIdByUserId(userId);
+        if(olympicsId == 0 && isUserModified) {
+        	return ResponseEntity.ok(user.getName() + "님의 정보를 수정했습니다.");        	
+        }
+        
         OlympicsSetup olympic = new OlympicsSetup(userId, olympicsName, playerNames);
-        olympic.setOlympicsId(playerService.findOlympicsIdByUserId(userId));
+        olympic.setOlympicsId(olympicsId);
         
         boolean isOlympicModified = playerService.modifyOlympics(olympic);
         
