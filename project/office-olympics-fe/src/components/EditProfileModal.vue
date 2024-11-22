@@ -101,11 +101,17 @@ import defaultProfileImage from '@/assets/images/default_profile.png';
 const props = defineProps({
   userData: {
     type: Object,
-    required: true
+    required: false,
+    default: () => ({
+      nickname: '',
+      ImgSrc: defaultProfileImage,
+      userId: null
+    })
   },
   players: {
     type: Array,
-    required: true
+    required: false,
+    default: () => []
   }
 });
 
@@ -133,7 +139,10 @@ const formData = ref({
 watch(() => props.userData, (newData) => {
   if (newData) {
     formData.value.nickname = newData.nickname || '';
-    formData.value.currentImgSrc = newData.ImgSrc || '';
+    formData.value.currentImgSrc = newData.ImgSrc || defaultProfileImage;
+  } else {
+    formData.value.nickname = '';
+    formData.value.currentImgSrc = defaultProfileImage;
   }
 }, { immediate: true });
 
@@ -141,6 +150,9 @@ watch(() => props.players, (newPlayers) => {
   if (newPlayers && newPlayers.length > 0) {
     formData.value.olympicsName = newPlayers[0].olympics_name || '';
     formData.value.playerNames = newPlayers.map(p => p.player_name);
+  } else {
+    formData.value.olympicsName = '';
+    formData.value.playerNames = [''];
   }
 }, { immediate: true });
 
@@ -161,6 +173,11 @@ const removePlayer = (index) => {
 
 const handleSubmit = async () => {
   try {
+    if (!props.userData?.userId) {
+      console.error('No user ID available');
+      return;
+    }
+
     loading.value = true;
     const submitData = new FormData();
 
