@@ -72,15 +72,16 @@
 
               <!-- Comment Actions -->
               <div class="comment-actions-bar">
-                <button
-                  class="btn btn-sm btn-link text-secondary"
-                  @click="toggleReplyForm(comment.commentId)"
-                  v-if="comment.commentDepth === 0"
-                >
-                  Reply
-                </button>
-
-                <div class="dropdown comment-menu">
+                <div class="actions-left">
+                  <button
+                    class="btn btn-sm btn-link text-secondary"
+                    @click="toggleReplyForm(comment.commentId)"
+                    v-if="comment.commentDepth === 0"
+                  >
+                    Reply
+                  </button>
+                </div>
+                <div class="dropdown comment-menu ms-auto">
                   <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                       <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -158,7 +159,16 @@
 
                       <!-- Reply Actions -->
                       <div class="comment-actions-bar">
-                        <div class="dropdown comment-menu">
+                        <div class="actions-left">
+                          <button
+                            class="btn btn-sm btn-link text-secondary"
+                            @click="toggleReplyForm(reply.commentId)"
+                            v-if="reply.commentDepth === 0"
+                          >
+                            Reply
+                          </button>
+                        </div>
+                        <div class="dropdown comment-menu ms-auto">
                           <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                               <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -381,6 +391,13 @@ watch(() => commentStore.comments, (newComments) => {
 
 .comment-actions-bar {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.actions-left {
+  display: flex;
   align-items: center;
   gap: 1rem;
 }
@@ -393,6 +410,14 @@ watch(() => commentStore.comments, (newComments) => {
 .comment-item:hover .comment-menu,
 .reply-item:hover .comment-menu {
   opacity: 1;
+}
+
+.bi-three-dots-vertical {
+  color: #666;
+}
+
+.btn-link:hover .bi-three-dots-vertical {
+  color: var(--primary-color);
 }
 
 .replies {
