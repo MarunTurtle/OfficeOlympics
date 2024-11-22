@@ -1,8 +1,8 @@
 INSERT INTO `users` VALUES 
-(1,'ssafy1@ssafy.com','87e310ef0dd31cb1f3250a608df890a34aafe7d57e2a618aad59c6a8abcfff4b','8iDvseT5+vOm4ONeeixwYA==','사용자1','닉네임1','profile1.png','0ab7bf98-b57f-4594-9773-ed939eecf45f.png','2024-11-18 11:18:37'),
-(2,'ssafy2@ssafy.com','af16034ba4340164f0e1cc4bb3a12f10ea8331d399c4bef728acb13b6d97ff42','jfTalvGnu9+2HsGusI95kQ==','사용자2','닉네임2','profile2.png','a480e227-5ca9-4bd4-86a2-3243d5d604ee.png','2024-11-18 11:18:50'),
-(3,'ssafy3@ssafy.com','1a31f7b07a6e3ab336c579b2867ac2e27a6bb2126124663311afcd07e4514a9a','ujaYVCyVY+GNglJMy+gEGQ==','사용자3','닉네임3','profile3.png','0421fe1e-5b60-4970-9709-8aa28763502c.png','2024-11-18 11:19:02'),
-(4,'ssafy4@ssafy.com','05637a083ae06c74e8d6013546d72b8ab4ac6bf6543d0293baa33a4a679fcf7a','UbIHw0JnlnQ1SDfUiUFQRw==','사용자4','닉네임4', NULL, NULL, '2024-11-20 13:45:33');
+(1,'ssafy1@ssafy.com','c3470dfd5cd105404a810b8918b02d3361504488c75217271f9437b89b97b6ef','RSnrbJXTNFcKoBEOO0+9Mg==','사용자1','닉네임1','profile1.png','http://localhost:8080/uploads/profile/78914804586c4da9bb77458b98ea2488_profile1.png','2024-11-22 09:22:14'),
+(2,'ssafy2@ssafy.com','1d51a91c578fb1f78bcea1742c166a390a610fc811d1db4390e9cbde84d850c2','BoCz9/55lTyviygWfRPzhQ==','사용자2','닉네임2',NULL,NULL,'2024-11-22 09:22:46'),
+(3,'ssafy3@ssafy.com','0213101a8f9e20dfa242f40ebdec280a8a5ffb4b0585b8beb1e05c05895a6cae','FBAk4IJDZpUT0nUUV+WwtQ==','사용자3','닉네임3','kermit.png','http://localhost:8080/uploads/profile/374f198308574977bf4b94fa2f42b629_kermit.png','2024-11-22 09:23:15'),
+(4,'ssafy4@ssafy.com','0097975238e8f89cdd0d0ada0489a3fa4081140d0f1d39244ccccf989d3b5320','84TFXqq2pbZQrb9D53au9g==','사용자4','닉네임4', 'bebe.jpg', 'http://localhost:8080/uploads/profile/8fdde37a21754a728bc0ce1ae45e6d8e_bebe.jpg', '2024-11-22 09:23:40');
 
 INSERT INTO olympics (user_id, olympics_name) VALUES
 (1, '팀 A 올림픽'),
