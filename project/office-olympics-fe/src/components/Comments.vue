@@ -20,8 +20,8 @@
         <div class="comment-avatar">
           <div class="avatar-circle">
             <img
-              v-if="authStore.user?.ImgSrc"
-              :src="authStore.user?.ImgSrc"
+              v-if="authStore.user?.imgSrc"
+              :src="authStore.user.imgSrc"
               :alt="authStore.user?.nickname"
               class="avatar-image"
             />
@@ -140,8 +140,8 @@
                   <div class="comment-avatar">
                     <div class="avatar-circle">
                       <img
-                        v-if="authStore.user?.ImgSrc"
-                        :src="authStore.user.ImgSrc"
+                        v-if="authStore.user?.imgSrc"
+                        :src="authStore.user.imgSrc"
                         :alt="authStore.user?.nickname"
                         class="avatar-image"
                       />
@@ -409,7 +409,7 @@ const toggleReplies = (commentId) => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--primary-color);
+  background-color: var(--tertiary-color);
   color: white;
   display: flex;
   align-items: center;
