@@ -80,6 +80,19 @@
                   >
                     Reply
                   </button>
+
+                  <!-- Add this new replies toggle button -->
+                  <button
+                    v-if="getRepliesForComment(comment.commentId).length > 0"
+                    class="btn btn-sm btn-link text-secondary replies-toggle"
+                    @click="toggleReplies(comment.commentId)"
+                  >
+                    <span>{{ getRepliesForComment(comment.commentId).length }} replies</span>
+                    <i
+                      class="bi bi-chevron-down"
+                      :class="{ 'rotated': expandedComments.has(comment.commentId) }"
+                    ></i>
+                  </button>
                 </div>
                 <div class="dropdown comment-menu ms-auto">
                   <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -459,21 +472,27 @@ const toggleReplies = (commentId) => {
 }
 
 .replies-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0;
   color: var(--primary-color);
-  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-.replies-toggle .bi-chevron-down {
+.replies-toggle:hover {
+  text-decoration: underline;
+}
+
+.bi-chevron-down {
   transition: transform 0.2s ease;
 }
 
-.replies-toggle .bi-chevron-down.rotated {
+.bi-chevron-down.rotated {
   transform: rotate(180deg);
 }
 
+/* Make sure your existing replies class has these properties */
 .replies {
   margin-left: 56px;
   transition: all 0.3s ease;
