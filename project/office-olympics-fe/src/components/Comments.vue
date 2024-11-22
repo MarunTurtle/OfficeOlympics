@@ -200,13 +200,6 @@ const toggleReplyForm = (commentId) => {
 };
 
 const addComment = async () => {
-  console.log('Current user ID:', currentUserId.value);
-  console.log('Auth store state:', authStore.$state);
-
-  if (!currentUserId.value) {
-    commentStore.setError('로그인이 필요합니다.');
-    return;
-  }
   if (!newComment.value.trim()) return;
 
   try {
@@ -220,10 +213,6 @@ const addComment = async () => {
 };
 
 const addReply = async (commentId) => {
-  if (!currentUserId.value) {
-    commentStore.setError('로그인이 필요합니다.');
-    return;
-  }
   if (!replyText.value.trim()) return;
 
   try {
@@ -250,12 +239,7 @@ const editComment = (comment) => {
 };
 
 const updateComment = async () => {
-  if (!currentUserId.value || !editingComment.value) return;
-
-  if (editingComment.value.userId !== currentUserId.value) {
-    commentStore.setError('본인이 작성한 댓글만 수정할 수 있습니다.');
-    return;
-  }
+  if (!editingComment.value) return;
 
   try {
     const commentData = { commentText: editingComment.value.commentText };

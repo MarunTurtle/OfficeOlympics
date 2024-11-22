@@ -7,6 +7,7 @@ import {
   addCommentReply,
   updateCommentReply
 } from '@/services/comment';
+import { useAuthStore } from '@/stores/auth';
 
 export const useCommentStore = defineStore('comment', {
   state: () => ({
@@ -109,9 +110,11 @@ const handleApiError = (error) => {
     case 400:
       return error.response.data || '잘못된 요청입니다.';
     case 401:
-      return '로그인이 필요하거나 권한이 없습니다.';
-    case 404:
-      return '댓글을 찾을 수 없습니다.';
+      const authStore = useAuthStore();
+      authStore.logoutUser();
+      return '세션이 만료되었습니다. 다시 로그인해주세요.';
+    case 403:
+      return '권한이 없습니다.';
     default:
       return '서버 오류가 발생했습니다.';
   }
