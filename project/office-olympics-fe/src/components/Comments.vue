@@ -166,7 +166,10 @@ const newComment = ref('');
 const replyText = ref('');
 const showReplyForm = ref(null);
 const editingComment = ref(null);
-const currentUserId = computed(() => authStore.userId || null);
+const currentUserId = computed(() => {
+  console.log('Auth store state:', authStore.$state);
+  return authStore.userId || null;
+});
 
 const comments = computed(() => {
   console.log('Computing comments:', commentStore.comments);

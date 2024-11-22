@@ -18,12 +18,17 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { user, olympicsId } = await login(credentials);
         console.log('Login Response:', { user, olympicsId });
+
+        // Set both user and userId
         this.user = {
           ...user,
-          id: user.id
+          id: user.loginUserId  // Make sure this matches the backend response
         };
+        this.userId = user.loginUserId;  // Explicitly set userId
+
         console.log('Stored User Data:', this.user);
         localStorage.setItem('user', JSON.stringify(this.user));
+        localStorage.setItem('userId', user.loginUserId);  // Store userId separately
         localStorage.setItem('olympicsId', olympicsId || null);
 
         // Update Olympic store
