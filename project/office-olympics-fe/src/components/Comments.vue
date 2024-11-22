@@ -82,19 +82,14 @@
               </p>
 
               <!-- Comment Actions -->
-              <div class="comment-toolbar d-flex justify-content-between align-items-center">
-                <div class="replies-count" v-if="comment.commentDepth === 0">
-                  {{ getRepliesForComment(comment.commentId).length }} {{ getRepliesForComment(comment.commentId).length === 1 ? 'reply' : 'replies' }}
-                </div>
-
-                <div class="d-flex align-items-center gap-2">
-                  <button
-                    class="btn btn-sm btn-link"
-                    @click="toggleReplyForm(comment.commentId)"
-                    v-if="comment.commentDepth === 0"
-                  >
-                    <i class="fas fa-reply me-1"></i>Reply
-                  </button>
+              <div class="comment-toolbar">
+                <button
+                  class="btn btn-sm btn-link"
+                  @click="toggleReplyForm(comment.commentId)"
+                  v-if="comment.commentDepth === 0"
+                >
+                  <i class="fas fa-reply me-1"></i>Reply
+                </button>
 
                 <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
                   <button class="btn btn-link btn-sm p-0 three-dots" type="button" data-bs-toggle="dropdown">
@@ -110,7 +105,6 @@
                       <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
                     </li>
                   </ul>
-                  </div>
                 </div>
               </div>
 
