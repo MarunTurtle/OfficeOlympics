@@ -139,9 +139,13 @@ const editProfile = () => {
 const confirmDelete = async () => {
   if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
     try {
-      await userStore.deleteUser();
-      await authStore.logout();
-      router.push('/login');
+      const userId = authStore.user?.id || authStore.user?.userId;
+      if (!userId) {
+        throw new Error('No user ID found');
+      }
+      await userStore.deleteUser(userId);
+      await authStore.logoutUser();
+      router.push('/');
     } catch (err) {
       error.value = 'Failed to delete account. Please try again.';
     }

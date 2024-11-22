@@ -37,21 +37,20 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async deleteUser() {
-      if (!this.user?.id) {
+    async deleteUser(userId) {
+      if (!userId) {
         console.error('No user ID available to delete.');
         return;
       }
 
       this.loading = true;
       try {
-        await deleteUserAccount(this.user.id);
+        await deleteUserAccount(userId);
         this.user = null;
         console.log('User account deleted successfully.');
-        // Consider redirecting the user here
       } catch (error) {
         console.error('Failed to delete user account:', error);
-        // Consider adding user feedback here
+        throw error;
       } finally {
         this.loading = false;
       }
