@@ -450,5 +450,8 @@ desktop.ini
 .env.test.local
 .env.production.local
 
+# properties
+*db.properties
+
 
 # End of https://www.toptal.com/developers/gitignore/api/java,node,vue,vuejs,git,macos,microsoftoffice,windows,maven,eclipse
