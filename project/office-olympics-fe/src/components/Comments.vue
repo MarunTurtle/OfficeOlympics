@@ -95,11 +95,13 @@
 
                   <!-- Add this new replies toggle button -->
                   <button
-                    v-if="getRepliesForComment(comment.commentId).length > 0"
+                    v-if="comment.commentDepth === 0"
                     class="btn btn-sm btn-link text-secondary replies-toggle"
                     @click="toggleReplies(comment.commentId)"
                   >
-                    <span>{{ getRepliesForComment(comment.commentId).length }} replies</span>
+                    <span v-if="getRepliesForComment(comment.commentId).length > 0">
+                      {{ getRepliesForComment(comment.commentId).length }} replies
+                    </span>
                     <i
                       class="bi bi-chevron-down"
                       :class="{ 'rotated': expandedComments.has(comment.commentId) }"
@@ -168,7 +170,10 @@
               </div>
 
               <!-- Replies -->
-              <div class="replies mt-3" v-if="comment.commentDepth === 0 && expandedComments.has(comment.commentId)">
+              <div
+                class="replies mt-3"
+                v-if="getRepliesForComment(comment.commentId).length > 0 && expandedComments.has(comment.commentId)"
+              >
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
                   :key="reply.commentId"
@@ -246,16 +251,20 @@ const currentUserId = computed(() => {
 });
 
 const comments = computed(() => {
-  console.log('Computing comments:', commentStore.comments);
+  console.log('All comments:', commentStore.comments);
+  const parentComments = commentStore.comments.filter(c => c.commentDepth === 0);
+  console.log('Parent comments:', parentComments);
   return commentStore.comments || [];
 });
 
 // Computed property to get replies for a specific comment
-const getRepliesForComment = (commentId) => {
-  return commentStore.comments.filter(
+const getRepliesForComment = computed(() => (commentId) => {
+  const replies = commentStore.comments.filter(
     comment => comment.commentDepth === 1 && comment.commentGroup === commentId
   );
-};
+  console.log(`Replies for comment ${commentId}:`, replies);
+  return replies;
+});
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('ko-KR', {
@@ -340,6 +349,13 @@ onMounted(async () => {
   console.log('Comments component mounted');
   await commentStore.fetchComments(props.challengeId);
   console.log('Comments fetched:', commentStore.comments);
+
+  // Optionally auto-expand comments with replies
+  commentStore.comments.forEach(comment => {
+    if (comment.commentDepth === 0 && getRepliesForComment.value(comment.commentId).length > 0) {
+      expandedComments.value.add(comment.commentId);
+    }
+  });
 });
 
 // Add a watch to monitor changes
