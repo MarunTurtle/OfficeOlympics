@@ -244,11 +244,6 @@ const newComment = ref('');
 const replyText = ref('');
 const showReplyForm = ref(null);
 const editingComment = ref(null);
-const currentUserId = computed(() => {
-  console.log('Auth store state:', authStore.$state);
-  console.log('Current user ID:', authStore.userId);
-  return authStore.userId;
-});
 
 const comments = computed(() => {
   console.log('All comments:', commentStore.comments);
@@ -259,9 +254,13 @@ const comments = computed(() => {
 
 // Computed property to get replies for a specific comment
 const getRepliesForComment = computed(() => (commentId) => {
-  const replies = commentStore.comments.filter(
-    comment => comment.commentDepth === 1 && comment.commentGroup === commentId
+  const parentComment = commentStore.comments.find(c => c.commentId === commentId);
+  if (!parentComment) return [];
+
+  const replies = commentStore.comments.filter(comment =>
+    comment.commentDepth === 1 && comment.commentGroup === parentComment.commentGroup
   );
+
   console.log(`Replies for comment ${commentId}:`, replies);
   return replies;
 });
@@ -317,6 +316,10 @@ const deleteComment = async (commentId) => {
 };
 
 const editComment = (comment) => {
+  if (comment.userId !== authStore.user?.id) {
+    commentStore.setError('본인이 작성한 댓글만 수정할 수 있습니다.');
+    return;
+  }
   editingComment.value = { ...comment };
 };
 
@@ -346,9 +349,19 @@ const updateComment = async () => {
 };
 
 onMounted(async () => {
-  console.log('Comments component mounted');
+  console.log('Comments component mounted for challenge:', props.challengeId);
   await commentStore.fetchComments(props.challengeId);
   console.log('Comments fetched:', commentStore.comments);
+
+  // Log the structure of each comment
+  commentStore.comments.forEach(comment => {
+    console.log('Comment structure:', {
+      id: comment.commentId,
+      depth: comment.commentDepth,
+      group: comment.commentGroup,
+      text: comment.commentText
+    });
+  });
 
   // Optionally auto-expand comments with replies
   commentStore.comments.forEach(comment => {
