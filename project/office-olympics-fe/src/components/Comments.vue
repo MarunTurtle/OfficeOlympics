@@ -80,7 +80,7 @@
                   Reply
                 </button>
 
-                <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
+                <div class="dropdown comment-menu">
                   <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                       <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -158,7 +158,7 @@
 
                       <!-- Reply Actions -->
                       <div class="comment-actions-bar">
-                        <div class="dropdown comment-menu" v-if="reply.userId === currentUserId">
+                        <div class="dropdown comment-menu">
                           <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                               <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -412,13 +412,9 @@ watch(() => commentStore.comments, (newComments) => {
   background-color: #f8f9fa;
 }
 
-.comment-menu .bi-three-dots-vertical {
+.fa-ellipsis-v {
   color: #666;
-  transition: color 0.2s ease;
-}
-
-.comment-menu:hover .bi-three-dots-vertical {
-  color: var(--primary-color);
+  font-size: 1.2rem;
 }
 
 .btn-link {
