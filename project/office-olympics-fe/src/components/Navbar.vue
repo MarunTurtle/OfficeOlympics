@@ -143,7 +143,7 @@ const onLogout = async () => {
 }
 
 .btn-tertiary:hover {
-  background-color: var(--warning-color);
+  background-color: var(--alert-color);
   transform: scale(1.05);
 }
 
