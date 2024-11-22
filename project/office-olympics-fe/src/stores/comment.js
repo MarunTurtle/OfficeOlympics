@@ -24,13 +24,12 @@ export const useCommentStore = defineStore('comment', {
     },
 
     async fetchComments(challengeId) {
-      this.loading = true;
       try {
+        this.loading = true;
         const response = await getChallengeComments(challengeId);
         this.comments = response.data;
-        return this.comments;
       } catch (error) {
-        console.error('Failed to fetch comments:', error);
+        this.setError(error.response?.data || 'Failed to fetch comments');
         throw error;
       } finally {
         this.loading = false;

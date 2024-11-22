@@ -23,9 +23,10 @@
           placeholder="Add a comment..."
         >
         <button
-          class="btn btn-primary"
+          class="btn btn-primary btn-sm"
           @click="addComment"
           :disabled="!newComment.trim()"
+          style="width: 80px;"
         >
           Post
         </button>
@@ -312,5 +313,20 @@ onMounted(async () => {
 .comment-author, .reply-author {
   color: var(--primary-color);
   margin-right: 0.5rem;
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.input-group .btn {
+  border-radius: 4px;
+  height: 38px;
+  padding: 0 16px;
+}
+
+.input-group .form-control {
+  border-radius: 4px;
 }
 </style>

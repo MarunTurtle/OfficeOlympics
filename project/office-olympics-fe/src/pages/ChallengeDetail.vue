@@ -102,8 +102,6 @@ onMounted(async () => {
       description: challengeResponse.challengeDesc,
       videoUrl: transformYoutubeUrl(challengeResponse.challengeUrl)
     };
-
-    await commentStore.fetchComments(challengeId);
   } catch (error) {
     console.error('Failed to fetch challenge details:', error);
   } finally {
