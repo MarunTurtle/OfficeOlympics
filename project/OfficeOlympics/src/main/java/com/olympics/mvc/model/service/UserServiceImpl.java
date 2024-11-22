@@ -72,8 +72,16 @@ public class UserServiceImpl implements UserService{
 				e.printStackTrace();
 			}
 		} else {
-			user.setProfileImg(null);
-			user.setImgSrc(null);
+			
+			String defaultImg = "default_profile.png";
+			File uploadDir = new File(IMG_PATH);
+			
+			if(!uploadDir.exists()) {
+				uploadDir.mkdirs();
+			}
+			
+			user.setProfileImg(defaultImg);
+			user.setImgSrc(PREFIX+defaultImg);
 		}
 		
 		int res = userDao.insertUser(user);

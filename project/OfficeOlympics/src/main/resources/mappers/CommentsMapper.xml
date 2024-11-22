@@ -6,8 +6,8 @@
 
 	<!-- 챌린지별 댓글 확인 -->
 	<select id="getComments" parameterType="int" resultType="map">
-		SELECT c.comment_id, c.user_id, c.comment_depth, c.comment_group, c.comment_text,
-               c.reg_date, c.update_date, u.nickname, u.profile_img
+		SELECT c.comment_id as commentId, c.user_id as userId, c.comment_depth as commentDepth, c.comment_group as commentGroup, c.comment_text as commentText,
+               c.reg_date as regDate, c.update_date as updateDate, u.nickname, u.profile_img as profileImg, u.img_src as imgSrc
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
         WHERE c.challenge_id = #{challengeId}
