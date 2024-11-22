@@ -30,7 +30,7 @@
               <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">My Page</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="btn btn-neutral" @click="onLogout">Log Out</button>
+              <button class="btn btn-tertiary" @click="onLogout">Log Out</button>
             </li>
           </template>
 
@@ -43,7 +43,7 @@
               <RouterLink class="nav-button btn" to="/accounts/{{ authStore.user.id }}">My Page</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="btn btn-neutral" @click="onLogout">Log Out</button>
+              <button class="btn btn-tertiary" @click="onLogout">Log Out</button>
             </li>
           </template>
         </ul>
@@ -126,6 +126,28 @@ const onLogout = async () => {
 }
 
 .nav-button:active {
+  transform: scale(0.95);
+}
+
+.btn-tertiary {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  margin: 0 5px;
+  color: #333;
+  background-color: var(--tertiary-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-tertiary:hover {
+  background-color: var(--warning-color);
+  transform: scale(1.05);
+}
+
+.btn-tertiary:active {
   transform: scale(0.95);
 }
 </style>
