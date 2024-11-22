@@ -30,7 +30,7 @@
               <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">My Page</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="nav-button btn" @click="onLogout">Log Out</button>
+              <button class="btn btn-neutral" @click="onLogout">Log Out</button>
             </li>
           </template>
 
@@ -43,7 +43,7 @@
               <RouterLink class="nav-button btn" to="/accounts/{{ authStore.user.id }}">My Page</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="nav-button btn" @click="onLogout">Log Out</button>
+              <button class="btn btn-neutral" @click="onLogout">Log Out</button>
             </li>
           </template>
         </ul>
