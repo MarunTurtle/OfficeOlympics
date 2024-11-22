@@ -246,8 +246,8 @@ const showReplyForm = ref(null);
 const editingComment = ref(null);
 const currentUserId = computed(() => {
   console.log('Auth store state:', authStore.$state);
-  console.log('Current user ID:', authStore.userId);
-  return authStore.userId;
+  console.log('Current user ID:', authStore.user?.id);
+  return authStore.user?.id;
 });
 
 const comments = computed(() => {
@@ -317,7 +317,7 @@ const deleteComment = async (commentId) => {
 };
 
 const editComment = (comment) => {
-  if (comment.userId !== authStore.userId) {
+  if (comment.userId !== authStore.user?.id) {
     commentStore.setError('본인이 작성한 댓글만 수정할 수 있습니다.');
     return;
   }
