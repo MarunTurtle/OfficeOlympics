@@ -59,6 +59,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
+import { useCommentStore } from '@/stores/comment';
 import MainLayout from '@/layouts/MainLayout.vue';
 import RecommendedChallengeCard from '@/components/RecommendedChallengeCard.vue';
 import Comments from '@/components/Comments.vue';
@@ -66,6 +67,7 @@ import Comments from '@/components/Comments.vue';
 const router = useRouter();
 const route = useRoute();
 const challengeStore = useChallengeStore();
+const commentStore = useCommentStore();
 
 const challenge = ref(null);
 const loading = ref(true);
@@ -101,7 +103,7 @@ onMounted(async () => {
       videoUrl: transformYoutubeUrl(challengeResponse.challengeUrl)
     };
 
-    await challengeStore.fetchComments(challengeId);
+    await commentStore.fetchComments(challengeId);
   } catch (error) {
     console.error('Failed to fetch challenge details:', error);
   } finally {
