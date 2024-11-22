@@ -1,5 +1,11 @@
 <template>
   <div class="comments-section">
+    <!-- Add debug info -->
+    <div class="debug-info">
+      Loading: {{ commentStore.loading }}
+      Comments length: {{ comments.length }}
+    </div>
+    
     <div v-if="commentStore.error" class="alert alert-danger">
       {{ commentStore.error }}
     </div>
@@ -142,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useCommentStore } from '@/stores/comment';
 import { useAuthStore } from '@/stores/auth'; // Assuming you have an auth store
 
@@ -162,7 +168,10 @@ const showReplyForm = ref(null);
 const editingComment = ref(null);
 const currentUserId = computed(() => authStore.userId || null);
 
-const comments = computed(() => commentStore.comments || []);
+const comments = computed(() => {
+  console.log('Computing comments:', commentStore.comments);
+  return commentStore.comments || [];
+});
 
 // Computed property to get replies for a specific comment
 const getRepliesForComment = (commentId) => {
@@ -264,8 +273,15 @@ const updateComment = async () => {
 };
 
 onMounted(async () => {
+  console.log('Comments component mounted');
   await commentStore.fetchComments(props.challengeId);
+  console.log('Comments fetched:', commentStore.comments);
 });
+
+// Add a watch to monitor changes
+watch(() => commentStore.comments, (newComments) => {
+  console.log('Comments updated:', newComments);
+}, { deep: true });
 </script>
 
 <style scoped>
