@@ -58,7 +58,7 @@
           No comments yet. Be the first to comment!
         </div>
 
-        <div v-else v-for="comment in comments.filter(c => !c.commentDepth)" :key="comment.commentId" class="comment-item">
+        <div v-else v-for="comment in comments.filter(c => c.commentDepth === 0)" :key="comment.commentId" class="comment-item">
           <!-- Main Comment -->
           <div class="d-flex gap-3">
             <div class="comment-avatar">
