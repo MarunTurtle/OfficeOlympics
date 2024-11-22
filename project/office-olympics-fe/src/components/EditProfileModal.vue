@@ -8,6 +8,15 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="handleSubmit">
+            <!-- Add preview of current profile image -->
+            <div class="mb-3 text-center">
+              <img
+                :src="currentImageSrc"
+                class="rounded-circle profile-preview mb-3"
+                alt="Profile Preview"
+              >
+            </div>
+
             <!-- Nickname -->
             <div class="mb-3">
               <label class="form-label">Nickname</label>
@@ -84,9 +93,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { Modal } from 'bootstrap';
 import { useUserStore } from '@/stores/user';
+import defaultProfileImage from '@/assets/images/default_profile.png';
 
 const props = defineProps({
   userData: {
@@ -105,16 +115,25 @@ const userStore = useUserStore();
 const modal = ref(null);
 const loading = ref(false);
 
+const currentImageSrc = computed(() => {
+  if (formData.value.profileImg) {
+    return URL.createObjectURL(formData.value.profileImg);
+  }
+  return props.userData?.ImgSrc || defaultProfileImage;
+});
+
 const formData = ref({
   nickname: '',
   profileImg: null,
   olympicsName: '',
-  playerNames: ['']
+  playerNames: [''],
+  currentImgSrc: ''
 });
 
 watch(() => props.userData, (newData) => {
   if (newData) {
     formData.value.nickname = newData.nickname || '';
+    formData.value.currentImgSrc = newData.ImgSrc || '';
   }
 }, { immediate: true });
 
@@ -126,7 +145,10 @@ watch(() => props.players, (newPlayers) => {
 }, { immediate: true });
 
 const handleFileChange = (event) => {
-  formData.value.profileImg = event.target.files[0];
+  const file = event.target.files[0];
+  if (file) {
+    formData.value.profileImg = file;
+  }
 };
 
 const addPlayer = () => {
@@ -142,14 +164,22 @@ const handleSubmit = async () => {
     loading.value = true;
     const submitData = new FormData();
 
-    // Required fields
+    // Required field
     submitData.append('nickname', formData.value.nickname);
-    submitData.append('olympicsName', formData.value.olympicsName);
+
+    // Optional fields
+    if (formData.value.olympicsName) {
+      submitData.append('olympicsName', formData.value.olympicsName);
+    }
 
     // Add player names as separate entries
-    formData.value.playerNames.forEach(name => {
-      submitData.append('playerNames', name);
-    });
+    if (formData.value.playerNames && formData.value.playerNames.length > 0) {
+      formData.value.playerNames.forEach(name => {
+        if (name.trim()) {  // Only append non-empty names
+          submitData.append('playerNames', name.trim());
+        }
+      });
+    }
 
     // Optional profile image
     if (formData.value.profileImg) {
@@ -174,4 +204,19 @@ defineExpose({
   show: () => modal.value.show(),
   hide: () => modal.value.hide()
 });
+
+onBeforeUnmount(() => {
+  // Clean up any object URLs we created
+  if (formData.value.profileImg) {
+    URL.revokeObjectURL(currentImageSrc.value);
+  }
+});
 </script>
+
+<style scoped>
+.profile-preview {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+</style>

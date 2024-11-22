@@ -117,8 +117,10 @@ const fetchUserProfile = async () => {
 
     const response = await userStore.fetchUser(userId);
     console.log('Profile Response:', response);
-
-    userData.value = response.data.userData;
+    userData.value = {
+      ...response.data.userData,
+      ImgSrc: response.data.userData.ImgSrc || defaultProfileImage
+    };
     players.value = response.data.players;
 
   } catch (err) {
