@@ -137,7 +137,7 @@
               </div>
 
               <!-- Replies -->
-              <div class="replies mt-3" v-if="comment.commentDepth === 0">
+              <div class="replies mt-3" v-if="comment.commentDepth === 0 && expandedComments.has(comment.commentId)">
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
                   :key="reply.commentId"
@@ -309,6 +309,18 @@ onMounted(async () => {
 watch(() => commentStore.comments, (newComments) => {
   console.log('Comments updated:', newComments);
 }, { deep: true });
+
+// Add this with your other refs
+const expandedComments = ref(new Set());
+
+// Add this function to toggle reply visibility
+const toggleReplies = (commentId) => {
+  if (expandedComments.value.has(commentId)) {
+    expandedComments.value.delete(commentId);
+  } else {
+    expandedComments.value.add(commentId);
+  }
+};
 </script>
 
 <style scoped>
@@ -444,5 +456,26 @@ watch(() => commentStore.comments, (newComments) => {
 .edit-form,
 .reply-form {
   margin-top: 1rem;
+}
+
+.replies-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.replies-toggle .bi-chevron-down {
+  transition: transform 0.2s ease;
+}
+
+.replies-toggle .bi-chevron-down.rotated {
+  transform: rotate(180deg);
+}
+
+.replies {
+  margin-left: 56px;
+  transition: all 0.3s ease;
 }
 </style>
