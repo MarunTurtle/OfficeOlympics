@@ -16,6 +16,7 @@ body {
 :root {
   --primary-color: #2B88D9;
   --secondary-color: #F2F2F0;
+  --neutral-color: #E8EdF2;
   --warning-color: #F2AE30;
   --interaction-hover-color: #0DA64F;
   --alert-color: #F2668B;
@@ -75,8 +76,27 @@ button.alert {
   color: #fff;
 }
 
+button.secondary {
+  background-color: var(--secondary-color);
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+button.secondary:hover {
+  background-color: #e2e2e0;
+}
+
 button:hover {
   transform: scale(1.05);
+}
+
+button.neutral {
+  background-color: var(--neutral-color);
+  color: #333;
+}
+
+button.neutral:hover {
+  background-color: #d8dde2;
 }
 
 /* Navbar */

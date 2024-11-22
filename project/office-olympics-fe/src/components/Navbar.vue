@@ -73,7 +73,7 @@ const onLogout = async () => {
     // If the user has an OlympicId, delete it from the backend
     // if (olympicStore.userOlympicId) {
     //   await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
-    // }    
+    // }
 
     // Logout the user (clears user data on the frontend and backend)
     await authStore.logoutUser();
