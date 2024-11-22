@@ -21,6 +21,7 @@ public interface CommentsService {
 	void updateCommentGroup (int commentId);
 	
 	// 댓글 수정
+	boolean checkDeleted(Comments comments);
 	boolean modifyComment(Comments comments);
 	
 	// 댓글 삭제

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -123,13 +124,19 @@ public class CommentsController {
 
         int userId = commentService.findWriter(commentId);
         if (!Validate.isValidSessionUser(session, userId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
         }
-
+        
         comments.setChallengeId(challengeId);
         comments.setUserId(userId);
         comments.setCommentId(commentId);
 
+        boolean isSoftDeleted = commentService.checkDeleted(comments);
+        
+        if (isSoftDeleted) {
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("삭제된 댓글은 수정할 수 없습니다.");
+        }
+        
         boolean isModified = commentService.modifyComment(comments);
 
         return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")

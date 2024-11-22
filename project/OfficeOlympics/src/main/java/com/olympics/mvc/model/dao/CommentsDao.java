@@ -22,6 +22,9 @@ public interface CommentsDao {
 	
 	// 댓글 수정
 	int modifyComment(Comments comments);
+
+	// 삭제된 댓글 여부 확인
+	int checkDeleted(Map<String, Object> params);
 	
 	// 대댓글 확인
 	boolean hasReplies(int commentId);
@@ -32,11 +35,19 @@ public interface CommentsDao {
 	// 댓글 삭제
 	int deleteComment(Map<String, Object> params);
 
+	// 댓글 전체 삭제
+	boolean deleteAllComments(int commentGroup);
+
 	// 대댓글 작성
 	int insertReply(Comments comments);
 	
 	// 대댓글 수정
 	int modifyReply(Comments comments);
 
+	int findGroup(Map<String, Object> params);
+	
+	int cntDeleteReply(int commentGroup);
+	
+	int cntCommentGroup(int commentGroup);
 
 }

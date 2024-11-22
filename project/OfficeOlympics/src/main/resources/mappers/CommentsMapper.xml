@@ -39,6 +39,14 @@
 		WHERE comment_id = #{commentId};
 	</update>
 	
+	<!-- softDelete 여부 확인 -->
+	<select id="checkDeleted" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM comments
+		WHERE update_date IS NOT NULL
+		AND comment_id = #{commentId}
+		AND user_id = #{userId};
+	</select>
+	
 	<!-- 댓글 수정 -->
 	<update id="modifyComment" parameterType="Comments">
 		UPDATE comments
@@ -72,6 +80,31 @@
 		DELETE FROM comments
 		WHERE comment_id = #{commentId}
 		AND user_id = #{userId};
+	</delete>
+	
+	<!-- 댓글 그룹 확인 -->
+	<select id="findGroup" parameterType="map" resultType="int">
+		SELECT comment_group FROM comments
+		WHERE comment_id = #{commentId}
+		AND user_id = #{userId};
+	</select>
+	
+	<!-- 댓글 그룹에서 삭제된 댓글 count -->
+	<select id="cntDeleteReply" parameterType="int">
+		SELECT COUNT(*) FROM comments
+		WHERE comment_text = "삭제된 댓글입니다."
+		AND comment_group = #{commentGroup};
+	</select>
+	
+	<!-- 댓글 그룹 내 댓글 count -->
+	<select id="cntCommentGroup" parameterType="int">
+		SELECT COUNT(*) FROM comments
+		WHERE comment_group = #{commentGroup};
+	</select>
+	<!-- 댓글 완전 삭제 -->
+	<delete id="deleteAllComments" parameterType="int">
+		DELETE FROM comments
+		WHERE comment_group = #{commentGroup};
 	</delete>
 	
 	<!-- 대댓글 작성 -->

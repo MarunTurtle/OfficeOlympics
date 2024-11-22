@@ -52,6 +52,23 @@ public class CommentsServiceImpl implements CommentsService{
 	}
 
 	// 댓글 수정
+	@Override
+	public boolean checkDeleted(Comments comments) {
+		if (comments.getCommentText().equals("삭제된 댓글입니다.")) {
+			
+			Map<String, Object> params = new HashMap<>();
+		    params.put("commentId", comments.getCommentId());
+		    params.put("userId", comments.getUserId());
+		    
+			int isDeleted = commentsDao.checkDeleted(params);
+			return isDeleted == 1;
+		}
+		else {
+			return false;
+		}
+		
+	}
+
 	@Transactional
 	@Override
 	public boolean modifyComment(Comments comments) {
@@ -70,10 +87,15 @@ public class CommentsServiceImpl implements CommentsService{
 	    params.put("commentId", commentId);
 	    params.put("userId", userId);
 
+	    int commentGroup = commentsDao.findGroup(params);
+	    
 	    if (hasReplies) {
+	    	if (commentsDao.cntDeleteReply(commentGroup) == commentsDao.cntCommentGroup(commentGroup)) {
+	    		return commentsDao.deleteAllComments(commentGroup);
+	    	}
 	        return commentsDao.softDeleteComment(params) > 0;
 	    } else {
-	    		return commentsDao.deleteComment(params) > 0;
+	    	return commentsDao.deleteAllComments(commentGroup);
 	    }
 	}
 
@@ -100,6 +122,7 @@ public class CommentsServiceImpl implements CommentsService{
 		int isModified = commentsDao.modifyReply(comments);
 		return isModified == 1;
 	}
+
 
 
 
