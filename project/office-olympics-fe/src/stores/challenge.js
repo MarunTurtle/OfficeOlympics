@@ -81,43 +81,6 @@ export const useChallengeStore = defineStore('challenge', {
       }
     },
 
-    // Fetch comments for a challenge
-    async fetchComments(challengeId) {
-      this.loading = true;
-      try {
-        const response = await getChallengeComments(challengeId);
-        this.comments = response.data;
-        return this.comments;
-      } catch (error) {
-        console.error('Failed to fetch comments:', error);
-        throw error;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    // Add a comment to a challenge
-    async addComment(challengeId, commentData) {
-      try {
-        const response = await addChallengeComment(challengeId, commentData);
-        return response.data;
-      } catch (error) {
-        console.error('Failed to add comment:', error);
-        throw error;
-      }
-    },
-
-    // Delete a comment from a challenge
-    async deleteComment(challengeId, commentId) {
-      try {
-        await deleteChallengeComment(challengeId, commentId);
-        this.comments = this.comments.filter(comment => comment.id !== commentId);
-        console.log('Comment deleted successfully!');
-      } catch (error) {
-        console.error('Failed to delete comment:', error);
-      }
-    },
-
     async fetchMainPageData() {
       this.loading = true;
       try {

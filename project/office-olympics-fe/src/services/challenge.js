@@ -29,46 +29,6 @@ export const submitChallengeScore = (challengeId, scoreData) => {
 };
 
 /**
- * Fetch comments for a specific challenge
- * @param {number} challengeId
- * @returns {Promise}
- */
-export const getChallengeComments = (challengeId) => {
-  return api.get(`/challenges/${challengeId}/comments`);
-};
-
-/**
- * Add a new comment for a challenge
- * @param {number} challengeId
- * @param {object} commentData
- * @returns {Promise}
- */
-export const addChallengeComment = (challengeId, commentData) => {
-  return api.post(`/challenges/${challengeId}/comments`, commentData);
-};
-
-/**
- * Update a comment for a challenge
- * @param {number} challengeId
- * @param {number} commentId
- * @param {object} commentData
- * @returns {Promise}
- */
-export const updateChallengeComment = (challengeId, commentId, commentData) => {
-  return api.put(`/challenges/${challengeId}/comments/${commentId}`, commentData);
-};
-
-/**
- * Delete a comment for a challenge
- * @param {number} challengeId
- * @param {number} commentId
- * @returns {Promise}
- */
-export const deleteChallengeComment = (challengeId, commentId) => {
-  return api.delete(`/challenges/${challengeId}/comments/${commentId}`);
-};
-
-/**
  * Fetch main page data
  * @returns {Promise}
  */

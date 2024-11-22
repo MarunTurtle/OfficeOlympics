@@ -32,41 +32,8 @@
             <p>{{ challenge.description }}</p>
           </div>
 
-          <!-- Comments Section -->
-          <div class="comments-section">
-            <h3>Comments</h3>
-
-            <!-- Add Comment Form -->
-            <div class="comment-form mb-4">
-              <div class="input-group">
-                <input type="text" class="form-control" v-model="newComment" placeholder="Add a comment...">
-                <button class="btn btn-primary" @click="addComment" :disabled="!newComment.trim()">
-                  Post
-                </button>
-              </div>
-            </div>
-
-            <!-- Comments List -->
-            <div class="comments-list">
-              <div v-if="!comments.length" class="text-center text-muted">
-                No comments yet. Be the first to comment!
-              </div>
-
-              <div v-else v-for="comment in comments" :key="comment.id" class="comment-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <strong class="comment-author">{{ comment.userName }}</strong>
-                    <p class="comment-content mb-1">{{ comment.content }}</p>
-                    <small class="text-muted">{{ new Date(comment.createdAt).toLocaleDateString() }}</small>
-                  </div>
-                  <button v-if="comment.userId === currentUserId" class="btn btn-sm btn-danger"
-                    @click="deleteComment(comment.id)">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Add Comments component -->
+          <Comments :challengeId="challengeId" />
         </div>
 
         <!-- Right Panel -->
@@ -94,14 +61,13 @@ import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 import MainLayout from '@/layouts/MainLayout.vue';
 import RecommendedChallengeCard from '@/components/RecommendedChallengeCard.vue';
+import Comments from '@/components/Comments.vue';
 
 const router = useRouter();
 const route = useRoute();
 const challengeStore = useChallengeStore();
 
 const challenge = ref(null);
-const comments = ref([]);
-const newComment = ref('');
 const loading = ref(true);
 
 const challengeId = parseInt(route.params.id);
@@ -136,7 +102,6 @@ onMounted(async () => {
     };
 
     await challengeStore.fetchComments(challengeId);
-    comments.value = challengeStore.comments;
   } catch (error) {
     console.error('Failed to fetch challenge details:', error);
   } finally {
@@ -147,37 +112,6 @@ onMounted(async () => {
 const startChallenge = () => {
   router.push(`/challenges/${challengeId}/score`);
 };
-
-const addComment = async () => {
-  if (newComment.value.trim()) {
-    try {
-      const commentData = {
-        challengeId: challengeId,
-        commentText: newComment.value.trim()
-      };
-
-      await challengeStore.addComment(challengeId, commentData);
-      newComment.value = '';
-      // Refresh comments after adding
-      await challengeStore.fetchComments(challengeId);
-      comments.value = challengeStore.comments;
-    } catch (error) {
-      console.error('Failed to add comment:', error);
-    }
-  }
-};
-
-const deleteComment = async (commentId) => {
-  try {
-    await challengeStore.deleteComment(challengeId, commentId);
-    comments.value = comments.value.filter(c => c.id !== commentId);
-  } catch (error) {
-    console.error('Failed to delete comment:', error);
-  }
-};
-
-// Add currentUserId ref (near the top with other refs)
-const currentUserId = ref(null); // You'll need to get this from your auth store
 
 const recommendedChallenges = computed(() => {
   return challengeStore.challenges
@@ -210,20 +144,6 @@ const recommendedChallenges = computed(() => {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-}
-
-.comments-section {
-  margin-top: 30px;
-}
-
-.comments-list {
-  list-style: none;
-  padding: 0;
-}
-
-.comment-item {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
 }
 
 .related-challenges {
