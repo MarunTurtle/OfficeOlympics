@@ -34,103 +34,105 @@
 
     <!-- Comments List -->
     <div class="comments-list">
-      <div v-if="!comments.length" class="text-center text-muted">
-        No comments yet. Be the first to comment!
-      </div>
+      <div v-if="!commentStore.loading">
+        <div v-if="!comments.length" class="text-center text-muted">
+          No comments yet. Be the first to comment!
+        </div>
 
-      <div v-else v-for="comment in comments" :key="comment.commentId" class="comment-item">
-        <!-- Main Comment -->
-        <div class="d-flex justify-content-between align-items-start">
-          <div class="comment-content">
-            <div class="comment-header">
-              <img :src="comment.profileImg" alt="Profile" class="profile-img" v-if="comment.profileImg">
-              <strong class="comment-author">{{ comment.nickname }}</strong>
-              <small class="text-muted">{{ formatDate(comment.regDate) }}</small>
+        <div v-else v-for="comment in comments" :key="comment.commentId" class="comment-item">
+          <!-- Main Comment -->
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="comment-content">
+              <div class="comment-header">
+                <img :src="comment.profileImg" alt="Profile" class="profile-img" v-if="comment.profileImg">
+                <strong class="comment-author">{{ comment.nickname }}</strong>
+                <small class="text-muted">{{ formatDate(comment.regDate) }}</small>
+              </div>
+              <p class="comment-text mb-1" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
+                {{ comment.commentText }}
+              </p>
+
+              <!-- Reply Button -->
+              <button
+                class="btn btn-sm btn-link"
+                @click="toggleReplyForm(comment.commentId)"
+                v-if="comment.commentDepth === 0"
+              >
+                Reply
+              </button>
             </div>
-            <p class="comment-text mb-1" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
-              {{ comment.commentText }}
-            </p>
 
-            <!-- Reply Button -->
-            <button
-              class="btn btn-sm btn-link"
-              @click="toggleReplyForm(comment.commentId)"
-              v-if="comment.commentDepth === 0"
-            >
-              Reply
-            </button>
+            <!-- Comment Actions -->
+            <div class="comment-actions" v-if="comment.userId === currentUserId">
+              <button class="btn btn-sm btn-outline-primary me-2" @click="editComment(comment)">
+                Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger" @click="deleteComment(comment.commentId)">
+                Delete
+              </button>
+            </div>
           </div>
 
-          <!-- Comment Actions -->
-          <div class="comment-actions" v-if="comment.userId === currentUserId">
-            <button class="btn btn-sm btn-outline-primary me-2" @click="editComment(comment)">
-              Edit
-            </button>
-            <button class="btn btn-sm btn-outline-danger" @click="deleteComment(comment.commentId)">
-              Delete
-            </button>
+          <!-- Reply Form -->
+          <div class="reply-form ms-4 mt-2" v-if="showReplyForm === comment.commentId">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                v-model="replyText"
+                placeholder="Write a reply..."
+              >
+              <button
+                class="btn btn-primary"
+                @click="addReply(comment.commentId)"
+                :disabled="!replyText.trim()"
+              >
+                Reply
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Reply Form -->
-        <div class="reply-form ms-4 mt-2" v-if="showReplyForm === comment.commentId">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              v-model="replyText"
-              placeholder="Write a reply..."
+          <!-- Replies -->
+          <div class="replies ms-4" v-if="comment.commentDepth === 0">
+            <div
+              v-for="reply in getRepliesForComment(comment.commentId)"
+              :key="reply.commentId"
+              class="reply-item mt-2"
             >
-            <button
-              class="btn btn-primary"
-              @click="addReply(comment.commentId)"
-              :disabled="!replyText.trim()"
-            >
-              Reply
-            </button>
-          </div>
-        </div>
-
-        <!-- Replies -->
-        <div class="replies ms-4" v-if="comment.commentDepth === 0">
-          <div
-            v-for="reply in getRepliesForComment(comment.commentId)"
-            :key="reply.commentId"
-            class="reply-item mt-2"
-          >
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="reply-content">
-                <div class="reply-header">
-                  <img :src="reply.profileImg" alt="Profile" class="profile-img" v-if="reply.profileImg">
-                  <strong class="reply-author">{{ reply.nickname }}</strong>
-                  <small class="text-muted">{{ formatDate(reply.regDate) }}</small>
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="reply-content">
+                  <div class="reply-header">
+                    <img :src="reply.profileImg" alt="Profile" class="profile-img" v-if="reply.profileImg">
+                    <strong class="reply-author">{{ reply.nickname }}</strong>
+                    <small class="text-muted">{{ formatDate(reply.regDate) }}</small>
+                  </div>
+                  <p class="reply-text mb-1">{{ reply.commentText }}</p>
                 </div>
-                <p class="reply-text mb-1">{{ reply.commentText }}</p>
-              </div>
 
-              <!-- Reply Actions -->
-              <div class="reply-actions" v-if="reply.userId === currentUserId">
-                <button class="btn btn-sm btn-outline-primary me-2" @click="editReply(reply)">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-outline-danger" @click="deleteComment(reply.commentId)">
-                  Delete
-                </button>
+                <!-- Reply Actions -->
+                <div class="reply-actions" v-if="reply.userId === currentUserId">
+                  <button class="btn btn-sm btn-outline-primary me-2" @click="editReply(reply)">
+                    Edit
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" @click="deleteComment(reply.commentId)">
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Add this inside the comment-item div, when editing -->
-        <div v-if="editingComment && editingComment.commentId === comment.commentId" class="edit-form mb-2">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              v-model="editingComment.commentText"
-            >
-            <button class="btn btn-primary" @click="updateComment">Save</button>
-            <button class="btn btn-secondary" @click="editingComment = null">Cancel</button>
+          <!-- Add this inside the comment-item div, when editing -->
+          <div v-if="editingComment && editingComment.commentId === comment.commentId" class="edit-form mb-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                v-model="editingComment.commentText"
+              >
+              <button class="btn btn-primary" @click="updateComment">Save</button>
+              <button class="btn btn-secondary" @click="editingComment = null">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
@@ -158,6 +160,8 @@ const replyText = ref('');
 const showReplyForm = ref(null);
 const editingComment = ref(null);
 const currentUserId = computed(() => authStore.userId || null);
+
+const comments = computed(() => commentStore.comments || []);
 
 // Computed property to get replies for a specific comment
 const getRepliesForComment = (commentId) => {
