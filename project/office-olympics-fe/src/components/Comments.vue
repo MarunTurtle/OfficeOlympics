@@ -19,7 +19,13 @@
       <div class="d-flex gap-3">
         <div class="comment-avatar">
           <div class="avatar-circle">
-            {{ authStore.user?.nickname?.charAt(0) || 'U' }}
+            <img
+              v-if="authStore.user?.imgSrc"
+              :src="authStore.user.imgSrc"
+              :alt="authStore.user?.nickname"
+              class="avatar-image"
+            />
+            <span v-else>{{ authStore.user?.nickname?.charAt(0) || 'U' }}</span>
           </div>
         </div>
         <div class="flex-grow-1">
@@ -57,7 +63,13 @@
           <div class="d-flex gap-3">
             <div class="comment-avatar">
               <div class="avatar-circle">
-                {{ comment.nickname?.charAt(0) || 'U' }}
+                <img
+                  v-if="comment.imgSrc"
+                  :src="comment.imgSrc"
+                  :alt="comment.nickname"
+                  class="avatar-image"
+                />
+                <span v-else>{{ comment.nickname?.charAt(0) || 'U' }}</span>
               </div>
             </div>
             <div class="flex-grow-1">
@@ -125,7 +137,13 @@
                 <div class="d-flex gap-3">
                   <div class="comment-avatar">
                     <div class="avatar-circle">
-                      {{ authStore.user?.nickname?.charAt(0) || 'U' }}
+                      <img
+                        v-if="authStore.user?.imgSrc"
+                        :src="authStore.user.imgSrc"
+                        :alt="authStore.user?.nickname"
+                        class="avatar-image"
+                      />
+                      <span v-else>{{ authStore.user?.nickname?.charAt(0) || 'U' }}</span>
                     </div>
                   </div>
                   <div class="flex-grow-1">
@@ -159,7 +177,13 @@
                   <div class="d-flex gap-3">
                     <div class="comment-avatar">
                       <div class="avatar-circle">
-                        {{ reply.nickname?.charAt(0) || 'U' }}
+                        <img
+                          v-if="reply.imgSrc"
+                          :src="reply.imgSrc"
+                          :alt="reply.nickname"
+                          class="avatar-image"
+                        />
+                        <span v-else>{{ reply.nickname?.charAt(0) || 'U' }}</span>
                       </div>
                     </div>
                     <div class="flex-grow-1">
@@ -362,6 +386,7 @@ const toggleReplies = (commentId) => {
   align-items: center;
   justify-content: center;
   font-weight: 500;
+  overflow: hidden;
 }
 
 .comment-form {
@@ -496,5 +521,11 @@ const toggleReplies = (commentId) => {
 .replies {
   margin-left: 56px;
   transition: all 0.3s ease;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
