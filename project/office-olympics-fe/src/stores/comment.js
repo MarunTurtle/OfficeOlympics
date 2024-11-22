@@ -29,17 +29,18 @@ export const useCommentStore = defineStore('comment', {
         this.loading = true;
         const response = await getChallengeComments(challengeId);
         this.comments = response.data.map(comment => ({
-          updateDate: comment.updateDate,
-          nickname: comment.nickname,
+          ...comment,
           commentId: comment.commentId,
           commentGroup: comment.commentGroup,
-          regDate: comment.regDate,
-          profileImg: comment.profileImg,
-          userId: comment.userId,
           commentDepth: comment.commentDepth,
           commentText: comment.commentText,
+          regDate: comment.regDate,
+          updateDate: comment.updateDate,
+          nickname: comment.nickname,
+          userId: comment.userId,
           imgSrc: comment.imgSrc
         }));
+        console.log('Mapped comments:', this.comments);
       } catch (error) {
         this.setError(error.response?.data || 'Failed to fetch comments');
         throw error;

@@ -254,9 +254,13 @@ const comments = computed(() => {
 
 // Computed property to get replies for a specific comment
 const getRepliesForComment = computed(() => (commentId) => {
-  const replies = commentStore.comments.filter(
-    comment => comment.commentDepth === 1 && comment.commentGroup === commentId
-  );
+  console.log('All comments before filtering:', commentStore.comments);
+  const replies = commentStore.comments.filter(comment => {
+    console.log('Checking comment:', comment);
+    console.log('Is depth 1?', comment.commentDepth === 1);
+    console.log('Does group match?', comment.commentGroup === commentId);
+    return comment.commentDepth === 1 && comment.commentGroup === commentId;
+  });
   console.log(`Replies for comment ${commentId}:`, replies);
   return replies;
 });
@@ -345,9 +349,19 @@ const updateComment = async () => {
 };
 
 onMounted(async () => {
-  console.log('Comments component mounted');
+  console.log('Comments component mounted for challenge:', props.challengeId);
   await commentStore.fetchComments(props.challengeId);
   console.log('Comments fetched:', commentStore.comments);
+
+  // Log the structure of each comment
+  commentStore.comments.forEach(comment => {
+    console.log('Comment structure:', {
+      id: comment.commentId,
+      depth: comment.commentDepth,
+      group: comment.commentGroup,
+      text: comment.commentText
+    });
+  });
 
   // Optionally auto-expand comments with replies
   commentStore.comments.forEach(comment => {
