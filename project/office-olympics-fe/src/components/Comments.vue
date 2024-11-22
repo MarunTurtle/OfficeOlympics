@@ -1,11 +1,5 @@
 <template>
   <div class="comments-section">
-    <!-- Add debug info -->
-    <div class="debug-info">
-      Loading: {{ commentStore.loading }}
-      Comments length: {{ comments.length }}
-    </div>
-
     <div v-if="commentStore.error" class="alert alert-danger">
       {{ commentStore.error }}
     </div>
@@ -16,16 +10,15 @@
       </div>
     </div>
 
-    <h3 class="comments-header">
-      Comments <span class="comment-count">{{ comments.length }}</span>
+    <h3 class="comments-header mb-4">
+      Comments <span class="comment-count">({{ comments.length }})</span>
     </h3>
 
     <!-- Add Comment Form -->
     <div class="comment-form mb-4">
       <div class="d-flex gap-3">
         <div class="comment-avatar">
-          <!-- Placeholder avatar if no profile image -->
-          <div class="avatar-placeholder">
+          <div class="avatar-circle">
             {{ authStore.user?.nickname?.charAt(0) || 'U' }}
           </div>
         </div>
@@ -37,10 +30,7 @@
             placeholder="Add a comment..."
           >
           <div class="comment-actions mt-2" v-if="newComment.trim()">
-            <button
-              class="btn btn-secondary me-2"
-              @click="newComment = ''"
-            >
+            <button class="btn btn-secondary me-2" @click="newComment = ''">
               Cancel
             </button>
             <button
@@ -66,8 +56,7 @@
           <!-- Main Comment -->
           <div class="d-flex gap-3">
             <div class="comment-avatar">
-              <img v-if="comment.profileImg" :src="comment.profileImg" alt="Profile" class="avatar-img">
-              <div v-else class="avatar-placeholder">
+              <div class="avatar-circle">
                 {{ comment.nickname?.charAt(0) || 'U' }}
               </div>
             </div>
@@ -77,33 +66,27 @@
                 <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
               </div>
 
-              <p class="comment-text" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
+              <p class="comment-text mb-2" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
                 {{ comment.commentText }}
               </p>
 
               <!-- Comment Actions -->
-              <div class="comment-toolbar">
+              <div class="comment-actions-bar">
                 <button
-                  class="btn btn-sm btn-link"
+                  class="btn btn-sm btn-link text-secondary"
                   @click="toggleReplyForm(comment.commentId)"
                   v-if="comment.commentDepth === 0"
                 >
-                  <i class="fas fa-reply me-1"></i>Reply
+                  Reply
                 </button>
 
                 <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
-                  <button class="btn btn-link btn-sm p-0 three-dots" type="button" data-bs-toggle="dropdown">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <button class="dropdown-item" @click="editComment(comment)">Edit</button>
-                    </li>
-                    <li>
-                      <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
-                    </li>
+                    <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
+                    <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button></li>
                   </ul>
                 </div>
               </div>
@@ -122,10 +105,10 @@
               </div>
 
               <!-- Reply Form -->
-              <div class="reply-form mt-2" v-if="showReplyForm === comment.commentId">
+              <div v-if="showReplyForm === comment.commentId" class="reply-form mt-3">
                 <div class="d-flex gap-3">
                   <div class="comment-avatar">
-                    <div class="avatar-placeholder">
+                    <div class="avatar-circle">
                       {{ authStore.user?.nickname?.charAt(0) || 'U' }}
                     </div>
                   </div>
@@ -159,8 +142,7 @@
                 >
                   <div class="d-flex gap-3">
                     <div class="comment-avatar">
-                      <img v-if="reply.profileImg" :src="reply.profileImg" alt="Profile" class="avatar-img">
-                      <div v-else class="avatar-placeholder">
+                      <div class="avatar-circle">
                         {{ reply.nickname?.charAt(0) || 'U' }}
                       </div>
                     </div>
@@ -170,12 +152,12 @@
                         <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
                       </div>
 
-                      <p class="comment-text">{{ reply.commentText }}</p>
+                      <p class="comment-text mb-2">{{ reply.commentText }}</p>
 
                       <!-- Reply Actions -->
-                      <div class="comment-toolbar">
+                      <div class="comment-actions-bar">
                         <div class="dropdown comment-menu" v-if="reply.userId === currentUserId">
-                          <button class="btn btn-link btn-sm dropdown-toggle no-arrow" type="button" data-bs-toggle="dropdown">
+                          <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end">
@@ -326,100 +308,77 @@ watch(() => commentStore.comments, (newComments) => {
 
 <style scoped>
 .comments-section {
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
-.profile-img {
-  width: 32px;
-  height: 32px;
+.comments-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.comment-count {
+  color: #666;
+  font-weight: normal;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  margin-right: 8px;
-}
-
-.comment-header {
+  background-color: var(--primary-color);
+  color: white;
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
+  justify-content: center;
+  font-weight: 500;
 }
 
-.reply-form {
-  margin: 8px 0;
-}
-
-.comment-actions, .reply-actions {
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.comment-item:hover .comment-actions,
-.reply-item:hover .reply-actions {
-  opacity: 1;
-}
-
-/* Reuse existing styles from ChallengeDetail.vue */
 .comment-form {
   margin-bottom: 2rem;
 }
 
-.comments-list {
-  max-height: 500px;
-  overflow-y: auto;
+.comment-input {
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 0;
+  padding: 8px 0;
 }
 
-.comment-author, .reply-author {
-  color: var(--primary-color);
+.comment-input:focus {
+  box-shadow: none;
+  border-color: var(--primary-color);
+}
+
+.comment-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.comment-header {
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 500;
+  color: #000;
   margin-right: 0.5rem;
 }
 
-.input-group {
-  display: flex;
-  gap: 8px;
-}
-
-.input-group .btn {
-  border-radius: 4px;
-  height: 38px;
-  padding: 0 16px;
-}
-
-.input-group .form-control {
-  border-radius: 4px;
-}
-
-.comment-menu .btn-link {
+.comment-date {
+  font-size: 0.875rem;
   color: #666;
-  padding: 4px 8px;
 }
 
-.comment-menu .btn-link:hover {
-  color: var(--primary-color);
+.comment-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-.dropdown-item i {
-  width: 16px;
-}
-
-.fa-ellipsis-vertical {
-  font-size: 1.2rem;
-}
-
-.three-dots {
+.comment-actions-bar {
   display: flex;
-  gap: 3px;
   align-items: center;
-  padding: 4px 8px !important;
-}
-
-.dot {
-  width: 4px;
-  height: 4px;
-  background-color: #666;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.three-dots:hover .dot {
-  background-color: var(--primary-color);
+  gap: 1rem;
 }
 
 .comment-menu {
@@ -430,5 +389,40 @@ watch(() => commentStore.comments, (newComments) => {
 .comment-item:hover .comment-menu,
 .reply-item:hover .comment-menu {
   opacity: 1;
+}
+
+.replies {
+  margin-left: 56px;
+}
+
+.reply-item {
+  padding: 1rem 0;
+}
+
+.dropdown-item {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.fa-ellipsis-v {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.btn-link {
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.edit-form,
+.reply-form {
+  margin-top: 1rem;
 }
 </style>
