@@ -81,6 +81,7 @@ public class AuthController {
 		
 		Map<String, Object> data  = new HashMap<>();
 		data.put("loginUserId", session.getAttribute("loginUserId"));
+		data.put("nickname", user.getNickname());
 
 		int olympicsId = playerService.findOlympicsIdByUserId(loginUser.getUserId());
 		
