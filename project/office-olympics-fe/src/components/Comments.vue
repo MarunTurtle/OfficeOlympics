@@ -254,13 +254,13 @@ const comments = computed(() => {
 
 // Computed property to get replies for a specific comment
 const getRepliesForComment = computed(() => (commentId) => {
-  console.log('All comments before filtering:', commentStore.comments);
-  const replies = commentStore.comments.filter(comment => {
-    console.log('Checking comment:', comment);
-    console.log('Is depth 1?', comment.commentDepth === 1);
-    console.log('Does group match?', comment.commentGroup === commentId);
-    return comment.commentDepth === 1 && comment.commentGroup === commentId;
-  });
+  const parentComment = commentStore.comments.find(c => c.commentId === commentId);
+  if (!parentComment) return [];
+
+  const replies = commentStore.comments.filter(comment =>
+    comment.commentDepth === 1 && comment.commentGroup === parentComment.commentGroup
+  );
+
   console.log(`Replies for comment ${commentId}:`, replies);
   return replies;
 });
