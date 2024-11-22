@@ -8,15 +8,6 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="handleSubmit">
-            <!-- Add preview of current profile image -->
-            <div class="mb-3 text-center">
-              <img
-                :src="currentImageSrc"
-                class="rounded-circle profile-preview mb-3"
-                alt="Profile Preview"
-              >
-            </div>
-
             <!-- Nickname -->
             <div class="mb-3">
               <label class="form-label">Nickname</label>
@@ -93,25 +84,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { Modal } from 'bootstrap';
 import { useUserStore } from '@/stores/user';
-import defaultProfileImage from '@/assets/images/default_profile.png';
 
 const props = defineProps({
   userData: {
     type: Object,
-    required: false,
-    default: () => ({
-      nickname: '',
-      ImgSrc: defaultProfileImage,
-      userId: null
-    })
+    required: true
   },
   players: {
     type: Array,
-    required: false,
-    default: () => []
+    required: true
   }
 });
 
@@ -121,28 +105,16 @@ const userStore = useUserStore();
 const modal = ref(null);
 const loading = ref(false);
 
-const currentImageSrc = computed(() => {
-  if (formData.value.profileImg) {
-    return URL.createObjectURL(formData.value.profileImg);
-  }
-  return props.userData?.ImgSrc || defaultProfileImage;
-});
-
 const formData = ref({
   nickname: '',
   profileImg: null,
   olympicsName: '',
-  playerNames: [''],
-  currentImgSrc: ''
+  playerNames: ['']
 });
 
 watch(() => props.userData, (newData) => {
   if (newData) {
     formData.value.nickname = newData.nickname || '';
-    formData.value.currentImgSrc = newData.ImgSrc || defaultProfileImage;
-  } else {
-    formData.value.nickname = '';
-    formData.value.currentImgSrc = defaultProfileImage;
   }
 }, { immediate: true });
 
@@ -150,17 +122,11 @@ watch(() => props.players, (newPlayers) => {
   if (newPlayers && newPlayers.length > 0) {
     formData.value.olympicsName = newPlayers[0].olympics_name || '';
     formData.value.playerNames = newPlayers.map(p => p.player_name);
-  } else {
-    formData.value.olympicsName = '';
-    formData.value.playerNames = [''];
   }
 }, { immediate: true });
 
 const handleFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    formData.value.profileImg = file;
-  }
+  formData.value.profileImg = event.target.files[0];
 };
 
 const addPlayer = () => {
@@ -173,30 +139,17 @@ const removePlayer = (index) => {
 
 const handleSubmit = async () => {
   try {
-    if (!props.userData?.userId) {
-      console.error('No user ID available');
-      return;
-    }
-
     loading.value = true;
     const submitData = new FormData();
 
-    // Required field
+    // Required fields
     submitData.append('nickname', formData.value.nickname);
-
-    // Optional fields
-    if (formData.value.olympicsName) {
-      submitData.append('olympicsName', formData.value.olympicsName);
-    }
+    submitData.append('olympicsName', formData.value.olympicsName);
 
     // Add player names as separate entries
-    if (formData.value.playerNames && formData.value.playerNames.length > 0) {
-      formData.value.playerNames.forEach(name => {
-        if (name.trim()) {  // Only append non-empty names
-          submitData.append('playerNames', name.trim());
-        }
-      });
-    }
+    formData.value.playerNames.forEach(name => {
+      submitData.append('playerNames', name);
+    });
 
     // Optional profile image
     if (formData.value.profileImg) {
@@ -221,19 +174,4 @@ defineExpose({
   show: () => modal.value.show(),
   hide: () => modal.value.hide()
 });
-
-onBeforeUnmount(() => {
-  // Clean up any object URLs we created
-  if (formData.value.profileImg) {
-    URL.revokeObjectURL(currentImageSrc.value);
-  }
-});
 </script>
-
-<style scoped>
-.profile-preview {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-}
-</style>
