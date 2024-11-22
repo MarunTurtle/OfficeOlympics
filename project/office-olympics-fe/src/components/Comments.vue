@@ -82,40 +82,35 @@
               </p>
 
               <!-- Comment Actions -->
-              <div class="comment-toolbar">
-                <button
-                  class="btn btn-sm btn-link"
-                  @click="toggleReplyForm(comment.commentId)"
-                >
-                  <i class="fas fa-reply me-1"></i>Reply
-                </button>
+              <div class="comment-toolbar d-flex justify-content-between align-items-center">
+                <div class="replies-count" v-if="comment.commentDepth === 0">
+                  {{ getRepliesForComment(comment.commentId).length }} {{ getRepliesForComment(comment.commentId).length === 1 ? 'reply' : 'replies' }}
+                </div>
 
-                <button
-                  v-if="getRepliesForComment(comment.commentId).length > 0"
-                  class="btn btn-sm btn-link"
-                  @click="toggleReplies(comment.commentId)"
-                >
-                  <i :class="['fas', showRepliesFor === comment.commentId ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
-                  {{ getRepliesForComment(comment.commentId).length }}
-                  {{ getRepliesForComment(comment.commentId).length === 1 ? 'reply' : 'replies' }}
-                </button>
-
-                <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
-                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-ellipsis-vertical"></i>
+                <div class="d-flex align-items-center gap-2">
+                  <button
+                    class="btn btn-sm btn-link"
+                    @click="toggleReplyForm(comment.commentId)"
+                    v-if="comment.commentDepth === 0"
+                  >
+                    <i class="fas fa-reply me-1"></i>Reply
                   </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <button class="dropdown-item" @click="editComment(comment)">
-                        <i class="fas fa-edit me-2"></i>Edit
-                      </button>
-                    </li>
-                    <li>
-                      <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">
-                        <i class="fas fa-trash-alt me-2"></i>Delete
-                      </button>
-                    </li>
-                  </ul>
+
+                  <div class="dropdown comment-menu" v-if="currentUserId === comment.userId">
+                    <button class="btn btn-link btn-sm p-0 three-dots" type="button" data-bs-toggle="dropdown">
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button class="dropdown-item" @click="editComment(comment)">Edit</button>
+                      </li>
+                      <li>
+                        <button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
@@ -162,10 +157,7 @@
               </div>
 
               <!-- Replies -->
-              <div
-                class="replies mt-3"
-                v-if="comment.commentDepth === 0 && showRepliesFor === comment.commentId"
-              >
+              <div class="replies mt-3" v-if="comment.commentDepth === 0">
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
                   :key="reply.commentId"
@@ -336,12 +328,6 @@ onMounted(async () => {
 watch(() => commentStore.comments, (newComments) => {
   console.log('Comments updated:', newComments);
 }, { deep: true });
-
-const showRepliesFor = ref(null);
-
-const toggleReplies = (commentId) => {
-  showRepliesFor.value = showRepliesFor.value === commentId ? null : commentId;
-};
 </script>
 
 <style scoped>
@@ -423,31 +409,32 @@ const toggleReplies = (commentId) => {
   font-size: 1.2rem;
 }
 
-.comment-toolbar {
+.three-dots {
   display: flex;
+  gap: 3px;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  padding: 4px 8px !important;
 }
 
-.btn-link {
-  color: #666;
-  text-decoration: none;
-  padding: 4px 8px;
+.dot {
+  width: 4px;
+  height: 4px;
+  background-color: #666;
+  border-radius: 50%;
+  display: inline-block;
 }
 
-.btn-link:hover {
-  color: var(--primary-color);
+.three-dots:hover .dot {
+  background-color: var(--primary-color);
 }
 
-.replies {
-  margin-top: 1rem;
-  padding-left: 2rem;
-  border-left: 2px solid var(--secondary-color);
+.comment-menu {
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.fa-chevron-down,
-.fa-chevron-up {
-  margin-right: 4px;
+.comment-item:hover .comment-menu,
+.reply-item:hover .comment-menu {
+  opacity: 1;
 }
 </style>
