@@ -1,14 +1,11 @@
 import { defineStore } from 'pinia';
 import { login, logout, register } from '@/services/auth';
 import { useOlympicStore } from '@/stores/olympic';
-import axios from 'axios';
-
-axios.defaults.withCredentials = true;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    userId: localStorage.getItem('userId') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: null,
+    token: null,
   }),
   getters: {
     isAuthenticated: (state) => !!state.user,
@@ -18,17 +15,12 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { user, olympicsId } = await login(credentials);
         console.log('Login Response:', { user, olympicsId });
-
-        // Set both user and userId
         this.user = {
           ...user,
-          id: user.loginUserId  // Make sure this matches the backend response
+          id: user.id
         };
-        this.userId = user.loginUserId;  // Explicitly set userId
-
         console.log('Stored User Data:', this.user);
         localStorage.setItem('user', JSON.stringify(this.user));
-        localStorage.setItem('userId', user.loginUserId);  // Store userId separately
         localStorage.setItem('olympicsId', olympicsId || null);
 
         // Update Olympic store
@@ -77,17 +69,5 @@ export const useAuthStore = defineStore('auth', {
         this.user = null; // Clear user if not found in localStorage
       }
     },
-    setUser(userData) {
-      this.user = userData;
-      this.userId = userData.loginUserId;
-      localStorage.setItem('userId', userData.loginUserId);
-      localStorage.setItem('user', JSON.stringify(userData));
-    },
-    clearUser() {
-      this.user = null;
-      this.userId = null;
-      localStorage.removeItem('userId');
-      localStorage.removeItem('user');
-    }
   },
 });
