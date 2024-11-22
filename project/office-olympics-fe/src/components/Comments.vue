@@ -317,6 +317,10 @@ const deleteComment = async (commentId) => {
 };
 
 const editComment = (comment) => {
+  if (comment.userId !== authStore.userId) {
+    commentStore.setError('You can only edit your own comments');
+    return;
+  }
   editingComment.value = { ...comment };
 };
 
