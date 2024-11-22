@@ -7,7 +7,8 @@ export const login = async (credentials) => {
 
   return {
     user: {
-      nickname: response.data.loginUserId,
+      id: response.data.loginUserId,
+      nickname: response.data.nickname
     },
     olympicsId: response.data.olympicsId || null,
     token: null,

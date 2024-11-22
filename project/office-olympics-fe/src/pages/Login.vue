@@ -82,11 +82,14 @@ const onLogin = async () => {
       router.push('/olympic/create'); // Redirect to Olympic creation page otherwise
     }
 
-    alert(`Welcome, ${authStore.user.nickname}!`);
+    // Use the correct nickname from the auth store
+    const nickname = authStore.user?.nickname || 'User';
+    alert(`Welcome, ${nickname}!`);
   } catch (error) {
     alert(error.message || 'Login failed. Please try again.');
   }
 };
+
 </script>
 
 <style scoped>
