@@ -21,7 +21,7 @@
           <div class="avatar-circle">
             <img
               v-if="authStore.user?.imgSrc"
-              :src="authStore.user.imgSrc"
+              :src="authStore.user?.imgSrc"
               :alt="authStore.user?.nickname"
               class="avatar-image"
             />
