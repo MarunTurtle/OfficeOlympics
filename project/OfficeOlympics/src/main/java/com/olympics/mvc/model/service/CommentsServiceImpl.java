@@ -54,19 +54,12 @@ public class CommentsServiceImpl implements CommentsService{
 	// 댓글 수정
 	@Override
 	public boolean checkDeleted(Comments comments) {
-		if (comments.getCommentText().equals("삭제된 댓글입니다.")) {
-			
-			Map<String, Object> params = new HashMap<>();
-		    params.put("commentId", comments.getCommentId());
-		    params.put("userId", comments.getUserId());
-		    
-			int isDeleted = commentsDao.checkDeleted(params);
-			return isDeleted == 1;
-		}
-		else {
-			return false;
-		}
+		Map<String, Object> params = new HashMap<>();
+		params.put("commentId", comments.getCommentId());
+		params.put("userId", comments.getUserId());
 		
+		int isDeleted = commentsDao.checkDeleted(params);
+		return isDeleted == 1;
 	}
 
 	@Transactional
@@ -87,15 +80,21 @@ public class CommentsServiceImpl implements CommentsService{
 	    params.put("commentId", commentId);
 	    params.put("userId", userId);
 
-	    int commentGroup = commentsDao.findGroup(params);
+	    int commentGroup = commentsDao.findGroup(commentId);
+	    
 	    
 	    if (hasReplies) {
-	    	if (commentsDao.cntDeleteReply(commentGroup) == commentsDao.cntCommentGroup(commentGroup)) {
+	    	if(commentsDao.childCommentDeleted(commentGroup) == (commentsDao.cntCommentGroup(commentGroup)-1)) {
+	    		return commentsDao.deleteAllComments(commentGroup);
+	    	} else {
+	    		return commentsDao.softDeleteComment(params) > 0;
+	    	}
+	    	// TODO 자식은 없는데 부모가 삭제된 댓글일 경우 추가
+	    } else {
+	    	if(commentsDao.parentCommentDeleted(commentGroup)) {
 	    		return commentsDao.deleteAllComments(commentGroup);
 	    	}
-	        return commentsDao.softDeleteComment(params) > 0;
-	    } else {
-	    	return commentsDao.deleteAllComments(commentGroup);
+	    	return commentsDao.softDeleteComment(params) > 0;
 	    }
 	}
 

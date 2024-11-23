@@ -28,13 +28,13 @@ public interface CommentsDao {
 	
 	// 대댓글 확인
 	boolean hasReplies(int commentId);
+
+	// 댓글 그룹 확인
+	int findGroup(int commentId);
 	
 	// 소프트 삭제
 	int softDeleteComment(Map<String, Object> params);
 	
-	// 댓글 삭제
-	int deleteComment(Map<String, Object> params);
-
 	// 댓글 전체 삭제
 	boolean deleteAllComments(int commentGroup);
 
@@ -44,9 +44,10 @@ public interface CommentsDao {
 	// 대댓글 수정
 	int modifyReply(Comments comments);
 
-	int findGroup(Map<String, Object> params);
+	// 삭제된 대댓글 count
+	int childCommentDeleted(int commentGroup);
 	
-	int cntDeleteReply(int commentGroup);
+	boolean parentCommentDeleted(int commentGroup);
 	
 	int cntCommentGroup(int commentGroup);
 

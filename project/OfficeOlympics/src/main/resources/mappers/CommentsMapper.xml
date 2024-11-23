@@ -75,32 +75,38 @@
 		AND user_id = #{userId};
 	</update>
 	
-	<!-- 댓글 실제 삭제 -->
-	<delete id="deleteComment" parameterType="map">
-		DELETE FROM comments
-		WHERE comment_id = #{commentId}
-		AND user_id = #{userId};
-	</delete>
-	
 	<!-- 댓글 그룹 확인 -->
-	<select id="findGroup" parameterType="map" resultType="int">
+	<select id="findGroup" parameterType="int" resultType="int">
 		SELECT comment_group FROM comments
-		WHERE comment_id = #{commentId}
-		AND user_id = #{userId};
+		WHERE comment_id = #{commentId};
 	</select>
 	
-	<!-- 댓글 그룹에서 삭제된 댓글 count -->
-	<select id="cntDeleteReply" parameterType="int">
-		SELECT COUNT(*) FROM comments
-		WHERE comment_text = "삭제된 댓글입니다."
-		AND comment_group = #{commentGroup};
+	<!-- 대댓글 soft삭제 여부 count -->
+	<select id="childCommentDeleted" parameterType="int" resultType="int">
+		SELECT count(*)
+		FROM comments
+		WHERE comment_group = #{commentGroup}
+		  AND comment_text = "삭제된 댓글입니다."
+          AND comment_depth = 1
+	</select>
+	
+	<!-- 원댓글 soft삭제 여부 count -->
+	<select id="parentCommentDeleted" parameterType="int" resultType="boolean">
+	SELECT EXISTS (
+		SELECT count(*)
+		FROM comments
+		WHERE comment_group = #{commentGroup}
+		  AND comment_text = "삭제된 댓글입니다."
+          AND comment_depth = 0
+          );
 	</select>
 	
 	<!-- 댓글 그룹 내 댓글 count -->
-	<select id="cntCommentGroup" parameterType="int">
+	<select id="cntCommentGroup" parameterType="int" resultType="int">
 		SELECT COUNT(*) FROM comments
 		WHERE comment_group = #{commentGroup};
 	</select>
+	
 	<!-- 댓글 완전 삭제 -->
 	<delete id="deleteAllComments" parameterType="int">
 		DELETE FROM comments
