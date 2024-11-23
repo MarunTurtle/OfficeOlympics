@@ -1,12 +1,12 @@
 <template>
   <MainLayout>
     <div class="error-page">
-      <h1 class="text-danger text-center">Oops! Something went wrong.</h1>
+      <h1 class="text-danger text-center">앗! 문제가 발생했습니다.</h1>
       <p class="text-center">
-        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        찾으시는 페이지가 삭제되었거나, 일시적으로 사용할 수 없습니다.
       </p>
       <div class="text-center mt-4">
-        <RouterLink to="/" class="btn btn-primary">Go to Home</RouterLink>
+        <RouterLink to="/" class="btn btn-primary">홈으로 이동</RouterLink>
       </div>
     </div>
   </MainLayout>

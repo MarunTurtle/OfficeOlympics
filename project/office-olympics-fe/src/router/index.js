@@ -5,8 +5,6 @@ import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
 import OlympicCreate from '@/pages/OlympicCreate.vue';
 import ErrorPage from '@/pages/Error.vue';
-// import ChallengeDetail from '@/pages/ChallengeDetail.vue';
-// import ChallengeScore from '@/pages/ChallengeScore.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },

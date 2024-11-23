@@ -33,12 +33,20 @@
     
     <!-- 올림픽 팀 멤버 수정 -->
     <update id="modifyPlayers" parameterType="map">
-	    <foreach collection="playerDataList" item="playerData" separator=";">
-	        UPDATE players
-	        SET player_name = #{playerData.playerName}
-	        WHERE olympics_id = #{olympicsId} AND player_id = #{playerData.playerId}
-	    </foreach>
-	</update>
+        UPDATE players
+        <set>
+            player_name = CASE player_id
+            <foreach collection="playerDataList" item="playerData">
+                WHEN #{playerData.playerId} THEN #{playerData.playerName}
+            </foreach>
+            END
+        </set>
+        WHERE olympics_id = #{olympicsId}
+        AND player_id IN
+        <foreach collection="playerDataList" item="playerData" open="(" separator="," close=")">
+            #{playerData.playerId}
+        </foreach>
+    </update>
 	
 	<!-- 올림픽 팀 이름 수정 -->
 	<update id="modifyOlympics" parameterType="map">

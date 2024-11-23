@@ -1,14 +1,14 @@
 <template>
   <MainLayout>
     <div class="container py-4">
-      <h1 class="text-center mb-5">Challenge Rankings</h1>
+      <h1 class="text-center mb-5">챌린지 결과</h1>
 
       <div class="row justify-content-center">
         <div class="col-md-8">
           <!-- Loading State -->
           <div v-if="loading" class="text-center">
             <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
+              <span class="visually-hidden">로딩중...</span>
             </div>
           </div>
 
@@ -29,7 +29,7 @@
                     <span>{{ player.playerName }}</span>
                   </div>
                   <div>
-                    <strong>{{ player.score }}</strong> points
+                    <strong>{{ player.score }}</strong> 점
                   </div>
                 </div>
               </div>
@@ -38,10 +38,10 @@
             <!-- Navigation buttons -->
             <div class="d-flex justify-content-center gap-3 mt-4">
               <button class="btn btn-primary" @click="nextChallenge">
-                Next Challenge
+                다음 챌린지
               </button>
               <button class="btn btn-secondary" @click="endOlympics">
-                End Olympics
+                올림픽 종료
               </button>
             </div>
           </div>

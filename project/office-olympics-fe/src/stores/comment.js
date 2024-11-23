@@ -42,7 +42,7 @@ export const useCommentStore = defineStore('comment', {
         }));
         console.log('Mapped comments:', this.comments);
       } catch (error) {
-        this.setError(error.response?.data || 'Failed to fetch comments');
+        this.setError(error.response?.data || '댓글을 불러오는데 실패했습니다');
         throw error;
       } finally {
         this.loading = false;
@@ -55,7 +55,7 @@ export const useCommentStore = defineStore('comment', {
         await this.fetchComments(challengeId);
         return response.data;
       } catch (error) {
-        this.setError(error.response?.data || 'Failed to add comment');
+        this.setError(error.response?.data || '댓글 추가에 실패했습니다');
         throw error;
       }
     },
@@ -77,7 +77,7 @@ export const useCommentStore = defineStore('comment', {
         await deleteChallengeComment(challengeId, commentId);
         await this.fetchComments(challengeId);
       } catch (error) {
-        this.setError(error.response?.data || 'Failed to delete comment');
+        this.setError(error.response?.data || '댓글 삭제에 실패했습니다');
         throw error;
       }
     },
@@ -88,7 +88,7 @@ export const useCommentStore = defineStore('comment', {
         await this.fetchComments(challengeId);
         return response.data;
       } catch (error) {
-        this.setError(error.response?.data || 'Failed to add reply');
+        this.setError(error.response?.data || '답글 추가에 실패했습니다');
         throw error;
       }
     },
@@ -99,7 +99,7 @@ export const useCommentStore = defineStore('comment', {
         await this.fetchComments(challengeId);
         return response.data;
       } catch (error) {
-        this.setError(error.response?.data || 'Failed to update reply');
+        this.setError(error.response?.data || '답글 수정에 실패했습니다');
         throw error;
       }
     }

@@ -49,7 +49,7 @@ const isFormValid = computed(() => {
 // Submit handler for creating Olympic event
 const onCreateOlympic = async () => {
   if (!isFormValid.value) {
-    alert("Please fill out all required fields.");
+    alert("모든 필수 항목을 입력해주세요.");
     return;
   }
 
@@ -63,11 +63,11 @@ const onCreateOlympic = async () => {
     const response = await olympicStore.createOlympicEvent(olympicData);
     olympicStore.setUserOlympicId(response.olympicsId);
 
-    alert("Olympic event created successfully!");
+    alert("올림픽 이벤트가 성공적으로 생성되었습니다!");
     router.push("/");
   } catch (error) {
     console.error("Error creating Olympic event:", error);
-    alert("Failed to create Olympic event. Please try again.");
+    alert("올림픽 이벤트 생성에 실패했습니다. 다시 시도해주세요.");
   } finally {
     loading.value = false;
   }
@@ -77,43 +77,43 @@ const onCreateOlympic = async () => {
 <template>
   <MainLayout>
     <div class="olympic-create-form">
-      <h1 class="text-center mb-4">Create an Olympic Event</h1>
+      <h1 class="text-center mb-4">오피스 올림픽 생성</h1>
       <form @submit.prevent="onCreateOlympic">
         <!-- Event Name -->
         <div class="mb-3">
-          <label for="event-name" class="form-label">Event Name</label>
+          <label for="event-name" class="form-label">오피스 올림픽 이름</label>
           <input type="text" id="event-name" class="form-control" v-model="eventName"
-            placeholder="Enter the Olympic event name" required />
+            placeholder="오피스 올림픽 이름을 입력하세요" required />
           <small v-if="!eventName" class="text-danger">
-            Event name is required.
+            해당 항목은 필수입니다.
           </small>
         </div>
 
         <!-- Number of Players -->
         <div class="mb-3">
-          <label for="player-count" class="form-label">Number of Players</label>
+          <label for="player-count" class="form-label">플레이어 수</label>
           <input type="number" id="player-count" class="form-control" v-model.number="playerCount"
-            @input="generatePlayerFields" placeholder="Enter the number of players" required />
+            @input="generatePlayerFields" placeholder="플레이어 수를 입력하세요" required />
           <small v-if="playerCount <= 0" class="text-danger">
-            Please enter a valid number of players.
+            유효한 플레이어 수를 입력해주세요.
           </small>
         </div>
 
         <!-- Player Nicknames -->
         <div v-for="(player, index) in players" :key="player.id" class="mb-3">
           <label :for="'player-' + player.id" class="form-label">
-            Player {{ index + 1 }} Nickname
+            플레이어 {{ index + 1 }} 닉네임
           </label>
           <input type="text" :id="'player-' + player.id" class="form-control" v-model="player.nickname"
-            placeholder="Enter the player's nickname" required />
+            placeholder="플레이어의 닉네임을 입력하세요" required />
           <small v-if="!player.nickname.trim()" class="text-danger">
-            Nickname is required for Player {{ index + 1 }}.
+            플레이어 {{ index + 1 }}의 닉네임은 필수입니다.
           </small>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary w-100" :disabled="loading">
-          {{ loading ? "Creating..." : "Start Olympics" }}
+          {{ loading ? "생성 중..." : "올림픽 시작하기" }}
         </button>
       </form>
     </div>
@@ -122,55 +122,65 @@ const onCreateOlympic = async () => {
 
 <style scoped>
 .olympic-create-form {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: var(--secondary-color);
+  max-width: 30rem;
+  margin: 20px auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.form-control {
+  background: var(--tertiary-color);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  font-size: 2rem;
-  color: var(--primary-color);
-}
-
-.form-label {
+  padding: 0.75rem;
   font-size: 1rem;
-  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
 
-input {
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-input:focus {
+.form-control:focus {
   border-color: var(--primary-color);
   outline: none;
+  background: white;
 }
 
-button {
+.btn-primary {
   background-color: var(--primary-color);
-  color: white;
-  padding: 10px;
-  font-weight: bold;
-  transition: background-color 0.3s, transform 0.2s;
+  border: none;
+  padding: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-button:hover {
+.btn-primary:hover {
   background-color: var(--interaction-hover-color);
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
-button:disabled {
+.btn-primary:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
+  transform: none;
 }
 
 .text-danger {
   color: var(--alert-color);
   font-size: 0.875rem;
+}
+
+h1 {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem !important;
 }
 </style>

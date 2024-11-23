@@ -1,13 +1,13 @@
 <template>
   <MainLayout>
     <div class="score-submission container py-4">
-      <h1 class="text-center mb-5">Challenge Score Submission</h1>
+      <h1 class="text-center mb-5">챌린지 점수 제출</h1>
 
       <div class="row justify-content-center">
         <div class="col-md-8">
           <div v-if="loading" class="text-center">
             <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
+              <span class="visually-hidden">로딩중...</span>
             </div>
           </div>
 
@@ -18,18 +18,18 @@
           <div v-else class="score-form">
             <div v-for="(player, index) in players" :key="index" class="mb-4">
               <label :for="'player' + index" class="form-label">
-                {{ player.player_name }} (Total Score: {{ player.total_score }})
+                {{ player.player_name }} (총점: {{ player.total_score }})
               </label>
               <input type="number" class="form-control" v-model="scores[index]"
-                :placeholder="'Enter score for ' + player.player_name" min="0" step="1">
+                :placeholder="player.player_name + ' 점수 입력'" min="0" step="1">
             </div>
 
             <div class="d-flex justify-content-center gap-3 mt-5">
               <button class="btn btn-primary" @click="submitScores" :disabled="!isValidSubmission">
-                Submit
+                제출
               </button>
               <button class="btn btn-secondary" @click="cancel">
-                Cancel
+                취소
               </button>
             </div>
           </div>

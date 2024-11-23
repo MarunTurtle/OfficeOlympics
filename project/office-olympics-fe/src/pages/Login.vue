@@ -1,41 +1,43 @@
 <template>
   <AuthLayout>
-    <div class="login-form">
-      <h1 class="text-center">Login</h1>
+    <div class="auth-form">
+      <h1 class="text-center mb-4">로그인</h1>
       <form @submit.prevent="onLogin">
         <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
+          <label for="email" class="form-label">이메일</label>
           <input
             type="email"
             id="email"
-            class="form-control"
+            class="form-control input-field"
             v-model="email"
             :class="{ 'is-invalid': emailError }"
+            placeholder="이메일을 입력하세요"
             required
           />
           <div v-if="emailError" class="invalid-feedback">
-            Please enter a valid email address.
+            유효한 이메일 주소를 입력해주세요.
           </div>
         </div>
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+          <label for="password" class="form-label">비밀번호</label>
           <input
             type="password"
             id="password"
-            class="form-control"
+            class="form-control input-field"
             v-model="password"
             :class="{ 'is-invalid': passwordError }"
+            placeholder="비밀번호를 입력하세요"
             required
           />
           <div v-if="passwordError" class="invalid-feedback">
-            Password cannot be empty.
+            비밀번호를 입력해주세요.
           </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <button type="submit" class="btn btn-primary w-100">로그인</button>
       </form>
       <p class="text-center mt-3">
-        Don't have an account?
-        <RouterLink to="/auth/register">Sign Up</RouterLink>
+        계정이 없으신가요?
+        <RouterLink to="/auth/register" class="link-primary">회원가입</RouterLink>
       </p>
     </div>
   </AuthLayout>
@@ -66,7 +68,7 @@ const validateInputs = () => {
 
 const onLogin = async () => {
   if (!validateInputs()) {
-    alert('Please correct the errors and try again.');
+    alert('입력 내용을 확인하고 다시 시도해주세요.');
     return;
   }
 
@@ -83,32 +85,70 @@ const onLogin = async () => {
     }
 
     // Use the correct nickname from the auth store
-    const nickname = authStore.user?.nickname || 'User';
-    alert(`Welcome, ${nickname}!`);
+    const nickname = authStore.user?.nickname || '사용자';
+    alert(`환영합니다, ${nickname}님!`);
   } catch (error) {
-    alert(error.message || 'Login failed. Please try again.');
+    alert(error.message || '로그인에 실패했습니다. 다시 시도해주세요.');
   }
 };
 
 </script>
 
 <style scoped>
-.login-form {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.auth-form {
+  max-width: 30rem;
+  margin: 20px auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
-.is-invalid {
-  border-color: #f2668b;
-  /* Alert/Emergency Color */
+.input-field {
+  background: var(--tertiary-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.input-field:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  background: white;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.02);
+}
+
+.link-primary {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-primary:hover {
+  color: var(--interaction-hover-color);
 }
 
 .invalid-feedback {
-  color: #f2668b;
-  /* Alert/Emergency Color */
+  color: var(--alert-color);
+  font-size: 0.875rem;
+}
+
+h1 {
+  color: var(--primary-color);
+  font-weight: 600;
 }
 </style>

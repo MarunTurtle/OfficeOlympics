@@ -8,6 +8,7 @@ export const useUserStore = defineStore('user', {
   }),
 
   actions: {
+    // 사용자 정보 가져오기
     async fetchUser(userId) {
       this.loading = true;
       try {
@@ -23,6 +24,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    // 사용자 정보 업데이트
     async updateUser(userId, formData) {
       this.loading = true;
       try {
@@ -37,6 +39,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    // 사용자 계정 삭제
     async deleteUser(userId) {
       if (!userId) {
         console.error('No user ID available to delete.');

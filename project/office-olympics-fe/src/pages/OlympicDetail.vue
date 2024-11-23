@@ -2,25 +2,25 @@
   <MainLayout>
     <div class="olympic-detail">
       <h1 class="text-center mb-4">{{ olympic?.name }}</h1>
-      <p class="text-center text-muted">Olympic ID: {{ olympic?.id }}</p>
+      <p class="text-center text-muted">올림픽 ID: {{ olympic?.id }}</p>
 
       <!-- Player List -->
       <div class="player-list mt-5">
-        <h2>Players</h2>
+        <h2>플레이어</h2>
         <ul class="list-group">
           <li
             v-for="(player, index) in players"
             :key="player.id"
             class="list-group-item"
           >
-            <strong>Player {{ index + 1 }}:</strong> {{ player.nickname }}
+            <strong>플레이어 {{ index + 1 }}:</strong> {{ player.nickname }}
           </li>
         </ul>
       </div>
 
       <!-- Navigation Buttons -->
       <div class="mt-5 text-center">
-        <RouterLink to="/main" class="btn btn-secondary">Back to Home</RouterLink>
+        <RouterLink to="/main" class="btn btn-secondary">홈으로 돌아가기</RouterLink>
       </div>
     </div>
   </MainLayout>
@@ -30,9 +30,6 @@
 import { ref, onMounted } from 'vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { useOlympicStore } from '@/stores/olympic';
-// import { useRoute } from 'vue-router';
-// const route = useRoute();
-// const olympicId = route.params.id;
 
 // Olympic Store
 const olympicStore = useOlympicStore();

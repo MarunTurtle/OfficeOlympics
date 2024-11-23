@@ -1,58 +1,75 @@
 <template>
   <MainLayout>
-    <div class="my-page container py-4">
+    <div class="my-page container py-5">
       <!-- Loading State -->
-      <div v-if="loading" class="text-center">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
+      <div v-if="loading" class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">로딩중...</span>
         </div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="alert alert-danger">
+      <div v-else-if="error" class="alert alert-danger shadow-sm">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
         {{ error }}
       </div>
 
       <!-- Content -->
-      <div v-else class="row">
+      <div v-else class="row g-4">
         <!-- User Profile Section -->
         <div class="col-md-4">
-          <div class="card">
-            <div class="card-body text-center">
-              <img
-                :src="userData?.ImgSrc || defaultProfileImage"
-                class="rounded-circle mb-3 profile-image"
-                alt="userData?.profileImg "
-              >
-              <h3 class="card-title">{{ userData?.nickname }}</h3>
-              <p class="text-muted">{{ userData?.email }}</p>
-              <p class="text-muted">{{ userData?.name }}</p>
+          <div class="card shadow-sm hover-shadow">
+            <div class="card-body text-center p-4">
+              <div class="mb-4">
+                <img
+                  :src="userData?.imgSrc || defaultProfileImage"
+                  class="rounded-circle profile-image border border-3 border-white shadow"
+                  alt="프로필 이미지"
+                >
+              </div>
+              <h3 class="card-title fw-bold mb-2">{{ userData?.nickname }}</h3>
+              <p class="text-muted mb-1">
+                <i class="bi bi-envelope-fill me-2"></i>{{ userData?.email }}
+              </p>
+              <p class="text-muted">
+                <i class="bi bi-person-fill me-2"></i>{{ userData?.name }}
+              </p>
             </div>
           </div>
         </div>
 
         <!-- Players Section -->
         <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h4 class="mb-0">{{ players[0]?.olympics_name || 'Olympic Team Members' }}</h4>
+          <div class="card shadow-sm hover-shadow">
+            <div class="card-header bg-primary text-white py-3">
+              <h4 class="mb-0 fw-bold">
+                <i class="bi bi-trophy-fill me-2"></i>
+                {{ players[0]?.olympics_name || '올림픽 정보' }}
+              </h4>
             </div>
-            <div class="card-body">
-              <div v-if="players.length === 0" class="text-center text-muted">
-                No team members found
+            <div class="card-body p-4">
+              <div v-if="players.length === 0" class="text-center py-5">
+                <i class="bi bi-people-fill text-muted fs-1 mb-3 d-block"></i>
+                <p class="text-muted mb-0">생성된 올림픽이 없습니다</p>
               </div>
               <div v-else class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
                     <tr>
-                      <th>Name</th>
-                      <th>Score</th>
+                      <th class="py-3">이름</th>
+                      <th class="py-3 text-end">점수</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="player in players" :key="player.player_name">
-                      <td>{{ player.player_name }}</td>
-                      <td>{{ player.total_score }}</td>
+                      <td class="py-3">
+                        <i class="bi bi-person-circle me-2"></i>
+                        {{ player.player_name }}
+                      </td>
+                      <td class="py-3 text-end fw-bold">
+                        {{ player.total_score }}
+                        <span class="ms-2">점</span>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -63,13 +80,13 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="row mt-4">
+      <div class="row mt-5">
         <div class="col-12 text-center">
-          <button class="btn btn-primary me-2" @click="editProfile">
-            Edit Profile
+          <button class="btn btn-primary btn-lg me-3 px-4 shadow-sm" @click="editProfile">
+            <i class="bi bi-pencil-fill me-2"></i>프로필 수정
           </button>
-          <button class="btn btn-danger" @click="confirmDelete">
-            Delete Account
+          <button class="btn btn-outline-danger btn-lg px-4" @click="confirmDelete">
+            <i class="bi bi-trash-fill me-2"></i>계정 삭제
           </button>
         </div>
       </div>
@@ -120,7 +137,7 @@ const fetchUserProfile = async () => {
 
     userData.value = {
       ...response.data.userData,
-      ImgSrc: response.data.userData.ImgSrc || defaultProfileImage
+      imgSrc: response.data.userData.imgSrc || defaultProfileImage
     };
     players.value = response.data.players;
 
@@ -137,7 +154,7 @@ const editProfile = () => {
 };
 
 const confirmDelete = async () => {
-  if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+  if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
     try {
       const userId = authStore.user?.id || authStore.user?.userId;
       if (!userId) {
@@ -147,7 +164,7 @@ const confirmDelete = async () => {
       await authStore.logoutUser();
       router.push('/');
     } catch (err) {
-      error.value = 'Failed to delete account. Please try again.';
+      error.value = '계정 삭제에 실패했습니다. 다시 시도해 주세요.';
     }
   }
 };
@@ -163,27 +180,56 @@ onMounted(() => {
   margin: 0 auto;
 }
 
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
 .profile-image {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
 }
 
 .card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  border: none;
+  border-radius: 8px;
+  border: 1px solid var(--tertiary-color);
 }
 
 .card-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom: 1px solid var(--tertiary-color);
 }
 
-.table {
-  margin-bottom: 0;
+.table th {
+  font-weight: 600;
+  color: #495057;
+  background-color: var(--secondary-color);
 }
 
-.badge {
-  font-weight: 500;
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+  border-color: var(--interaction-hover-color);
+}
+
+.btn-outline-danger {
+  color: var(--alert-color);
+  border-color: var(--alert-color);
+  font-weight: 600;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--alert-color);
+  border-color: var(--alert-color);
+  color: white;
 }
 </style>
