@@ -97,7 +97,8 @@
                     @click="toggleReplies(comment.commentId)"
                   >
                     <span v-if="getRepliesForComment(comment.commentId).length > 0">
-                      답글 {{ getRepliesForComment(comment.commentId).length }}개
+                      {{ expandedComments.has(comment.commentId) ? '답글 숨기기' : '답글 보기' }}
+                      ({{ getRepliesForComment(comment.commentId).length }})
                     </span>
                   </button>
                 </div>
@@ -153,7 +154,7 @@
 
               <div
                 class="replies mt-3"
-                v-if="getRepliesForComment(comment.commentId).length > 0"
+                v-if="expandedComments.has(comment.commentId) && getRepliesForComment(comment.commentId).length > 0"
               >
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
