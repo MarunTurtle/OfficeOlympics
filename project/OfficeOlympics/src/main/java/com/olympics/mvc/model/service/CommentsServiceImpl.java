@@ -79,28 +79,26 @@ public class CommentsServiceImpl implements CommentsService{
             throw new IllegalArgumentException("해당 댓글이 존재하지 않습니다.");
         }
 
-     // 원댓글 처리
         if (comment.getCommentDepth() == 0) {
             int replyCount = commentsDao.countReplies(commentId);
 
             if (replyCount > 0) {
-                // 대댓글이 있으면 텍스트 변경
+
             	Map<String, Object> params = new HashMap<>();
             	params.put("commentId", commentId);
             	params.put("commentText", "삭제된 메시지입니다");
             	commentsDao.updateCommentText(params);
             } else {
-                // 대댓글이 없으면 삭제
+
             	commentsDao.deleteCommentById(commentId);
             }
         } else {
-            // 대댓글 처리
+        	
         	commentsDao.deleteCommentById(commentId);
 
-            // 해당 댓글 그룹의 남아있는 대댓글 수 확인
-            int remainingReplies = commentsDao.countReplies(comment.getCommentGroup());
-            if (remainingReplies == 0) {
-                // 원댓글 상태 확인 후 삭제
+            int repliesExist = commentsDao.countReplies(comment.getCommentGroup());
+            
+            if (repliesExist == 0) {
                 Comments parentComment = commentsDao.findCommentById(comment.getCommentGroup());
                 if ("삭제된 메시지입니다".equals(parentComment.getCommentText())) {
                 	commentsDao.deleteCommentById(comment.getCommentGroup());
@@ -108,7 +106,7 @@ public class CommentsServiceImpl implements CommentsService{
             }
         }
 
-        return true; // 삭제 성공 시 true 반환
+        return true; 
 	}
 	
 
