@@ -1,65 +1,49 @@
 <template>
   <div class="comments-section">
-    <div v-if="commentStore.error" class="alert alert-danger">
+    <div v-if="commentStore.error" class="alert alert-danger rounded-3">
       {{ commentStore.error }}
     </div>
 
-    <div v-if="commentStore.loading" class="text-center">
+    <div v-if="commentStore.loading" class="text-center py-4">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">로딩중...</span>
       </div>
     </div>
 
-    <h3 class="comments-header mb-4">
-      Comments <span class="comment-count">({{ comments.length }})</span>
-    </h3>
+    <div class="comments-header d-flex align-items-center mb-4">
+      <h3 class="comments-title">댓글 <span class="comment-count">({{ comments.length }})</span></h3>
+    </div>
 
-    <!-- Add Comment Form -->
     <div class="comment-form mb-4">
       <div class="d-flex gap-3">
-        <div class="comment-avatar">
-          <div class="avatar-circle">
-            <img
-              v-if="authStore.user?.imgSrc"
-              :src="authStore.user.imgSrc"
-              :alt="authStore.user?.nickname"
-              class="avatar-image"
-            />
-            <span v-else>{{ authStore.user?.nickname?.charAt(0) || 'U' }}</span>
-          </div>
-        </div>
         <div class="flex-grow-1">
           <input
             type="text"
             class="form-control comment-input"
             v-model="newComment"
-            placeholder="Add a comment..."
+            placeholder="댓글을 작성해주세요..."
           >
           <div class="comment-actions mt-2" v-if="newComment.trim()">
-            <button class="btn btn-secondary me-2" @click="newComment = ''">
-              Cancel
-            </button>
-            <button
-              class="btn btn-primary"
-              @click="addComment"
-              :disabled="!newComment.trim()"
-            >
-              Comment
-            </button>
+            <div class="d-flex justify-content-end">
+              <button class="btn btn-primary me-2" @click="addComment" :disabled="!newComment.trim()">
+                댓글 작성
+              </button>
+              <button class="btn btn-outline-secondary" @click="newComment = ''">
+                취소
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Comments List -->
     <div class="comments-list">
       <div v-if="!commentStore.loading">
         <div v-if="!comments.length" class="text-center text-muted">
-          No comments yet. Be the first to comment!
+          아직 댓글이 없습니다. 첫 댓글을 작성해보세요!
         </div>
 
         <div v-else v-for="comment in comments.filter(c => c.commentDepth === 0)" :key="comment.commentId" class="comment-item">
-          <!-- Main Comment -->
           <div class="d-flex gap-3">
             <div class="comment-avatar">
               <div class="avatar-circle">
@@ -74,15 +58,29 @@
             </div>
             <div class="flex-grow-1">
               <div class="comment-header">
-                <span class="comment-author">{{ comment.nickname }}</span>
-                <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="comment-author">{{ comment.nickname }}</span>
+                    <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
+                  </div>
+                  <div class="dropdown comment-menu">
+                    <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                        <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button class="dropdown-item" @click="editComment(comment)">수정</button></li>
+                      <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">삭제</button></li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <p class="comment-text mb-2" :class="{ 'text-muted': comment.commentText === '삭제된 댓글입니다.' }">
                 {{ comment.commentText }}
               </p>
 
-              <!-- Comment Actions -->
               <div class="comment-actions-bar">
                 <div class="actions-left">
                   <button
@@ -90,38 +88,21 @@
                     @click="toggleReplyForm(comment.commentId)"
                     v-if="comment.commentDepth === 0"
                   >
-                    Reply
+                    답글
                   </button>
 
-                  <!-- Add this new replies toggle button -->
                   <button
                     v-if="comment.commentDepth === 0"
                     class="btn btn-sm btn-link text-secondary replies-toggle"
                     @click="toggleReplies(comment.commentId)"
                   >
                     <span v-if="getRepliesForComment(comment.commentId).length > 0">
-                      {{ getRepliesForComment(comment.commentId).length }} replies
+                      답글 {{ getRepliesForComment(comment.commentId).length }}개
                     </span>
-                    <i
-                      class="bi bi-chevron-down"
-                      :class="{ 'rotated': expandedComments.has(comment.commentId) }"
-                    ></i>
                   </button>
-                </div>
-                <div class="dropdown comment-menu ms-auto">
-                  <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                      <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                    </svg>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button class="dropdown-item" @click="editComment(comment)">Edit</button></li>
-                    <li><button class="dropdown-item text-danger" @click="deleteComment(comment.commentId)">Delete</button></li>
-                  </ul>
                 </div>
               </div>
 
-              <!-- Edit Form -->
               <div v-if="editingComment && editingComment.commentId === comment.commentId" class="edit-form mt-2">
                 <input
                   type="text"
@@ -129,12 +110,13 @@
                   v-model="editingComment.commentText"
                 >
                 <div class="edit-actions mt-2">
-                  <button class="btn btn-secondary btn-sm me-2" @click="editingComment = null">Cancel</button>
-                  <button class="btn btn-primary btn-sm" @click="updateComment">Save</button>
+                  <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary btn-sm me-2" @click="updateComment">저장</button>
+                    <button class="btn btn-secondary btn-sm" @click="editingComment = null">취소</button>
+                  </div>
                 </div>
               </div>
 
-              <!-- Reply Form -->
               <div v-if="showReplyForm === comment.commentId" class="reply-form mt-3">
                 <div class="d-flex gap-3">
                   <div class="comment-avatar">
@@ -151,28 +133,27 @@
                   <div class="flex-grow-1">
                     <input
                       type="text"
-                      class="form-control"
+                      class="form-control comment-input"
                       v-model="replyText"
-                      placeholder="Write a reply..."
+                      placeholder="답글을 작성해주세요..."
                     >
-                    <div class="reply-actions mt-2">
-                      <button class="btn btn-secondary btn-sm me-2" @click="toggleReplyForm(null)">Cancel</button>
-                      <button
-                        class="btn btn-primary btn-sm"
-                        @click="addReply(comment.commentId)"
-                        :disabled="!replyText.trim()"
-                      >
-                        Reply
-                      </button>
+                    <div class="comment-actions mt-2" v-if="replyText.trim()">
+                      <div class="d-flex justify-content-end">
+                        <button class="btn btn-primary me-2" @click="addReply(comment.commentId)" :disabled="!replyText.trim()">
+                          답글 작성
+                        </button>
+                        <button class="btn btn-outline-secondary" @click="toggleReplyForm(null)">
+                          취소
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Replies -->
               <div
                 class="replies mt-3"
-                v-if="getRepliesForComment(comment.commentId).length > 0 && expandedComments.has(comment.commentId)"
+                v-if="getRepliesForComment(comment.commentId).length > 0"
               >
                 <div
                   v-for="reply in getRepliesForComment(comment.commentId)"
@@ -193,26 +174,26 @@
                     </div>
                     <div class="flex-grow-1">
                       <div class="comment-header">
-                        <span class="comment-author">{{ reply.nickname }}</span>
-                        <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div>
+                            <span class="comment-author">{{ reply.nickname }}</span>
+                            <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
+                          </div>
+                          <div class="dropdown comment-menu">
+                            <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                              </svg>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li><button class="dropdown-item" @click="editComment(reply)">수정</button></li>
+                              <li><button class="dropdown-item text-danger" @click="deleteComment(reply.commentId)">삭제</button></li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
 
                       <p class="comment-text mb-2">{{ reply.commentText }}</p>
-
-                      <!-- Reply Actions -->
-                      <div class="comment-actions-bar">
-                        <div class="dropdown comment-menu ms-auto">
-                          <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                            </svg>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li><button class="dropdown-item" @click="editComment(reply)">Edit</button></li>
-                            <li><button class="dropdown-item text-danger" @click="deleteComment(reply.commentId)">Delete</button></li>
-                          </ul>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -247,22 +228,20 @@ const editingComment = ref(null);
 
 const comments = computed(() => {
   console.log('All comments:', commentStore.comments);
-  const parentComments = commentStore.comments.filter(c => c.commentDepth === 0);
-  console.log('Parent comments:', parentComments);
   return commentStore.comments || [];
 });
 
 // Computed property to get replies for a specific comment
-const getRepliesForComment = computed(() => (commentId) => {
-  const parentComment = commentStore.comments.find(c => c.commentId === commentId);
-  if (!parentComment) return [];
+const getRepliesForComment = computed(() => {
+  return (commentId) => {
+    const parentComment = commentStore.comments.find(c => c.commentId === commentId);
+    if (!parentComment) return [];
 
-  const replies = commentStore.comments.filter(comment =>
-    comment.commentDepth === 1 && comment.commentGroup === parentComment.commentGroup
-  );
-
-  console.log(`Replies for comment ${commentId}:`, replies);
-  return replies;
+    return commentStore.comments.filter(comment =>
+      comment.commentDepth === 1 &&
+      (comment.commentGroup === parentComment.commentGroup || comment.commentGroup === parentComment.commentId)
+    );
+  };
 });
 
 const formatDate = (date) => {
@@ -284,26 +263,80 @@ const addComment = async () => {
   if (!newComment.value.trim()) return;
 
   try {
-    await commentStore.addComment(props.challengeId, {
-      commentText: newComment.value.trim()
-    });
+    // Optimistic update
+    const tempComment = {
+      commentId: Date.now(), // 임시 ID
+      commentText: newComment.value.trim(),
+      commentDepth: 0,
+      commentGroup: Date.now(), // 임시 그룹 ID
+      nickname: authStore.user?.nickname,
+      imgSrc: authStore.user?.imgSrc,
+      regDate: new Date().toISOString(),
+      userId: authStore.user?.id
+    };
+
+    // 임시 댓글 추가
+    commentStore.comments = [...commentStore.comments, tempComment];
+    const commentText = newComment.value.trim();
     newComment.value = '';
+
+    // 실제 API 호출
+    const response = await commentStore.addComment(props.challengeId, {
+      commentText: commentText
+    });
+
+    // 실제 댓글로 임시 댓글 교체
+    if (response) {
+      commentStore.comments = commentStore.comments.map(comment =>
+        comment.commentId === tempComment.commentId ? response : comment
+      );
+    }
   } catch (error) {
     console.error('Failed to add comment:', error);
+    // 에러 메시지를 사용자에게 표시하는 로직 추가 필요
+    commentStore.setError('댓글 작성에 실패했습니다.');
+    await commentStore.fetchComments(props.challengeId);
   }
 };
 
-const addReply = async (commentId) => {
+const addReply = async (parentCommentId) => {
   if (!replyText.value.trim()) return;
 
   try {
-    await commentStore.addReply(props.challengeId, commentId, {
-      commentText: replyText.value.trim()
-    });
+    const parentComment = commentStore.comments.find(c => c.commentId === parentCommentId);
+    if (!parentComment) return;
+
+    // Optimistic update
+    const tempReply = {
+      commentId: Date.now(),
+      commentText: replyText.value.trim(),
+      commentDepth: 1,
+      commentGroup: parentComment.commentGroup || parentComment.commentId,
+      nickname: authStore.user?.nickname,
+      imgSrc: authStore.user?.imgSrc,
+      regDate: new Date().toISOString(),
+      userId: authStore.user?.id
+    };
+
+    // 임시 답글 추가
+    commentStore.comments = [...commentStore.comments, tempReply];
+
+    const replyTextContent = replyText.value.trim();
     replyText.value = '';
     showReplyForm.value = null;
+
+    // API 호출
+    const response = await commentStore.addReply(props.challengeId, parentCommentId, {
+      commentText: replyTextContent
+    });
+
+    // 실제 답글로 임시 답글 교체
+    if (response) {
+      await commentStore.fetchComments(props.challengeId);
+    }
   } catch (error) {
     console.error('Failed to add reply:', error);
+    await commentStore.fetchComments(props.challengeId);
   }
 };
 
@@ -363,10 +396,15 @@ onMounted(async () => {
     });
   });
 
-  // Optionally auto-expand comments with replies
+  // 답글이 있는 댓글들의 답글 목록을 자동으로 펼침
   commentStore.comments.forEach(comment => {
-    if (comment.commentDepth === 0 && getRepliesForComment.value(comment.commentId).length > 0) {
-      expandedComments.value.add(comment.commentId);
+    if (comment.commentDepth === 0) {
+      const hasReplies = commentStore.comments.some(reply =>
+        reply.commentDepth === 1 && reply.commentGroup === comment.commentGroup
+      );
+      if (hasReplies) {
+        expandedComments.value.add(comment.commentId);
+      }
     }
   });
 });
@@ -391,18 +429,47 @@ const toggleReplies = (commentId) => {
 
 <style scoped>
 .comments-section {
-  margin-top: 2rem;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
 }
 
 .comments-header {
-  font-size: 1.25rem;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 1rem;
+}
+
+.comments-title {
+  font-size: 1.5rem;
   font-weight: 600;
-  color: var(--primary-color);
+  color: #333;
+  margin: 0;
 }
 
 .comment-count {
-  color: #666;
+  color: var(--primary-color);
+  font-size: 1.2rem;
   font-weight: normal;
+}
+
+/* .comment-form {
+  background: var(--tertiary-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+} */
+
+.comment-input {
+  background: var(--tertiary-color);
+  border-radius: 8px;
+  padding: 1rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.comment-input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  background: white;
 }
 
 .avatar-circle {
@@ -418,25 +485,16 @@ const toggleReplies = (commentId) => {
   overflow: hidden;
 }
 
-.comment-form {
-  margin-bottom: 2rem;
-}
-
-.comment-input {
-  border: none;
-  border-bottom: 1px solid #dee2e6;
-  border-radius: 0;
-  padding: 8px 0;
-}
-
-.comment-input:focus {
-  box-shadow: none;
-  border-color: var(--primary-color);
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .comment-item {
-  padding: 1rem 0;
-  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+  border-bottom: 1px solid var(--tertiary-color);
+  transition: background-color 0.2s ease;
 }
 
 .comment-header {
@@ -444,117 +502,96 @@ const toggleReplies = (commentId) => {
 }
 
 .comment-author {
-  font-weight: 500;
-  color: #000;
+  font-weight: 600;
+  color: var(--primary-color);
   margin-right: 0.5rem;
 }
 
 .comment-date {
   font-size: 0.875rem;
-  color: #666;
+  color: #6c757d;
 }
 
 .comment-text {
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
 }
 
-.comment-actions-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.actions-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.comment-menu {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.comment-item:hover .comment-menu,
-.reply-item:hover .comment-menu {
-  opacity: 1;
-}
-
-.bi-three-dots-vertical {
-  color: #666;
-}
-
-.btn-link:hover .bi-three-dots-vertical {
-  color: var(--primary-color);
-}
-
-.replies {
-  margin-left: 56px;
-}
-
-.reply-item {
-  padding: 1rem 0;
-}
-
-.dropdown-item {
+.comment-actions button {
   font-size: 0.875rem;
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 1rem;
 }
 
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-}
-
-.fa-ellipsis-v {
-  color: #666;
-  font-size: 1.2rem;
-}
-
-.btn-link {
-  text-decoration: none;
-}
-
-.btn-link:hover {
-  color: var(--primary-color) !important;
-}
-
-.edit-form,
-.reply-form {
-  margin-top: 1rem;
-}
-
-.replies-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0;
-  color: var(--primary-color);
-  font-size: 0.9rem;
-}
-
-.replies-toggle:hover {
-  text-decoration: underline;
-}
-
-.bi-chevron-down {
-  transition: transform 0.2s ease;
-}
-
-.bi-chevron-down.rotated {
-  transform: rotate(180deg);
-}
-
-/* Make sure your existing replies class has these properties */
-.replies {
-  margin-left: 56px;
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+}
+
+.btn-outline-secondary {
+  border: 1px solid var(--tertiary-color);
+  color: #333;
+  background-color: white;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--secondary-color);
+}
+
+.reply-form {
+  /* 기존 스타일 제거 */
+  /* background: var(--tertiary-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem; */
+}
+
+.replies {
+  margin-left: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--tertiary-color);
+}
+
+.reply-item {
+  padding: 0.75rem 0;
+}
+
+.comment-menu .dropdown-menu {
+  min-width: 120px;
+  padding: 0.5rem 0;
+  border: 1px solid var(--tertiary-color);
+
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+
+}
+
+.dropdown-item:hover {
+  background-color: var(--secondary-color);
+  transform: none !important;
+}
+
+@media (max-width: 768px) {
+  .comments-section {
+    padding: 1rem;
+  }
+
+  .comment-form {
+    padding: 1rem;
+  }
+
+  .replies {
+    margin-left: 1.5rem;
+    padding-left: 0.75rem;
+  }
 }
 </style>

@@ -82,20 +82,20 @@ onBeforeUnmount(() => {
       <!-- Case 1: Logged In & Has Olympics -->
       <template v-if="isLoggedIn && hasOlympics">
         <div class="leaderboard-section">
-          <h2 class="text-center mb-4">Current Rankings</h2>
+          <h2 class="text-center mb-4">현재 순위</h2>
           <div v-if="errorMessage" class="alert alert-danger text-center">
             {{ errorMessage }}
           </div>
           <div v-else-if="leaderboard.length === 0" class="text-center">
-            No rankings available yet.
+            아직 순위가 없습니다.
           </div>
           <div v-else class="table-responsive">
             <table class="table table-hover">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center">Rank</th>
-                  <th>Player</th>
-                  <th class="text-center">Score</th>
+                  <th class="text-center">순위</th>
+                  <th>참가자</th>
+                  <th class="text-center">점수</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
           </div>
           <div v-if="loading" class="text-center">
             <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
+              <span class="visually-hidden">로딩중...</span>
             </div>
           </div>
         </div>
@@ -120,14 +120,14 @@ onBeforeUnmount(() => {
       <!-- Cases 2 & 3: Show slideshow for non-Olympics users -->
       <template v-else>
         <div class="slideshow-container">
-          <img :src="images[currentImageIndex]" alt="Slideshow Image" class="slideshow-image" />
+          <img :src="images[currentImageIndex]" alt="슬라이드쇼 이미지" class="slideshow-image" />
 
           <!-- Case 2: Logged In & No Olympics -->
           <template v-if="isLoggedIn && !hasOlympics">
             <div class="hero-content">
-              <h1 class="welcome-message">Get your team moving!</h1>
+              <h1 class="welcome-message">팀원들과 함께 올림픽을 열어보세요!</h1>
               <button class="btn nav-button nav-button-yellow mt-3" @click="$router.push('/olympic/create')">
-                Get Started
+                시작하기
               </button>
             </div>
           </template>
@@ -135,9 +135,9 @@ onBeforeUnmount(() => {
           <!-- Case 3: Logged Out -->
           <template v-else>
             <div class="hero-content">
-              <h1 class="welcome-message">Get your team moving!</h1>
+              <h1 class="welcome-message">오직 우리 사무실을 위한 오피스 올림픽</h1>
               <button class="btn nav-button mt-3" @click="$router.push('/auth/login')">
-                Get Started
+                시작하기
               </button>
             </div>
           </template>
@@ -146,14 +146,14 @@ onBeforeUnmount(() => {
 
       <!-- Featured Challenges -->
       <div class="featured-challenges mt-5">
-        <h2 class="text-center mb-4">Featured Challenges</h2>
+        <h2 class="text-center mb-4">추천 챌린지</h2>
         <div v-if="loading" class="text-center">
           <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">로딩중...</span>
           </div>
         </div>
         <div v-else-if="challengeStore.challenges.length === 0" class="text-center">
-          No challenges available.
+          플레이 가능한 챌린지가 없습니다.
         </div>
         <div v-else class="challenges-grid">
           <ChallengeCard v-for="challenge in challengeStore.challenges" :key="challenge.challengeId"

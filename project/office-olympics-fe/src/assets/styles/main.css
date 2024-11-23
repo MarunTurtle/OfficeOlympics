@@ -118,8 +118,8 @@ footer {
 /* Forms */
 input, select, textarea {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 0.5rem;
+  margin: 0.2rem 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -139,7 +139,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  /* transform: translateY(-5px); */
 }
 
 .card .card-title {

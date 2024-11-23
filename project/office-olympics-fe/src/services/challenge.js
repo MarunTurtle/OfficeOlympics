@@ -1,7 +1,7 @@
 import api from '@/services/api';
 
 /**
- * Fetch challenge details by ID
+ * ID로 챌린지 상세 정보 조회
  * @param {number} challengeId
  * @returns {Promise}
  */
@@ -10,7 +10,7 @@ export const getChallengeDetails = (challengeId) => {
 };
 
 /**
- * Fetch leaderboard for a specific challenge
+ * 특정 챌린지의 리더보드 조회
  * @param {number} challengeId
  * @returns {Promise}
  */
@@ -19,7 +19,7 @@ export const getChallengeLeaderboard = (challengeId) => {
 };
 
 /**
- * Submit user score for a challenge
+ * 챌린지에 유저 점수 제출
  * @param {number} challengeId
  * @param {object} scoreData
  * @returns {Promise}
@@ -29,7 +29,7 @@ export const submitChallengeScore = (challengeId, scoreData) => {
 };
 
 /**
- * Fetch main page data
+ * 메인 페이지 데이터 조회
  * @returns {Promise}
  */
 export const getMainPageData = () => {
@@ -37,7 +37,7 @@ export const getMainPageData = () => {
 };
 
 /**
- * Fetch challenge score form for a specific challenge
+ * 특정 챌린지의 점수 입력 폼 조회
  * @param {number} challengeId
  * @returns {Promise}
  */
@@ -46,7 +46,7 @@ export const getChallengeScoreForm = (challengeId) => {
 };
 
 /**
- * Fetch rank for a specific challenge
+ * 특정 챌린지의 순위 조회
  * @param {number} challengeId
  * @returns {Promise}
  */
@@ -55,7 +55,7 @@ export const getChallengeRank = (challengeId) => {
 };
 
 /**
- * Fetch final rank for a specific challenge
+ * 특정 챌린지의 최종 순위 조회
  * @param {number} challengeId
  * @returns {Promise}
  */
@@ -64,7 +64,7 @@ export const getFinalRank = (challengeId) => {
 };
 
 /**
- * Delete an Olympic for a specific user
+ * 특정 유저의 올림픽 삭제
  * @param {number} olympicId
  * @returns {Promise}
  */

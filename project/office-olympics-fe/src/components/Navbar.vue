@@ -3,7 +3,7 @@
     <div class="container">
       <!-- Logo -->
       <RouterLink class="navbar-brand" to="/">
-        <img src="@/assets/images/logo.png" alt="Office Olympics Logo" class="navbar-logo">
+        <img src="@/assets/images/logo.png" alt="오피스 올림픽 로고" class="navbar-logo">
       </RouterLink>
 
       <!-- Toggle Button for Responsive Navbar -->
@@ -17,33 +17,33 @@
           <!-- Case 1: Logged Out -->
           <template v-if="!isLoggedIn">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/auth/login">Login</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/login">로그인</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/auth/register">Register</RouterLink>
+              <RouterLink class="nav-button btn" to="/auth/register">회원가입</RouterLink>
             </li>
           </template>
 
           <!-- Case 2: Logged In & Created Olympic -->
           <template v-else-if="isLoggedIn && hasOlympics">
             <li class="nav-item">
-              <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">My Page</RouterLink>
+              <RouterLink class="nav-button btn" :to="`/accounts/${authStore.user.id}`">마이페이지</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="btn btn-tertiary" @click="onLogout">Log Out</button>
+              <button class="btn btn-tertiary" @click="onLogout">로그아웃</button>
             </li>
           </template>
 
           <!-- Case 3: Logged In & No Olympic ID -->
           <template v-else-if="isLoggedIn && !hasOlympics">
             <li class="nav-item">
-              <RouterLink class="nav-button btn btn-warning" to="/olympic/create">Create Olympics</RouterLink>
+              <RouterLink class="nav-button btn btn-warning" to="/olympic/create">올림픽 만들기</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-button btn" to="/accounts/{{ authStore.user.id }}">My Page</RouterLink>
+              <RouterLink class="nav-button btn" to="/accounts/{{ authStore.user.id }}">마이페이지</RouterLink>
             </li>
             <li class="nav-item">
-              <button class="btn btn-tertiary" @click="onLogout">Log Out</button>
+              <button class="btn btn-tertiary" @click="onLogout">로그아웃</button>
             </li>
           </template>
         </ul>
@@ -69,20 +69,12 @@ const hasOlympics = computed(() => !!olympicStore.userOlympicId);
 // Logout handler
 const onLogout = async () => {
   try {
-
-    // If the user has an OlympicId, delete it from the backend
-    // if (olympicStore.userOlympicId) {
-    //   await olympicStore.deleteOlympicEvent(olympicStore.userOlympicId);
-    // }
-
-    // Logout the user (clears user data on the frontend and backend)
     await authStore.logoutUser();
-
-    alert("You have been logged out.");
-    router.push('/'); // Redirect to the main page
+    alert("로그아웃되었습니다.");
+    router.push('/');
   } catch (error) {
     console.error("Logout failed:", error);
-    alert("An error occurred while logging out.");
+    alert("로그아웃 중 오류가 발생했습니다.");
   }
 };
 </script>

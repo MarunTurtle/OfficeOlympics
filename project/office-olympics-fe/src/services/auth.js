@@ -1,6 +1,6 @@
 import api from './api';
 
-// Function for logging in a user
+// 사용자 로그인을 위한 함수
 export const login = async (credentials) => {
   const response = await api.post('/auth/login', credentials);
   console.log('Raw API Response:', response.data);
@@ -15,13 +15,14 @@ export const login = async (credentials) => {
   };
 };
 
-// For register, we only need to specify Content-Type since it differs from the global setting
+// 회원가입의 경우, 전역 설정과 다른 Content-Type을 지정해야 하므로 헤더만 따로 설정합니다
 export const register = async (data) => {
   return api.post('/auth/register', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
 
+// 로그아웃 함수
 export const logout = async () => {
   return api.post('/auth/logout');
 };

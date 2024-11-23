@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', {
 
       } catch (error) {
         console.error('Login failed:', error);
-        throw new Error('Invalid email or password.');
+        throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
       }
     },
 
@@ -37,16 +37,10 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await register(registerData);
         console.log('Registration successful:', response.data);
-
-        // Optional: Log the user in immediately after registration
-        // this.user = {
-        //   nickname: registerData.get('nickname'), // Assuming FormData is passed
-        // };
-        // localStorage.setItem('user', JSON.stringify(this.user));
-        alert('Registration successful! Please log in.');
+        alert('회원가입이 완료되었습니다! 로그인해 주세요.');
       } catch (error) {
         console.error('Registration failed:', error);
-        throw new Error('An error occurred during registration.');
+        throw new Error('회원가입 중 오류가 발생했습니다.');
       }
     },
     async logoutUser() {

@@ -10,12 +10,12 @@
 </script>
 
 <style scoped>
-.auth-layout {
+/* .auth-layout {
+  margin-top: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #fff;
 }
 
 .auth-container {
@@ -25,5 +25,5 @@
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+} */
 </style>

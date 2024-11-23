@@ -8,15 +8,14 @@ import {
 
 export const useOlympicStore = defineStore('olympic', {
   state: () => ({
-    olympic: null, // Current Olympic event details
-    players: [], // List of players in the Olympic event
-    userOlympicId: localStorage.getItem('olympicsId') || null, // Initialize from localStorage
-    loading: false, // Loading state for API calls
+    olympic: null, // 현재 올림픽 이벤트 상세 정보
+    players: [], // 올림픽 이벤트 참가자 목록
+    userOlympicId: localStorage.getItem('olympicsId') || null, // localStorage에서 초기화
+    loading: false, // API 호출을 위한 로딩 상태
   }),
 
   actions: {
-
-    // Set user Olympic ID
+    // 사용자 올림픽 ID 설정
     setUserOlympicId(olympicId) {
       this.userOlympicId = olympicId;
       if (olympicId) {
@@ -26,7 +25,7 @@ export const useOlympicStore = defineStore('olympic', {
       }
     },
 
-    // Clear Olympic data (called upon logout)
+    // 올림픽 데이터 초기화 (로그아웃 시 호출)
     clearOlympicData() {
       this.olympic = null;
       this.players = [];
@@ -34,7 +33,7 @@ export const useOlympicStore = defineStore('olympic', {
       localStorage.removeItem('olympicsId');
     },
 
-    // Create a new Olympic event
+    // 새로운 올림픽 이벤트 생성
     async createOlympicEvent(olympicData) {
       this.loading = true;
       let retries = 3;
@@ -57,7 +56,7 @@ export const useOlympicStore = defineStore('olympic', {
       }
     },
 
-    // Fetch Olympic event details
+    // 올림픽 이벤트 상세 정보 가져오기
     async fetchOlympicDetails(olympicId) {
       this.loading = true;
       try {
@@ -72,7 +71,7 @@ export const useOlympicStore = defineStore('olympic', {
       }
     },
 
-    // Delete an Olympic event
+    // 올림픽 이벤트 삭제
     async deleteOlympicEvent(olympicId) {
       this.loading = true;
       try {
@@ -88,7 +87,7 @@ export const useOlympicStore = defineStore('olympic', {
       }
     },
 
-    // Fetch players in an Olympic event
+    // 올림픽 이벤트 참가자 가져오기
     async fetchOlympicPlayers(olympicId) {
       this.loading = true;
       try {

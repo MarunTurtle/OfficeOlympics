@@ -38,11 +38,12 @@ const thumbnailUrl = computed(() => {
 <style scoped>
 .recommended-challenge-card {
   position: relative;
-  margin-bottom: 0.75rem;
-  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
   overflow: hidden;
   background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
 .thumbnail-wrapper {
@@ -63,14 +64,16 @@ const thumbnailUrl = computed(() => {
 }
 
 .card-body {
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
 }
 
 .card-title {
   margin: 0;
   font-size: 1rem;
-  line-height: 1.2;
-  height: 2.4em;
+  line-height: 1.4;
+  height: 2.0em;
+  font-weight: 500;
+  color: #2c3e50;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -89,5 +92,6 @@ const thumbnailUrl = computed(() => {
 
 .recommended-challenge-card:hover {
   transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 </style>
