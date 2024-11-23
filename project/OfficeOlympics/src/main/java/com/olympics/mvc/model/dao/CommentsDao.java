@@ -18,25 +18,14 @@ public interface CommentsDao {
 	
 	// 댓글 작성
 	int insertComment(Comments comments);
+	
+	// 댓글 작성 완료 후 그룹 ID 설정
 	int updateCommentGroup (int commentId);
 	
+	// 댓글이 삭제 상태인지 확인
+	int checkDeleted(Map<String, Object> params);
 	// 댓글 수정
 	int modifyComment(Comments comments);
-
-	// 삭제된 댓글 여부 확인
-	int checkDeleted(Map<String, Object> params);
-	
-	// 대댓글 확인
-	boolean hasReplies(int commentId);
-
-	// 댓글 그룹 확인
-	int findGroup(int commentId);
-	
-	// 소프트 삭제
-	int softDeleteComment(Map<String, Object> params);
-	
-	// 댓글 전체 삭제
-	boolean deleteAllComments(int commentGroup);
 
 	// 대댓글 작성
 	int insertReply(Comments comments);
@@ -44,11 +33,16 @@ public interface CommentsDao {
 	// 대댓글 수정
 	int modifyReply(Comments comments);
 
-	// 삭제된 대댓글 count
-	int childCommentDeleted(int commentGroup);
-	
-	boolean parentCommentDeleted(int commentGroup);
-	
-	int cntCommentGroup(int commentGroup);
+	// 댓글 ID를 통해 특정 댓글 조회
+	Comments findCommentById(int commentId);
+
+	// 특정 댓글에 달린 대댓글 개수를 조회
+	int countReplies(int commentId);
+
+	// 댓글 텍스트를 업데이트
+	void updateCommentText(Map<String, Object> params);
+
+	// 댓글 텍스트를 업데이트
+	void deleteCommentById(int commentId);
 
 }

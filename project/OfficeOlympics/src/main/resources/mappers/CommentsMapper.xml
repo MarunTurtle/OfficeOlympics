@@ -56,63 +56,6 @@
 		AND comment_depth = 0;
 	</update>
 	
-	<!-- 대댓글 유무 확인 -->
-	<select id="hasReplies" parameterType="int" resultType="boolean">
-	    SELECT EXISTS (
-		    SELECT 1
-		    FROM comments
-		    WHERE comment_group = #{commentId}
-		      AND comment_id != #{commentId}
-		      AND comment_group IS NOT NULL
-		);
-	</select>
-	
-	<!-- 대댓이 있는 원댓글일 경우 삭제된 댓글로 업데이트 -->
-	<update id="softDeleteComment" parameterType="map">
-		UPDATE comments
-		SET comment_text = "삭제된 댓글입니다.", update_date = NOW()
-		WHERE comment_id = #{commentId}
-		AND user_id = #{userId};
-	</update>
-	
-	<!-- 댓글 그룹 확인 -->
-	<select id="findGroup" parameterType="int" resultType="int">
-		SELECT comment_group FROM comments
-		WHERE comment_id = #{commentId};
-	</select>
-	
-	<!-- 대댓글 soft삭제 여부 count -->
-	<select id="childCommentDeleted" parameterType="int" resultType="int">
-		SELECT count(*)
-		FROM comments
-		WHERE comment_group = #{commentGroup}
-		  AND comment_text = "삭제된 댓글입니다."
-          AND comment_depth = 1
-	</select>
-	
-	<!-- 원댓글 soft삭제 여부 count -->
-	<select id="parentCommentDeleted" parameterType="int" resultType="boolean">
-	SELECT EXISTS (
-		SELECT count(*)
-		FROM comments
-		WHERE comment_group = #{commentGroup}
-		  AND comment_text = "삭제된 댓글입니다."
-          AND comment_depth = 0
-          );
-	</select>
-	
-	<!-- 댓글 그룹 내 댓글 count -->
-	<select id="cntCommentGroup" parameterType="int" resultType="int">
-		SELECT COUNT(*) FROM comments
-		WHERE comment_group = #{commentGroup};
-	</select>
-	
-	<!-- 댓글 완전 삭제 -->
-	<delete id="deleteAllComments" parameterType="int">
-		DELETE FROM comments
-		WHERE comment_group = #{commentGroup};
-	</delete>
-	
 	<!-- 대댓글 작성 -->
 	<insert id="insertReply" parameterType="Comments" useGeneratedKeys="true" keyProperty="commentId">
 		INSERT INTO comments (user_id, challenge_id, comment_depth, comment_group, comment_text, reg_date)
@@ -128,5 +71,29 @@
           AND comment_depth = 1
           AND comment_group = #{commentGroup};
     </update>
+
+    <!-- 댓글 정보 조회 -->
+    <select id="findCommentById" resultType="Comments">
+        SELECT * FROM comments WHERE comment_id = #{commentId}
+    </select>
+
+    <!-- 특정 댓글의 대댓글 개수 조회 -->
+    <select id="countReplies" resultType="int">
+        SELECT COUNT(*) FROM comments WHERE comment_group = #{commentGroup} AND comment_depth = 1
+    </select>
+
+    <!-- 댓글 텍스트 업데이트 -->
+    <update id="updateCommentText" parameterType="Comments">
+		UPDATE comments
+		SET comment_text = #{commentText}, update_Date = NOW()
+		WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteCommentById">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>    
+    
+    
 
 </mapper>
