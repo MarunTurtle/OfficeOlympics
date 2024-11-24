@@ -224,7 +224,7 @@ public class CommentsController {
 			return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
 		}
 		
-		int userId = commentService.findWriter(commentId);
+		int userId = commentService.findWriter(replyId);
 		if (!Validate.isValidSessionUser(session, userId)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
 		}
