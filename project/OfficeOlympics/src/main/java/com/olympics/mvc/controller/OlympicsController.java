@@ -123,6 +123,8 @@ public class OlympicsController {
         }
         
         boolean isDeleted = playerService.deleteOlympics(olympicsId);
-        return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        
+        return isDeleted ? ResponseEntity.noContent().build() 
+        				 : ResponseEntity.notFound().build();
     }
 }

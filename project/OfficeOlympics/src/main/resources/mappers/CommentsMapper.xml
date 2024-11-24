@@ -40,11 +40,10 @@
 	</update>
 	
 	<!-- softDelete 여부 확인 -->
-	<select id="checkDeleted" parameterType="map" resultType="int">
+	<select id="checkDeleted" parameterType="int" resultType="int">
 		SELECT COUNT(*) FROM comments
-		WHERE update_date IS NOT NULL
-		AND comment_id = #{commentId}
-		AND user_id = #{userId};
+		WHERE is_deleted = 1
+		AND comment_id = #{commentId};
 	</select>
 	
 	<!-- 댓글 수정 -->
@@ -74,25 +73,28 @@
 
     <!-- 댓글 정보 조회 -->
     <select id="findCommentById" resultType="Comments">
-        SELECT * FROM comments WHERE comment_id = #{commentId}
+        SELECT * FROM comments 
+        WHERE comment_id = #{commentId};
     </select>
 
     <!-- 특정 댓글의 대댓글 개수 조회 -->
     <select id="countReplies" resultType="int">
-        SELECT COUNT(*) FROM comments WHERE comment_group = #{commentGroup} AND comment_depth = 1
+        SELECT COUNT(*) FROM comments 
+        WHERE comment_group = #{commentGroup} AND comment_depth = 1;
     </select>
 
     <!-- 댓글 텍스트 업데이트 -->
     <update id="updateCommentText" parameterType="Comments">
 		UPDATE comments
-		SET comment_text = #{commentText}, update_Date = NOW()
-		WHERE comment_id = #{commentId}
+		SET comment_text = #{commentText}, update_Date = NOW(), is_deleted = 1
+		WHERE comment_id = #{commentId};
     </update>
 
     <!-- 댓글 삭제 -->
     <delete id="deleteCommentById">
-        DELETE FROM comments WHERE comment_id = #{commentId}
-    </delete>    
+        DELETE FROM comments 
+        WHERE comment_id = #{commentId};
+    </delete>
     
     
 

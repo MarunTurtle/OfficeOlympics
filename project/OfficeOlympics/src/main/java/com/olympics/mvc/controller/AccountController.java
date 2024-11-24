@@ -163,6 +163,7 @@ public class AccountController {
         }
 
         boolean isDeleted = userService.deleteUser(userId);
+        
         if (isDeleted) {
         	session.invalidate();
         	return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");        	

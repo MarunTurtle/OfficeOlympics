@@ -84,8 +84,7 @@ public class UserServiceImpl implements UserService{
 			user.setImgSrc(PREFIX+defaultImg);
 		}
 		
-		int res = userDao.insertUser(user);
-		return res == 1;
+		return userDao.insertUser(user) == 1;
 	}
 	
 	/**
@@ -94,8 +93,7 @@ public class UserServiceImpl implements UserService{
 	@Transactional
 	@Override
 	public boolean deleteUser(int id) {
-		int res = userDao.deleteUser(id);
-		return res == 1;
+		return userDao.deleteUser(id) == 1;
 	}
 
 	/**
@@ -174,8 +172,7 @@ public class UserServiceImpl implements UserService{
 		if (user.getName() == null) user.setName(exUser.getName());
 		if (user.getEmail() == null) user.setEmail(exUser.getEmail());
 		
-		int res = userDao.modifyUser(user);
-		return res == 1;
+		return userDao.modifyUser(user) == 1;
 	}
 		
 }

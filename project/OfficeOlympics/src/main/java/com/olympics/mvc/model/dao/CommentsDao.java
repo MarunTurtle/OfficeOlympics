@@ -23,7 +23,8 @@ public interface CommentsDao {
 	int updateCommentGroup (int commentId);
 	
 	// 댓글이 삭제 상태인지 확인
-	int checkDeleted(Map<String, Object> params);
+	int checkDeleted(int commentId);
+	
 	// 댓글 수정
 	int modifyComment(Comments comments);
 
