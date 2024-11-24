@@ -29,7 +29,11 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
       try {
         const response = await updateUserProfile(userId, formData);
-        this.user = response.data;
+        this.user = {
+          ...this.user,
+          ...response.data,
+          imgSrc: response.data.ImgSrc || response.data.imgSrc
+        };
         return response;
       } catch (error) {
         console.error('Failed to update user profile:', error);

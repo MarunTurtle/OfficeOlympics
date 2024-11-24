@@ -137,7 +137,7 @@ const fetchUserProfile = async () => {
 
     userData.value = {
       ...response.data.userData,
-      imgSrc: response.data.userData.imgSrc || defaultProfileImage
+      imgSrc: response.data.userData.ImgSrc || response.data.userData.imgSrc || defaultProfileImage
     };
     players.value = response.data.players;
 

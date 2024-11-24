@@ -131,23 +131,24 @@ const handleSubmit = async () => {
     loading.value = true;
     const submitData = new FormData();
 
-    // Required fields
     submitData.append('nickname', formData.value.nickname);
     submitData.append('olympicsName', formData.value.olympicsName);
 
-    // Add player names as separate entries
     formData.value.playerNames.forEach(name => {
       submitData.append('playerNames', name);
     });
 
-    // Optional profile image
     if (formData.value.profileImg) {
       submitData.append('profileImg', formData.value.profileImg);
     }
 
-    await userStore.updateUser(props.userData.userId, submitData);
+    const response = await userStore.updateUser(props.userData.userId, submitData);
     modal.value.hide();
-    emit('update');
+
+    await emit('update');
+
+    formData.value.profileImg = null;
+
   } catch (error) {
     console.error('Failed to update profile:', error);
   } finally {
