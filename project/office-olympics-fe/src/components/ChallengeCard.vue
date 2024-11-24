@@ -140,6 +140,7 @@ const handleImageError = (e) => {
   margin-bottom: 0.1 rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   height: 2.4em;
@@ -151,6 +152,7 @@ const handleImageError = (e) => {
   margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   height: 4.5em;

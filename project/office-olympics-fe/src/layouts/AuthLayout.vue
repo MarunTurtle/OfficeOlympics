@@ -20,6 +20,18 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+</script>
 
-<style scoped></style>
+<style scoped>
+.auth-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 30rem;
+}
+</style>

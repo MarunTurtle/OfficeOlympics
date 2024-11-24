@@ -42,6 +42,7 @@
  */
 
 import { computed } from 'vue';
+import { getYoutubeThumbnail } from '@/utils/youtube';
 
 // Props 정의 및 유효성 검사
 const props = defineProps({
@@ -61,12 +62,10 @@ const props = defineProps({
 
 /**
  * YouTube 썸네일 URL 생성
- * videoUrl에서 video ID를 추출하여 YouTube 썸네일 API URL 생성
- * maxresdefault.jpg: 최고 품질의 썸네일 이미지 (1920x1080)
+ * utils/youtube.js의 함수를 재사용
  */
 const thumbnailUrl = computed(() => {
-  const videoId = props.videoUrl.split('/').pop();
-  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  return getYoutubeThumbnail(props.videoUrl);
 });
 </script>
 
@@ -128,6 +127,7 @@ const thumbnailUrl = computed(() => {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

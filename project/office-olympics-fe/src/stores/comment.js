@@ -1,3 +1,13 @@
+/**
+ * @파일명: stores/comment.js
+ * @설명: 챌린지 댓글 상태 관리 스토어
+ * @관련서비스:
+ *   - getChallengeComments (댓글 목록 조회)
+ *   - addChallengeComment (댓글 작성)
+ *   - updateChallengeComment (댓글 수정)
+ *   - deleteChallengeComment (댓글 삭제)
+ */
+
 import { defineStore } from 'pinia';
 import {
   getChallengeComments,
@@ -9,7 +19,16 @@ import {
 } from '@/services/comment';
 import { useAuthStore } from '@/stores/auth';
 
+/**
+ * 댓글 스토어 정의
+ */
 export const useCommentStore = defineStore('comment', {
+  /**
+   * 상태 정의
+   * @property {Array} comments - 댓글 목록
+   * @property {boolean} loading - 로딩 상태
+   * @property {string|null} error - 에러 메시지
+   */
   state: () => ({
     comments: [],
     loading: false,
@@ -17,6 +36,10 @@ export const useCommentStore = defineStore('comment', {
   }),
 
   actions: {
+    /**
+     * 에러 메시지 설정 및 자동 제거
+     * @param {string} message - 에러 메시지
+     */
     setError(message) {
       this.error = message;
       setTimeout(() => {
@@ -24,6 +47,11 @@ export const useCommentStore = defineStore('comment', {
       }, 3000);
     },
 
+    /**
+     * 챌린지의 댓글 목록 조회
+     * @param {number} challengeId - 챌린지 식별자
+     * @throws {Error} 조회 실패 시 에러
+     */
     async fetchComments(challengeId) {
       try {
         this.loading = true;
@@ -49,6 +77,12 @@ export const useCommentStore = defineStore('comment', {
       }
     },
 
+    /**
+     * 새 댓글 작성
+     * @param {number} challengeId - 챌린지 식별자
+     * @param {Object} commentData - 댓글 데이터
+     * @returns {Promise<Object>} 생성된 댓글 정보
+     */
     async addComment(challengeId, commentData) {
       try {
         const response = await addChallengeComment(challengeId, commentData);
@@ -60,6 +94,13 @@ export const useCommentStore = defineStore('comment', {
       }
     },
 
+    /**
+     * 기존 댓글 수정
+     * @param {number} challengeId - 챌린지 식별자
+     * @param {number} commentId - 댓글 식별자
+     * @param {Object} commentData - 수정할 댓글 데이터
+     * @returns {Promise<Object>} 수정된 댓글 정보
+     */
     async updateComment(challengeId, commentId, commentData) {
       try {
         const response = await updateChallengeComment(challengeId, commentId, commentData);
@@ -72,6 +113,12 @@ export const useCommentStore = defineStore('comment', {
       }
     },
 
+    /**
+     * 댓글 삭제
+     * @param {number} challengeId - 챌린지 식별자
+     * @param {number} commentId - 댓글 식별자
+     * @returns {Promise<Object>} 삭제 결과
+     */
     async deleteComment(challengeId, commentId) {
       try {
         const response = await deleteChallengeComment(challengeId, commentId);
@@ -84,6 +131,13 @@ export const useCommentStore = defineStore('comment', {
       }
     },
 
+    /**
+     * 댓글에 답글 작성
+     * @param {number} challengeId - 챌린지 식별자
+     * @param {number} commentId - 댓글 식별자
+     * @param {Object} replyData - 답글 데이터
+     * @returns {Promise<Object>} 생성된 답글 정보
+     */
     async addReply(challengeId, commentId, replyData) {
       try {
         const response = await addCommentReply(challengeId, commentId, replyData);
@@ -96,6 +150,14 @@ export const useCommentStore = defineStore('comment', {
       }
     },
 
+    /**
+     * 답글 수정
+     * @param {number} challengeId - 챌린지 식별자
+     * @param {number} commentId - 댓글 식별자
+     * @param {number} replyId - 답글 식별자
+     * @param {Object} replyData - 수정할 답글 데이터
+     * @returns {Promise<Object>} 수정된 답글 정보
+     */
     async updateReply(challengeId, commentId, replyId, replyData) {
       try {
         const response = await updateCommentReply(challengeId, commentId, replyId, replyData);
@@ -110,6 +172,11 @@ export const useCommentStore = defineStore('comment', {
   }
 });
 
+/**
+ * API 에러 처리 유틸리티 함수
+ * @param {Error} error - API 에러 객체
+ * @returns {string} 사용자 친화적인 에러 메시지
+ */
 const handleApiError = (error) => {
   if (!error.response) return '네트워크 오류가 발생했습니다.';
 
