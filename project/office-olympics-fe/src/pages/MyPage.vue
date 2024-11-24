@@ -1,24 +1,33 @@
+/**
+ * @파일명: MyPage.vue
+ * @설명: 사용자 프로필과 올림픽 정보를 표시하는 마이페이지 컴포넌트
+ * @관련백엔드:
+ *   - GET /api/users/{userId} (사용자 프로필 조회)
+ *   - DELETE /api/users/{userId} (계정 삭제)
+ */
+
 <template>
   <MainLayout>
     <div class="my-page container py-5">
-      <!-- Loading State -->
+      <!-- 로딩 상태 표시 -->
       <div v-if="loading" class="loading-spinner">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">로딩중...</span>
         </div>
       </div>
 
-      <!-- Error State -->
+      <!-- 에러 상태 표시 -->
       <div v-else-if="error" class="alert alert-danger shadow-sm">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
         {{ error }}
       </div>
 
-      <!-- Content -->
+      <!-- 메인 컨텐츠 -->
       <div v-else class="row g-4">
-        <!-- User Profile Section -->
+        <!-- 사용자 프로필 섹션 -->
         <div class="col-md-4">
           <div class="card shadow-sm hover-shadow">
+            <!-- 프로필 이미지와 기본 정보 -->
             <div class="card-body text-center p-4">
               <div class="mb-4">
                 <img
@@ -38,7 +47,7 @@
           </div>
         </div>
 
-        <!-- Players Section -->
+        <!-- 올림픽 참가자 섹션 -->
         <div class="col-md-8">
           <div class="card shadow-sm hover-shadow">
             <div class="card-header bg-primary text-white py-3">
@@ -79,7 +88,7 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- 작업 버튼 영역 -->
       <div class="row mt-5">
         <div class="col-12 text-center">
           <button class="btn btn-primary btn-lg me-3 px-4 shadow-sm" @click="editProfile">
@@ -91,6 +100,7 @@
         </div>
       </div>
     </div>
+    <!-- 프로필 수정 모달 -->
     <EditProfileModal
       ref="editProfileModal"
       :userData="userData"
@@ -101,6 +111,16 @@
 </template>
 
 <script setup>
+/**
+ * @컴포넌트명: MyPage
+ * @설명: 사용자 프로필 관리 및 올림픽 정보 표시
+ * @상태:
+ *   - userData: 사용자 프로필 정보
+ *   - players: 올림픽 참가자 목록
+ *   - loading: 로딩 상태
+ *   - error: 에러 메시지
+ */
+
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import MainLayout from '@/layouts/MainLayout.vue';
@@ -109,16 +129,24 @@ import { useAuthStore } from '@/stores/auth';
 import defaultProfileImage from '@/assets/images/default_profile.png';
 import EditProfileModal from '@/components/EditProfileModal.vue';
 
+// 라우터 및 스토어 초기화
 const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 
+// 상태 관리
 const userData = ref(null);
 const players = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const editProfileModal = ref(null);
 
+/**
+ * 사용자 프로필 정보 조회
+ * - 사용자 ID로 프로필 데이터 요청
+ * - 프로필 이미지 처리
+ * - 올림픽 참가자 정보 설정
+ */
 const fetchUserProfile = async () => {
   try {
     loading.value = true;
@@ -149,10 +177,19 @@ const fetchUserProfile = async () => {
   }
 };
 
+/**
+ * 프로필 수정 모달 표시
+ */
 const editProfile = () => {
   editProfileModal.value.show();
 };
 
+/**
+ * 계정 삭제 처리
+ * - 사용자 확인 후 계정 삭제
+ * - 로그아웃 처리
+ * - 홈페이지로 리다이렉션
+ */
 const confirmDelete = async () => {
   if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
     try {
@@ -169,17 +206,28 @@ const confirmDelete = async () => {
   }
 };
 
+// 컴포넌트 마운트 시 프로필 정보 로드
 onMounted(() => {
   fetchUserProfile();
 });
 </script>
 
 <style scoped>
+/**
+ * 마이페이지 레이아웃
+ * - 최대 너비 제한
+ * - 중앙 정렬
+ */
 .my-page {
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/**
+ * 로딩 스피너 스타일링
+ * - 중앙 정렬
+ * - 최소 높이 설정
+ */
 .loading-spinner {
   display: flex;
   justify-content: center;
@@ -187,6 +235,12 @@ onMounted(() => {
   min-height: 300px;
 }
 
+/**
+ * 프로필 이미지 스타일링
+ * - 원형 이미지
+ * - 고정 크기
+ * - 이미지 비율 유지
+ */
 .profile-image {
   width: 120px;
   height: 120px;

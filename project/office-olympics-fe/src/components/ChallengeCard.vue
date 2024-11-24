@@ -1,5 +1,13 @@
+/**
+ * @파일명: ChallengeCard.vue
+ * @설명: 챌린지 카드 컴포넌트 - 챌린지 목록에서 각 챌린지를 표시하는 카드 형태의 컴포넌트
+ * @관련백엔드: GET /api/challenges 응답의 개별 챌린지 데이터를 표시
+ */
+
 <template>
+  <!-- 카드 전체 클릭 시 해당 챌린지 상세 페이지로 이동 -->
   <div class="challenge-card" @click="navigateToChallenge">
+    <!-- 썸네일 영역: YouTube 썸네일 이미지 표시 -->
     <div class="thumbnail-wrapper">
       <img
         :src="thumbnailUrl"
@@ -13,6 +21,10 @@
       <h5 class="card-title">{{ title }}</h5>
       <p class="card-description">{{ description }}</p>
 
+      <!--
+        도전하기 버튼
+        @click.stop: 이벤트 버블링 방지 (카드 전체 클릭 이벤트와 충돌 방지)
+      -->
       <RouterLink
         :to="challengeRoute"
         class="btn card-button mt-3"
@@ -25,11 +37,21 @@
 </template>
 
 <script setup>
+/**
+ * @컴포넌트명: ChallengeCard
+ * @props: {
+ *   id: 챌린지 고유 식별자 (백엔드 DB PK)
+ *   title: 챌린지 제목
+ *   description: 챌린지 설명
+ *   videoUrl: YouTube 영상 URL
+ * }
+ */
+
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getYoutubeThumbnail } from '@/utils/youtube';
 
-// Props 정의
+// Props 유효성 검사 포함 정의
 const props = defineProps({
   id: {
     type: Number,
@@ -38,7 +60,7 @@ const props = defineProps({
   title: {
     type: String,
     required: true,
-    validator: value => value.length > 0
+    validator: value => value.length > 0 // 빈 문자열 방지
   },
   description: {
     type: String,
@@ -51,23 +73,34 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const fallbackImage = ref('/images/thumbnail-fallback.jpg');
+// 썸네일 로드 실패시 사용할 대체 이미지 경로
+const fallbackImage = ref('/images/thumbnail-fallback.png');
 
 // 컴퓨티드 속성
+// YouTube URL에서 썸네일 URL 추출
 const thumbnailUrl = computed(() => getYoutubeThumbnail(props.videoUrl));
+// 챌린지 상세 페이지 라우트 경로 생성
 const challengeRoute = computed(() => `/challenges/${props.id}`);
 
 // 메서드
+// 카드 클릭시 해당 챌린지 상세 페이지로 이동
 const navigateToChallenge = () => {
   router.push(challengeRoute.value);
 };
 
+// 썸네일 이미지 로드 실패시 대체 이미지로 교체
 const handleImageError = (e) => {
   e.target.src = fallbackImage.value;
 };
 </script>
 
 <style scoped>
+/*
+  카드 스타일링
+  - 16:9 비율 유지
+  - 호버시 약간 위로 떠오르는 애니메이션
+  - 제목과 설명은 일정 줄 수 이상이면 말줄임표 처리
+*/
 .challenge-card {
   position: relative;
   border-radius: 8px;

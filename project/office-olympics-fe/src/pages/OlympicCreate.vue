@@ -1,33 +1,66 @@
+/**
+ * @파일명: OlympicCreate.vue
+ * @설명: 오피스 올림픽 생성 페이지 컴포넌트
+ * @관련백엔드:
+ *   - POST /api/olympics (올림픽 이벤트 생성)
+ */
+
 <script setup>
+/**
+ * @컴포넌트명: OlympicCreate
+ * @설명: 올림픽 이벤트 생성 및 참가자 등록
+ * @상태:
+ *   - eventName: 올림픽 이벤트 이름
+ *   - playerCount: 참가자 수
+ *   - players: 참가자 목록
+ *   - loading: 로딩 상태
+ */
+
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
 import { useOlympicStore } from "@/stores/olympic";
 
+// 라우터 및 스토어 초기화
 const router = useRouter();
 const olympicStore = useOlympicStore();
 
+// 폼 상태 관리
 const eventName = ref("");
 const playerCount = ref(0);
 const players = ref([]);
 const loading = ref(false);
 
+// 유효성 검사 상태
 const eventNameError = ref(false);
 const playerCountError = ref(false);
 const playerErrors = ref([]);
 
+// 최대 참가자 수 제한
 const maxPlayerCount = 10;
 
+/**
+ * 참가자 수 유효성 검사
+ * @returns {boolean} 참가자 수가 유효한지 여부
+ */
 const isPlayerCountValid = computed(() => {
   return playerCount.value > 0 && playerCount.value <= maxPlayerCount;
 });
 
+/**
+ * 중복 닉네임 검사
+ * @returns {boolean} 중복된 닉네임이 있는지 여부
+ */
 const hasDuplicateNicknames = computed(() => {
   const nicknames = players.value.map(p => p.nickname.trim().toLowerCase());
   return new Set(nicknames).size !== nicknames.length;
 });
 
-// Function to generate player input fields dynamically
+/**
+ * 참가자 입력 필드 생성
+ * - playerCount에 따라 동적으로 입력 필드 생성
+ * - 각 참가자의 에러 상태도 함께 초기화
+ */
 const generatePlayerFields = () => {
   players.value = Array.from({ length: playerCount.value }, (_, index) => ({
     id: index + 1,
@@ -36,7 +69,13 @@ const generatePlayerFields = () => {
   playerErrors.value = Array(playerCount.value).fill(false);
 };
 
-// Validate the entire form
+/**
+ * 폼 전체 유효성 검사
+ * - 이벤트 이름 검증
+ * - 참가자 수 검증
+ * - 모든 참가자 닉네임 검증
+ * - 닉네임 중복 검사
+ */
 const isFormValid = computed(() => {
   const eventNameValid = eventName.value.trim().length > 0;
   const playerCountValid = isPlayerCountValid.value;
@@ -46,7 +85,12 @@ const isFormValid = computed(() => {
   return eventNameValid && playerCountValid && allPlayersValid && noDuplicates;
 });
 
-// Submit handler for creating Olympic event
+/**
+ * 올림픽 이벤트 생성 처리
+ * - 폼 유효성 검사
+ * - 올림픽 생성 요청
+ * - 성공 시 홈페이지로 리다이렉션
+ */
 const onCreateOlympic = async () => {
   if (!isFormValid.value) {
     alert("모든 필수 항목을 입력해주세요.");
@@ -76,10 +120,11 @@ const onCreateOlympic = async () => {
 
 <template>
   <MainLayout>
+    <!-- 올림픽 생성 폼 -->
     <div class="olympic-create-form">
       <h1 class="text-center mb-4">오피스 올림픽 생성</h1>
       <form @submit.prevent="onCreateOlympic">
-        <!-- Event Name -->
+        <!-- 이벤트 이름 입력 -->
         <div class="mb-3">
           <label for="event-name" class="form-label">오피스 올림픽 이름</label>
           <input type="text" id="event-name" class="form-control" v-model="eventName"
@@ -89,7 +134,7 @@ const onCreateOlympic = async () => {
           </small>
         </div>
 
-        <!-- Number of Players -->
+        <!-- 참가자 수 입력 -->
         <div class="mb-3">
           <label for="player-count" class="form-label">플레이어 수</label>
           <input type="number" id="player-count" class="form-control" v-model.number="playerCount"
@@ -99,7 +144,7 @@ const onCreateOlympic = async () => {
           </small>
         </div>
 
-        <!-- Player Nicknames -->
+        <!-- 참가자 닉네임 입력 -->
         <div v-for="(player, index) in players" :key="player.id" class="mb-3">
           <label :for="'player-' + player.id" class="form-label">
             플레이어 {{ index + 1 }} 닉네임
@@ -111,7 +156,7 @@ const onCreateOlympic = async () => {
           </small>
         </div>
 
-        <!-- Submit Button -->
+        <!-- 제출 버튼 -->
         <button type="submit" class="btn btn-primary w-100" :disabled="loading">
           {{ loading ? "생성 중..." : "올림픽 시작하기" }}
         </button>
@@ -121,15 +166,26 @@ const onCreateOlympic = async () => {
 </template>
 
 <style scoped>
+/**
+ * 올림픽 생성 폼 스타일링
+ * - 최대 너비 제한
+ * - 중앙 정렬
+ * - 둥근 모서리와 여백
+ */
 .olympic-create-form {
   max-width: 30rem;
   margin: 20px auto;
   padding: 1.5rem;
   background: white;
   border-radius: 12px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
+/**
+ * 입력 필드 스타일링
+ * - 배경색 설정
+ * - 부드러운 전환 효과
+ * - 포커스 시 시각적 피드백
+ */
 .form-control {
   background: var(--tertiary-color);
   border-radius: 8px;

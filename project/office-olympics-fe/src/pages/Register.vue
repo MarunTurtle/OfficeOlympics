@@ -1,17 +1,28 @@
+/**
+ * @파일명: Register.vue
+ * @설명: 사용자 회원가입 페이지 컴포넌트
+ * @관련백엔드:
+ *   - POST /api/auth/register (회원가입 요청)
+ */
+
 <template>
   <AuthLayout>
+    <!-- 회원가입 폼 컨테이너 -->
     <div class="register-form">
       <h1 class="text-center mb-4">회원가입</h1>
       <form @submit.prevent="onRegister">
+        <!-- 이름 입력 필드 -->
         <div class="mb-3">
           <label for="name" class="form-label">이름</label>
-          <input type="text" id="name" class="form-control" v-model="name" placeholder="예시: 이케빈"
-            @blur="nameTouched = true" />
+          <input type="text" id="name" class="form-control" v-model="name"
+            placeholder="예시: 이케빈" @blur="nameTouched = true" />
+          <!-- 이름 유효성 검사 에러 메시지 -->
           <small v-if="nameTouched && !isNotEmpty(name)" class="text-danger">
             이름을 입력해주세요.
           </small>
         </div>
 
+        <!-- 이메일 입력 필드 -->
         <div class="mb-3">
           <label for="email" class="form-label">이메일</label>
           <input type="email" id="email" class="form-control" v-model="email" placeholder="예시: ssafy@example.com"
@@ -21,6 +32,7 @@
           </small>
         </div>
 
+        <!-- 닉네임 입력 필드 -->
         <div class="mb-3">
           <label for="nickname" class="form-label">닉네임</label>
           <input type="text" id="nickname" class="form-control" v-model="nickname" placeholder="예시: 신입케빈"
@@ -30,6 +42,7 @@
           </small>
         </div>
 
+        <!-- 비밀번호 입력 필드 -->
         <div class="mb-3">
           <label for="password" class="form-label">비밀번호</label>
           <input type="password" id="password" class="form-control" v-model="password" placeholder="비밀번호를 입력하세요"
@@ -39,6 +52,7 @@
           </small>
         </div>
 
+        <!-- 비밀번호 확인 필드 -->
         <div class="mb-3">
           <label for="confirm-password" class="form-label">비밀번호 확인</label>
           <input type="password" id="confirm-password" class="form-control" v-model="confirmPassword"
@@ -48,16 +62,19 @@
           </small>
         </div>
 
+        <!-- 프로필 이미지 업로드 -->
         <div class="mb-3">
           <label for="profile-img" class="form-label">프로필 이미지 (선택사항)</label>
           <input type="file" id="profile-img" class="form-control" @change="onFileChange" />
         </div>
 
+        <!-- 제출 버튼 -->
         <button type="submit" class="btn btn-primary w-100" :disabled="!isFormValid">
           가입하기
         </button>
       </form>
 
+      <!-- 로그인 페이지 링크 -->
       <p class="text-center mt-3">
         이미 계정이 있으신가요?
         <RouterLink to="/auth/login">로그인하기</RouterLink>
@@ -67,14 +84,28 @@
 </template>
 
 <script setup>
+/**
+ * @컴포넌트명: Register
+ * @설명: 사용자 회원가입 처리 및 폼 유효성 검사
+ * @상태:
+ *   - name: 사용자 이름
+ *   - email: 이메일
+ *   - nickname: 닉네임
+ *   - password: 비밀번호
+ *   - confirmPassword: 비밀번호 확인
+ *   - profileImg: 프로필 이미지 파일
+ */
+
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { isValidEmail, isValidPassword, isNotEmpty } from '@/utils/validation';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import router from '@/router';
 
+// 스토어 초기화
 const authStore = useAuthStore();
 
+// 폼 입력 상태 관리
 const name = ref('');
 const email = ref('');
 const nickname = ref('');
@@ -82,18 +113,25 @@ const password = ref('');
 const confirmPassword = ref('');
 const profileImg = ref(null);
 
+// 입력 필드 터치 상태 관리
 const nameTouched = ref(false);
 const emailTouched = ref(false);
 const nicknameTouched = ref(false);
 const passwordTouched = ref(false);
 const confirmPasswordTouched = ref(false);
 
-// File input change handler
+/**
+ * 파일 입력 변경 핸들러
+ * @param {Event} e - 파일 입력 이벤트
+ */
 const onFileChange = (e) => {
   profileImg.value = e.target.files[0];
 };
 
-// Check if form is valid
+/**
+ * 폼 유효성 검사
+ * @returns {boolean} 폼이 유효한지 여부
+ */
 const isFormValid = computed(() => {
   return (
     isNotEmpty(name.value) &&
@@ -104,6 +142,12 @@ const isFormValid = computed(() => {
   );
 });
 
+/**
+ * 회원가입 제출 처리
+ * - FormData 구성
+ * - API 호출
+ * - 성공 시 로그인 페이지로 리다이렉션
+ */
 const onRegister = async () => {
   try {
     // Construct FormData for multipart request
@@ -127,15 +171,26 @@ const onRegister = async () => {
 </script>
 
 <style scoped>
+/**
+ * 회원가입 폼 스타일링
+ * - 최대 너비 제한
+ * - 중앙 정렬
+ * - 둥근 모서리와 여백
+ */
 .register-form {
   max-width: 30rem;
   margin: 20px auto;
   padding: 1.5rem;
   background: white;
   border-radius: 12px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
+/**
+ * 입력 필드 스타일링
+ * - 배경색 설정
+ * - 부드러운 전환 효과
+ * - 포커스 시 시각적 피드백
+ */
 .form-control {
   background: var(--tertiary-color);
   border-radius: 8px;

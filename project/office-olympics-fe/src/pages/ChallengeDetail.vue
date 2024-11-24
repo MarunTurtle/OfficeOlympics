@@ -1,19 +1,28 @@
+/**
+ * @파일명: ChallengeDetail.vue
+ * @설명: 챌린지 상세 페이지 컴포넌트
+ * @관련백엔드:
+ *   - GET /api/challenges/{challengeId} (챌린지 상세 정보)
+ */
+
 <template>
   <MainLayout>
     <div class="challenge-detail container">
-      <!-- 로딩 스피너 -->
+      <!-- 로딩 상태 표시 -->
       <div v-if="loading" class="text-center my-5 py-5">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">로딩중...</span>
         </div>
       </div>
 
+      <!-- 챌린지 상세 정보 표시 -->
       <div v-else-if="challenge" class="row g-4">
-        <!-- 메인 콘텐츠 -->
+        <!-- 메인 콘텐츠 영역 (9칸) -->
         <div class="col-lg-9">
-          <!-- 비디오 섹션 -->
+          <!-- 비디오 섹션: YouTube 임베드 -->
           <div class="content-section">
             <div class="video-container mb-4">
+              <!-- 16:9 비율 유지를 위한 래퍼 -->
               <div class="video-wrapper">
                 <iframe v-if="challenge.videoUrl"
                   :src="challenge.videoUrl"
@@ -24,8 +33,9 @@
               </div>
             </div>
 
-            <!-- 챌린지 정보 -->
+            <!-- 챌린지 정보 섹션 -->
             <div class="challenge-info p-4">
+              <!-- 제목과 시작 버튼 -->
               <div class="title-action-container d-flex justify-content-between align-items-center mb-4">
                 <h1 class="challenge-title mb-0">{{ challenge.title }}</h1>
                 <button class="btn btn-primary" @click="startChallenge">
@@ -33,6 +43,7 @@
                 </button>
               </div>
 
+              <!-- 챌린지 설명 -->
               <div class="challenge-description">
                 <h3 class="description-title mb-3">챌린지 설명</h3>
                 <p class="description-text">{{ challenge.description }}</p>
@@ -46,7 +57,7 @@
           </div>
         </div>
 
-        <!-- 우측 패널 -->
+        <!-- 우측 사이드바 (3칸): 추천 챌린지 목록 -->
         <div class="col-lg-3">
           <div class="recommended-challenges">
             <h4 class="recommended-title mb-4">추천 챌린지</h4>
@@ -64,7 +75,7 @@
         </div>
       </div>
 
-      <!-- 에러 상태 -->
+      <!-- 에러 상태 표시 -->
       <div v-else class="text-center my-5 py-5">
         <h2 class="text-danger">챌린지를 찾을 수 없습니다</h2>
         <p class="text-muted mt-3">요청하신 챌린지가 존재하지 않거나 삭제되었을 수 있습니다.</p>
@@ -74,6 +85,19 @@
 </template>
 
 <script setup>
+/**
+ * @컴포넌트명: ChallengeDetail
+ * @설명: 개별 챌린지의 상세 정보를 표시하는 페이지 컴포넌트
+ * @데이터구조: {
+ *   challenge: {
+ *     id: number,
+ *     title: string,
+ *     description: string,
+ *     videoUrl: string
+ *   }
+ * }
+ */
+
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
@@ -82,19 +106,23 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import RecommendedChallengeCard from '@/components/RecommendedChallengeCard.vue';
 import Comments from '@/components/Comments.vue';
 
+// 상태 관리 및 라우팅 설정
 const router = useRouter();
 const route = useRoute();
 const challengeStore = useChallengeStore();
 const commentStore = useCommentStore();
 
+// 로컬 상태 관리
 const challenge = ref(null);
 const loading = ref(true);
-
 const challengeId = parseInt(route.params.id);
 
+/**
+ * YouTube URL 변환 함수
+ * 일반 YouTube URL을 임베드 URL로 변환
+ */
 const transformYoutubeUrl = (url) => {
   if (!url) return '';
-  // Handle both youtu.be and youtube.com URLs
   if (url.includes('youtu.be/')) {
     const videoId = url.split('youtu.be/')[1];
     return `https://www.youtube.com/embed/${videoId}`;
@@ -105,10 +133,11 @@ const transformYoutubeUrl = (url) => {
   return url;
 };
 
+// 컴포넌트 마운트 시 데이터 로드
 onMounted(async () => {
   try {
     loading.value = true;
-    // Fetch both challenge details and main page data in parallel
+    // 챌린지 상세 정보와 메인 페이지 데이터 병렬 로드
     const [challengeResponse, mainPageResponse] = await Promise.all([
       challengeStore.fetchChallengeDetails(challengeId),
       challengeStore.fetchMainPageData()
@@ -127,18 +156,28 @@ onMounted(async () => {
   }
 });
 
+// 챌린지 시작 핸들러
 const startChallenge = () => {
   router.push(`/challenges/${challengeId}/score`);
 };
 
+// 추천 챌린지 목록 계산
 const recommendedChallenges = computed(() => {
   return challengeStore.challenges
     .filter(c => c.challengeId !== challengeId)
-    .slice(0, 10); // Show only 5 recommendations
+    .slice(0, 10); // 10개의 추천 챌린지만 표시
 });
 </script>
 
 <style scoped>
+/*
+  스타일링 규칙:
+  - 반응형 레이아웃 (Bootstrap grid system 활용)
+  - 스크롤 가능한 추천 챌린지 목록
+  - 호버 효과가 있는 버튼
+  - 미디어 쿼리로 모바일 대응
+*/
+
 .challenge-detail {
   margin-top: 1rem;
   margin-bottom: 2rem;
