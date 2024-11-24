@@ -33,7 +33,14 @@
     
     <!-- 올림픽 팀 멤버 수정 -->
     <update id="modifyPlayers" parameterType="map">
-        UPDATE players
+      <foreach collection="playerDataList" item="playerData" separator=";">
+	        UPDATE players
+	        SET player_name = #{playerData.playerName}
+	        WHERE olympics_id = #{olympicsId} AND player_id = #{playerData.playerId}
+	    </foreach>
+	  </update>
+    <!-- Macbook MyBatis version 오류 해결용 -->
+        <!-- UPDATE players
         <set>
             player_name = CASE player_id
             <foreach collection="playerDataList" item="playerData">
@@ -46,7 +53,7 @@
         <foreach collection="playerDataList" item="playerData" open="(" separator="," close=")">
             #{playerData.playerId}
         </foreach>
-    </update>
+    </update> -->
 	
 	<!-- 올림픽 팀 이름 수정 -->
 	<update id="modifyOlympics" parameterType="map">
