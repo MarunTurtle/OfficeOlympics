@@ -119,81 +119,88 @@ const onLogout = async () => {
 
 <style scoped>
 /*
-  네비게이션 바 스타일링:
-  - secondary-color 배경색 사용
-  - 반응형 로고 크기
-  - 일관된 버튼 스타일
-  - 호버/액티브 상태의 인터랙션 효과
+  네비게이션 바 컴포넌트의 스타일 정의
+  1. 컴포넌트 레이아웃
+  2. 인터랙션 효과
+  3. 버튼 스타일 변형
 */
 
+/* 1. 기본 레이아웃 스타일 */
 .navbar {
   background-color: var(--secondary-color);
 }
 
-/* 로고 스타일링 */
 .navbar-logo {
   height: 3.75rem;
   width: auto;
   object-fit: contain;
 }
 
-/* 네비게이션 링크 간격 */
 .nav-link {
   margin-left: 10px;
 }
 
-/*
-  버튼 공통 스타일
-  - 호버 시 스케일 효과
-  - 클릭 시 축소 효과
-*/
+/* 2. 공통 버튼 스타일 */
 .nav-button {
+  /* 텍스트 스타일링 */
   font-size: 1rem;
   font-weight: 600;
+
+  /* 여백 및 크기 */
   padding: 8px 16px;
   margin: 0 5px;
+
+  /* 시각적 스타일링 */
   color: #fff;
   background-color: var(--primary-color);
   border: none;
   border-radius: 5px;
+
+  /* 인터랙션 */
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
 
+/* 3. 버튼 상태별 스타일 */
+/* 호버 상태: 확대 및 색상 변경 */
 .nav-button:hover {
   background-color: var(--interaction-hover-color);
   transform: scale(1.05);
 }
 
+/* 클릭 상태: 축소 효과 */
 .nav-button:active {
   transform: scale(0.95);
 }
 
-/*
-  경고 버튼 스타일 (올림픽 생성 버튼)
-  warning-color 사용
-*/
+/* 4. 버튼 변형 스타일 */
+/* 경고 버튼: 올림픽 생성용 */
 .nav-button.btn-warning {
   background-color: var(--warning-color);
 }
 
-/*
-  tertiary 버튼 스타일 (로그아웃)
-  tertiary-color 사용
-*/
+/* 보조 버튼: 로그아웃용 */
 .btn-tertiary {
+  /* 텍스트 스타일링 */
   font-size: 1rem;
   font-weight: 600;
+
+  /* 여백 및 크기 */
   padding: 8px 16px;
   margin: 0 5px;
+
+  /* 시각적 스타일링 */
   color: #333;
   background-color: var(--tertiary-color);
   border: none;
   border-radius: 5px;
+
+  /* 인터랙션 */
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
 
+/* 보조 버튼 상태별 스타일 */
 .btn-tertiary:hover {
   background-color: var(--alert-color);
   transform: scale(1.05);

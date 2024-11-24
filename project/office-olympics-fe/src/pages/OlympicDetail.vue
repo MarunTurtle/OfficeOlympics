@@ -81,12 +81,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/**
- * 올림픽 상세 페이지 스타일링
- * - 최대 너비 제한
- * - 중앙 정렬
- * - 그림자 효과와 둥근 모서리
- */
+/* 올림픽 상세 컨테이너 */
 .olympic-detail {
   max-width: 800px;
   margin: 50px auto;
@@ -96,10 +91,7 @@ onMounted(async () => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/**
- * 참가자 목록 섹션 스타일링
- * - 상단 여백
- */
+/* 참가자 목록 영역 */
 .player-list {
   margin-top: 20px;
 }

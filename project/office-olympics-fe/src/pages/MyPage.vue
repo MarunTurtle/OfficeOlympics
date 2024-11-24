@@ -59,7 +59,7 @@
             <div class="card-body p-4">
               <div v-if="players.length === 0" class="text-center py-5">
                 <i class="bi bi-people-fill text-muted fs-1 mb-3 d-block"></i>
-                <p class="text-muted mb-0">생성된 올림픽이 없습니다</p>
+                <p class="text-muted mb-0">생성된 ��림픽이 없습니다</p>
               </div>
               <div v-else class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -213,21 +213,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/**
- * 마이페이지 레이아웃
- * - 최대 너비 제한
- * - 중앙 정렬
- */
+/* 페이지 컨테이너 */
 .my-page {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/**
- * 로딩 스피너 스타일링
- * - 중앙 정렬
- * - 최소 높이 설정
- */
+/* 로딩 스피너 중앙 정렬 */
 .loading-spinner {
   display: flex;
   justify-content: center;
@@ -235,18 +227,14 @@ onMounted(() => {
   min-height: 300px;
 }
 
-/**
- * 프로필 이미지 스타일링
- * - 원형 이미지
- * - 고정 크기
- * - 이미지 비율 유지
- */
+/* 프로필 이미지 */
 .profile-image {
   width: 120px;
   height: 120px;
   object-fit: cover;
 }
 
+/* 카드 스타일링 */
 .card {
   border-radius: 8px;
   border: 1px solid var(--tertiary-color);
@@ -258,12 +246,14 @@ onMounted(() => {
   border-bottom: 1px solid var(--tertiary-color);
 }
 
+/* 테이블 헤더 */
 .table th {
   font-weight: 600;
   color: #495057;
   background-color: var(--secondary-color);
 }
 
+/* 기본 버튼 */
 .btn-primary {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
@@ -275,6 +265,7 @@ onMounted(() => {
   border-color: var(--interaction-hover-color);
 }
 
+/* 삭제 버튼 */
 .btn-outline-danger {
   color: var(--alert-color);
   border-color: var(--alert-color);

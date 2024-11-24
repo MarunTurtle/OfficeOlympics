@@ -95,12 +95,9 @@ const handleImageError = (e) => {
 </script>
 
 <style scoped>
-/*
-  카드 스타일링
-  - 16:9 비율 유지
-  - 호버시 약간 위로 떠오르는 애니메이션
-  - 제목과 설명은 일정 줄 수 이상이면 말줄임표 처리
-*/
+/* 챌린지 카드 컴포넌트의 스타일 정의 */
+
+/* 카드 컨테이너 */
 .challenge-card {
   position: relative;
   border-radius: 8px;
@@ -111,16 +108,19 @@ const handleImageError = (e) => {
   cursor: pointer;
 }
 
+/* 카드 호버 효과: 위로 5px 이동 */
 .challenge-card:hover {
   transform: translateY(-5px);
 }
 
+/* 썸네일 컨테이너: 16:9 비율 유지 */
 .thumbnail-wrapper {
   position: relative;
-  padding-top: 56.25%; /* 16:9 비율 */
+  padding-top: 56.25%; /* 16:9 = (9/16 * 100)% */
   overflow: hidden;
 }
 
+/* 썸네일 이미지: 컨테이너에 맞춰 크기 조정 */
 .card-img-top {
   position: absolute;
   top: 0;
@@ -130,14 +130,16 @@ const handleImageError = (e) => {
   object-fit: cover;
 }
 
+/* 카드 내용 영역 */
 .card-body {
   padding: 1.25rem;
 }
 
+/* 카드 제목: 최대 2줄, 초과시 말줄임표 처리 */
 .card-title {
   font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 0.1 rem;
+  margin-bottom: 0.1rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -146,6 +148,7 @@ const handleImageError = (e) => {
   height: 2.4em;
 }
 
+/* 카드 설명: 최대 3줄, 초과시 말줄임표 처리 */
 .card-description {
   font-size: 1rem;
   color: #666;
@@ -158,6 +161,7 @@ const handleImageError = (e) => {
   height: 4.5em;
 }
 
+/* 도전하기 버튼: 기본 스타일 */
 .card-button {
   width: 100%;
   font-weight: 600;
@@ -168,6 +172,7 @@ const handleImageError = (e) => {
   transition: background-color 0.3s;
 }
 
+/* 도전하기 버튼: 호버 효과 */
 .card-button:hover {
   background-color: var(--interaction-hover-color);
 }

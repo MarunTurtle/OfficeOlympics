@@ -219,30 +219,25 @@ defineExpose({
 </script>
 
 <style scoped>
-/*
-  스타일링 규칙:
-  - 모든 입력 필드는 tertiary-color 배경
-  - 포커스 시 흰색 배경으로 변경
-  - 버튼은 hover 시 스케일 효과
-  - 모달은 부드러운 모서리 처리
-*/
+/* 프로필 수정 모달의 스타일 정의 */
 
-/* Add consistent styling */
+/* 입력 필드 기본 스타일 */
 .form-control {
   background: var(--tertiary-color);
   border-radius: 8px;
-  /* padding: 0.5rem; */
   font-size: 1rem;
   transition: all 0.3s ease;
   border: 1px solid transparent;
 }
 
+/* 입력 필드 포커스 효과 */
 .form-control:focus {
   border-color: var(--primary-color);
   outline: none;
   background: white;
 }
 
+/* 기본 버튼(저장) 스타일 */
 .btn-primary {
   background-color: var(--primary-color);
   border: none;
@@ -251,16 +246,19 @@ defineExpose({
   transition: all 0.3s ease;
 }
 
+/* 기본 버튼 호버 효과 */
 .btn-primary:hover {
   background-color: var(--interaction-hover-color);
   transform: scale(1.02);
 }
 
+/* 기본 버튼 비활성화 상태 */
 .btn-primary:disabled {
   background-color: #ccc;
   transform: none;
 }
 
+/* 보조 버튼(취소) 스타일 */
 .btn-secondary {
   background-color: grey;
   border: none;
@@ -270,11 +268,13 @@ defineExpose({
   color: black;
 }
 
+/* 보조 버튼 호버 효과 */
 .btn-secondary:hover {
   background-color: darkgrey;
   transform: scale(1.02);
 }
 
+/* 모달 레이아웃 스타일링 */
 .modal-content {
   border-radius: 12px;
 }
@@ -290,6 +290,7 @@ defineExpose({
   padding: 1rem 1rem;
 }
 
+/* 모달 내부 요소 스타일링 */
 .modal-title {
   color: var(--primary-color);
   font-weight: 600;
@@ -300,10 +301,12 @@ defineExpose({
   margin-bottom: 0.5rem;
 }
 
+/* 여백 설정 */
 .mb-3 {
   margin-bottom: 0.75rem !important;
 }
 
+/* 취소 버튼 배경색 */
 .cancel-button {
   background-color: var(--tertiary-color);
 }

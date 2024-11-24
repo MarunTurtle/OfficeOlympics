@@ -171,12 +171,7 @@ const onRegister = async () => {
 </script>
 
 <style scoped>
-/**
- * 회원가입 폼 스타일링
- * - 최대 너비 제한
- * - 중앙 정렬
- * - 둥근 모서리와 여백
- */
+/* 회원가입 폼 컨테이너 */
 .register-form {
   max-width: 30rem;
   margin: 20px auto;
@@ -185,12 +180,7 @@ const onRegister = async () => {
   border-radius: 12px;
 }
 
-/**
- * 입력 필드 스타일링
- * - 배경색 설정
- * - 부드러운 전환 효과
- * - 포커스 시 시각적 피드백
- */
+/* 입력 필드 기본 스타일 */
 .form-control {
   background: var(--tertiary-color);
   border-radius: 8px;
@@ -200,12 +190,14 @@ const onRegister = async () => {
   border: 1px solid transparent;
 }
 
+/* 입력 필드 포커스 스타일 */
 .form-control:focus {
   border-color: var(--primary-color);
   outline: none;
   background: white;
 }
 
+/* 기본 버튼 스타일 */
 .btn-primary {
   background-color: var(--primary-color);
   border: none;
@@ -214,27 +206,32 @@ const onRegister = async () => {
   transition: all 0.3s ease;
 }
 
+/* 버튼 호버 효과 */
 .btn-primary:hover {
   background-color: var(--interaction-hover-color);
   transform: scale(1.02);
 }
 
+/* 에러 메시지 스타일 */
 .text-danger {
   color: var(--alert-color);
   font-size: 0.875rem;
 }
 
+/* 제목 스타일 */
 h1 {
   color: var(--primary-color);
   font-weight: 600;
 }
 
+/* 링크 스타일 */
 a {
   color: var(--primary-color);
   text-decoration: none;
   font-weight: 600;
 }
 
+/* 링크 호버 효과 */
 a:hover {
   color: var(--interaction-hover-color);
 }
