@@ -74,10 +74,12 @@ export const useCommentStore = defineStore('comment', {
 
     async deleteComment(challengeId, commentId) {
       try {
-        await deleteChallengeComment(challengeId, commentId);
+        const response = await deleteChallengeComment(challengeId, commentId);
         await this.fetchComments(challengeId);
+        return response.data;
       } catch (error) {
-        this.setError(error.response?.data || '댓글 삭제에 실패했습니다');
+        const message = handleApiError(error);
+        this.setError(message);
         throw error;
       }
     },
@@ -88,7 +90,8 @@ export const useCommentStore = defineStore('comment', {
         await this.fetchComments(challengeId);
         return response.data;
       } catch (error) {
-        this.setError(error.response?.data || '답글 추가에 실패했습니다');
+        const message = handleApiError(error);
+        this.setError(message);
         throw error;
       }
     },
@@ -99,7 +102,8 @@ export const useCommentStore = defineStore('comment', {
         await this.fetchComments(challengeId);
         return response.data;
       } catch (error) {
-        this.setError(error.response?.data || '답글 수정에 실패했습니다');
+        const message = handleApiError(error);
+        this.setError(message);
         throw error;
       }
     }
@@ -113,12 +117,15 @@ const handleApiError = (error) => {
     case 400:
       return error.response.data || '잘못된 요청입니다.';
     case 401:
-      const authStore = useAuthStore();
-      authStore.logoutUser();
-      return '세션이 만료되었습니다. 다시 로그인해주세요.';
+      if (error.response.data === '세션이 만료되었습니다. 다시 로그인해주세요.') {
+        const authStore = useAuthStore();
+        authStore.logoutUser();
+        return '세션이 만료되었습니다. 다시 로그인해주세요.';
+      }
+      return error.response.data || '권한이 없습니다.';
     case 403:
-      return '권한이 없습니다.';
+      return error.response.data || '접근이 거부되었습니다.';
     default:
-      return '서버 오류가 발생했습니다.';
+      return '알 수 없는 오류가 발생했습니다.';
   }
 };

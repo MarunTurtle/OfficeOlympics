@@ -63,7 +63,7 @@
                     <span class="comment-author">{{ comment.nickname }}</span>
                     <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
                   </div>
-                  <div class="dropdown comment-menu">
+                  <div class="dropdown comment-menu" v-if="authStore.user && comment.userId === authStore.user.id">
                     <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                         <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -180,7 +180,7 @@
                             <span class="comment-author">{{ reply.nickname }}</span>
                             <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
                           </div>
-                          <div class="dropdown comment-menu">
+                          <div class="dropdown comment-menu" v-if="authStore.user && reply.userId === authStore.user.id">
                             <button class="btn btn-link btn-sm p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -195,6 +195,20 @@
                       </div>
 
                       <p class="comment-text mb-2">{{ reply.commentText }}</p>
+
+                      <div v-if="editingComment && editingComment.commentId === reply.commentId" class="edit-form mt-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          v-model="editingComment.commentText"
+                        >
+                        <div class="edit-actions mt-2">
+                          <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary btn-sm me-2" @click="updateComment">저장</button>
+                            <button class="btn btn-secondary btn-sm" @click="editingComment = null">취소</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -312,7 +326,7 @@ const addReply = async (parentCommentId) => {
       commentId: Date.now(),
       commentText: replyText.value.trim(),
       commentDepth: 1,
-      commentGroup: parentComment.commentGroup || parentComment.commentId,
+      commentGroup: parentComment.commentId,
       nickname: authStore.user?.nickname,
       imgSrc: authStore.user?.imgSrc,
       regDate: new Date().toISOString(),
@@ -342,15 +356,22 @@ const addReply = async (parentCommentId) => {
 };
 
 const deleteComment = async (commentId) => {
+  const comment = commentStore.comments.find(c => c.commentId === commentId);
+  if (!comment || !authStore.user || comment.userId !== authStore.user.id) {
+    commentStore.setError('본인이 작성한 댓글만 삭제할 수 있습니다.');
+    return;
+  }
+
   try {
     await commentStore.deleteComment(props.challengeId, commentId);
   } catch (error) {
     console.error('Failed to delete comment:', error);
+    commentStore.setError(error.response?.data || '댓글 삭제에 실패했습니다.');
   }
 };
 
 const editComment = (comment) => {
-  if (comment.userId !== authStore.user?.id) {
+  if (!comment || !authStore.user || comment.userId !== authStore.user.id) {
     commentStore.setError('본인이 작성한 댓글만 수정할 수 있습니다.');
     return;
   }
@@ -362,6 +383,7 @@ const updateComment = async () => {
 
   try {
     const commentData = { commentText: editingComment.value.commentText };
+
     if (editingComment.value.commentDepth === 0) {
       await commentStore.updateComment(
         props.challengeId,
@@ -369,16 +391,38 @@ const updateComment = async () => {
         commentData
       );
     } else {
+      // For replies, we need to ensure we're using the correct IDs
+      const parentCommentId = editingComment.value.commentGroup;
+      const replyId = editingComment.value.commentId;
+
+      // Store the current comment data before making the API call
+      const currentComment = { ...editingComment.value };
+
       await commentStore.updateReply(
         props.challengeId,
-        editingComment.value.commentGroup,
-        editingComment.value.commentId,
+        parentCommentId,
+        replyId,
         commentData
       );
+
+      // Update the local comment data to maintain the correct structure
+      const updatedComments = commentStore.comments.map(comment => {
+        if (comment.commentId === replyId) {
+          return {
+            ...comment,
+            commentText: currentComment.commentText,
+            updateDate: new Date().toISOString()
+          };
+        }
+        return comment;
+      });
+
+      commentStore.comments = updatedComments;
     }
     editingComment.value = null;
   } catch (error) {
-    throw error;
+    console.error('Failed to update comment:', error);
+    commentStore.setError(error.response?.data || '댓글 수정에 실패했습니다.');
   }
 };
 
