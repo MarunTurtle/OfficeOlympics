@@ -49,28 +49,20 @@
     
     <!-- 챌린지 결과 기록 (누적) -->
     <update id="updateScore" parameterType="list">
-	    <foreach collection="list" item="score" separator=";">
-	        UPDATE challenge_scores
-	        SET score = score + #{score.score} * 100, reg_date = NOW()
-	        WHERE challenge_id = #{score.challengeId} AND player_id = #{score.playerId}
-	    </foreach>
-	  </update>
-  <!-- Macbook MyBatis version 오류 해결용 -->
-      <!-- UPDATE challenge_scores
-      SET 
-          score = CASE
-          <foreach collection="list" item="score">
-              WHEN (challenge_id = #{score.challengeId} AND player_id = #{score.playerId}) 
-              THEN score + #{score.score} * 100
-          </foreach>
-          END,
-          reg_date = NOW()
-      WHERE (challenge_id, player_id) IN
-      <foreach collection="list" item="score" open="(" separator="," close=")">
-          (#{score.challengeId}, #{score.playerId})
-      </foreach>
-  </update> -->
-
+        UPDATE challenge_scores
+        SET 
+            score = CASE
+            <foreach collection="list" item="score">
+                WHEN (challenge_id = #{score.challengeId} AND player_id = #{score.playerId}) 
+                THEN score + #{score.score} * 100
+            </foreach>
+            END,
+            reg_date = NOW()
+        WHERE (challenge_id, player_id) IN
+        <foreach collection="list" item="score" open="(" separator="," close=")">
+            (#{score.challengeId}, #{score.playerId})
+        </foreach>
+    </update>
 
     <!-- 챌린지 총 점수 업데이트 -->
     <update id="updateTotalScore">
