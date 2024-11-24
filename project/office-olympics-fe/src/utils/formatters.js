@@ -6,14 +6,21 @@
 /**
  * 날짜를 읽기 쉬운 문자열로 변환
  * @param {string | Date} date - 변환할 날짜
- * @returns {string} 포맷된 날짜 문자열 (예: "Nov 16, 2024")
- * @example
- * formatDate("2024-11-16") // returns "Nov 16, 2024"
- * formatDate(new Date()) // returns current date in formatted string
+ * @returns {string} 포맷된 날짜 문자열
  */
 export const formatDate = (date) => {
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return new Date(date).toLocaleDateString(undefined, options);
+  if (!date) return '';
+
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+
+  return new Date(date).toLocaleDateString('ko-KR', options);
 };
 
 /**

@@ -77,7 +77,11 @@
                   <!-- 작성자 정보 -->
                   <div>
                     <span class="comment-author">{{ comment.nickname }}</span>
-                    <span class="comment-date">{{ formatDate(comment.regDate) }}</span>
+                    <span class="comment-date">
+                      {{ comment.updateDate
+                        ? `${formatDate(comment.updateDate)} (수정됨)`
+                        : formatDate(comment.regDate) }}
+                    </span>
                   </div>
 
                   <!-- 댓글 수정/삭제 드롭다운 메뉴 (작성자만 표시) -->
@@ -219,7 +223,11 @@
                           <!-- 답글 작성자 정보 -->
                           <div>
                             <span class="comment-author">{{ reply.nickname }}</span>
-                            <span class="comment-date">{{ formatDate(reply.regDate) }}</span>
+                            <span class="comment-date">
+                              {{ reply.updateDate
+                                ? `${formatDate(reply.updateDate)} (수정됨)`
+                                : formatDate(reply.regDate) }}
+                            </span>
                           </div>
 
                           <!-- 답글 수정/삭제 드롭다운 메뉴 (작성자만 표시) -->
@@ -328,13 +336,15 @@ const getRepliesForComment = computed(() => {
  * @returns {string} 포맷팅된 날짜 문자열 (예: 2024년 3월 15일 오후 2:30)
  */
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  if (!date) return '';
+
+  // UTC 표시(+00:00)와 'T'를 제거하고 공백으로 대체
+  const localDate = date.replace('T', ' ').replace(/\.[0-9]{3}\+00:00/, '');
+
+  return localDate.replace(/([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):[0-9]{2}/,
+    (match, year, month, day, hour, minute) => {
+      return `${year}년 ${month}월 ${day}일 ${hour}:${minute}`;
+    });
 };
 
 /**
@@ -486,24 +496,19 @@ const updateComment = async () => {
   try {
     const commentData = { commentText: editingComment.value.commentText };
 
-    // 일반 댓글인 경우 (depth = 0)
     if (editingComment.value.commentDepth === 0) {
+      // 일반 댓글 수정 (기존 코드 유지)
       await commentStore.updateComment(
         props.challengeId,
         editingComment.value.commentId,
         commentData
       );
-    }
-    // 답글인 경우 (depth = 1)
-    else {
-      // 부모 댓글 ID와 답글 ID 설정
+    } else {
+      // 답글 수정
       const parentCommentId = editingComment.value.commentGroup;
       const replyId = editingComment.value.commentId;
 
-      // 현재 댓글 데이터 임시 저장
-      const currentComment = { ...editingComment.value };
-
-      // 서버에 답글 수정 요청
+      // 서버에 답글 수정 요청 후 전체 댓글 목록 새로고침
       await commentStore.updateReply(
         props.challengeId,
         parentCommentId,
@@ -511,21 +516,10 @@ const updateComment = async () => {
         commentData
       );
 
-      // 로컬 상태 업데이트
-      const updatedComments = commentStore.comments.map(comment => {
-        if (comment.commentId === replyId) {
-          return {
-            ...comment,
-            commentText: currentComment.commentText,
-            updateDate: new Date().toISOString()
-          };
-        }
-        return comment;
-      });
-
-      commentStore.comments = updatedComments;
+      // 전체 댓글 목록 새로고침하여 서버의 최신 데이터로 업데이트
+      await commentStore.fetchComments(props.challengeId);
     }
-    // 수정 모드 종료
+
     editingComment.value = null;
   } catch (error) {
     console.error('Failed to update comment:', error);
