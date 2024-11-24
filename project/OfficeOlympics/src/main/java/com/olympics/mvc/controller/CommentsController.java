@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +82,7 @@ public class CommentsController {
     public ResponseEntity<String> insertComment(@PathVariable("challengeId") int challengeId,
                                                 HttpSession session, @RequestBody Comments comments) {
 
-        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+        if (isInvalidComment(comments)) {
             return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
         }
 
@@ -118,10 +117,10 @@ public class CommentsController {
                                                 @PathVariable("commentId") int commentId,
                                                 HttpSession session, @RequestBody Comments comments) {
 
-        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+        if (isInvalidComment(comments)) {
             return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
         }
-
+        
         int userId = commentService.findWriter(commentId);
         if (!Validate.isValidSessionUser(session, userId)) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("본인이 작성한 댓글만 수정할 수 있습니다.");
@@ -131,7 +130,7 @@ public class CommentsController {
         comments.setUserId(userId);
         comments.setCommentId(commentId);
 
-        boolean isSoftDeleted = commentService.checkDeleted(comments);
+        boolean isSoftDeleted = commentService.checkDeleted(commentId);
         
         if (isSoftDeleted) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("삭제된 댓글은 수정할 수 없습니다.");
@@ -142,7 +141,7 @@ public class CommentsController {
         return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
                           : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-	
+    
 	
     /**
      * 댓글 삭제
@@ -188,7 +187,7 @@ public class CommentsController {
                                            @PathVariable("commentId") int commentId,
                                            @RequestBody Comments comments, HttpSession session) {
 
-        if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+        if (isInvalidComment(comments)) {
             return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
         }
 
@@ -220,7 +219,7 @@ public class CommentsController {
             @PathVariable("replyId") int replyId,
             @RequestBody Comments comments, HttpSession session) {
 
-		if (comments == null || comments.getCommentText() == null || comments.getCommentText().isEmpty()) {
+		if (isInvalidComment(comments)) {
 			return ResponseEntity.badRequest().body("댓글 내용이 필요합니다.");
 		}
 		
@@ -234,7 +233,7 @@ public class CommentsController {
 		comments.setCommentGroup(commentId);
 		comments.setCommentId(replyId);
 		
-		boolean isSoftDeleted = commentService.checkDeleted(comments);
+		boolean isSoftDeleted = commentService.checkDeleted(commentId);
         
         if (isSoftDeleted) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("삭제된 댓글은 수정할 수 없습니다.");
@@ -246,4 +245,8 @@ public class CommentsController {
 		return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
 						  : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
+    
+    private boolean isInvalidComment(Comments comments) {
+        return comments == null || comments.getCommentText() == null || comments.getCommentText().trim().isEmpty();
+    }
 }

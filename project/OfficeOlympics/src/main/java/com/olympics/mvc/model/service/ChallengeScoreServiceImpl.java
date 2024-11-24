@@ -59,11 +59,9 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	    
 	    // 있으면 update, 없으면 insert 진행
 	    if(isExist > 0) {
-	    	int isUpdated = challengeDao.updateScore(scoreData);
-	    	return isUpdated > 0;
+	    	return challengeDao.updateScore(scoreData) > 0;
 	    } else {
-	    	int isInserted = challengeDao.insertScore(scoreData);
-	    	return isInserted > 0;
+	    	return challengeDao.insertScore(scoreData) > 0;
 	    }
 	}
 	
@@ -89,7 +87,5 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	public List<Rank> selectFinalScore(int olympicsId) {
 		return challengeDao.selectFinalScore(olympicsId);
 	}
-
-
 
 }

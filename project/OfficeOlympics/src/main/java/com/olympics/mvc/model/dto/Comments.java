@@ -9,11 +9,12 @@ public class Comments {
     private String commentText; // 댓글내용
     private String regDate; // 작성일자
     private String updateDate; // 수정일자
+    private int isDeleted; // 1이면 삭제된 댓글
 
     public Comments() {}
 
 	public Comments(int commentId, int userId, int challengeId, int commentDepth, int commentGroup, String commentText,
-			String regDate, String updateDate) {
+			String regDate, String updateDate, int isDeleted) {
 		super();
 		this.commentId = commentId;
 		this.userId = userId;
@@ -23,6 +24,7 @@ public class Comments {
 		this.commentText = commentText;
 		this.regDate = regDate;
 		this.updateDate = updateDate;
+		this.isDeleted = isDeleted;
 	}
 
 	public int getCommentId() {
@@ -88,6 +90,14 @@ public class Comments {
 	public void setUpdateDate(String updateDate) {
 		this.updateDate = updateDate;
 	}
-    
-    
+
+	public int getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(int isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	
 }

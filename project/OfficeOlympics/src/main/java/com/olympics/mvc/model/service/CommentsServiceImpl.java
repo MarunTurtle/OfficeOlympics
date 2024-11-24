@@ -30,8 +30,7 @@ public class CommentsServiceImpl implements CommentsService{
 	// 사용자가 작성한 댓글이 있는지 확인
 	@Override
 	public boolean findUserComments(int challengeId) {
-		int isExist = commentsDao.findUserComments(challengeId);
-		return isExist > 0;
+		return commentsDao.findUserComments(challengeId) > 0;
 	}
 
 	// 댓글 작성자 확인
@@ -51,22 +50,36 @@ public class CommentsServiceImpl implements CommentsService{
 		return isInserted == 1;
 	}
 
+	@Transactional
+	@Override
+	public void updateCommentGroup(int commentId) {
+		commentsDao.updateCommentGroup(commentId);
+	}
+	
 	// 댓글 수정
 	@Override
-	public boolean checkDeleted(Comments comments) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("commentId", comments.getCommentId());
-		params.put("userId", comments.getUserId());
-		
-		int isDeleted = commentsDao.checkDeleted(params);
-		return isDeleted == 1;
+	public boolean checkDeleted(int commentId) {
+		return commentsDao.checkDeleted(commentId) == 1;
 	}
 
 	@Transactional
 	@Override
 	public boolean modifyComment(Comments comments) {
-		int isModified = commentsDao.modifyComment(comments);
-		return isModified == 1;
+		return commentsDao.modifyComment(comments) == 1;
+	}
+
+	// 대댓글 작성
+	@Transactional
+	@Override
+	public boolean insertReply(Comments comments) {
+		return commentsDao.insertReply(comments) == 1;
+	}
+	
+	// 대댓글 수정
+	@Transactional
+	@Override
+	public boolean modifyReply(Comments comments) {
+		return commentsDao.modifyReply(comments) == 1;
 	}
 
 	// 댓글 삭제
@@ -88,8 +101,8 @@ public class CommentsServiceImpl implements CommentsService{
             	params.put("commentId", commentId);
             	params.put("commentText", "삭제된 메시지입니다");
             	commentsDao.updateCommentText(params);
+            	
             } else {
-
             	commentsDao.deleteCommentById(commentId);
             }
         } else {
@@ -100,7 +113,7 @@ public class CommentsServiceImpl implements CommentsService{
             
             if (repliesExist == 0) {
                 Comments parentComment = commentsDao.findCommentById(comment.getCommentGroup());
-                if ("삭제된 메시지입니다".equals(parentComment.getCommentText())) {
+                if (parentComment.getIsDeleted() == 1) {
                 	commentsDao.deleteCommentById(comment.getCommentGroup());
                 }
             }
@@ -109,32 +122,6 @@ public class CommentsServiceImpl implements CommentsService{
         return true; 
 	}
 	
-
 	
-	// 대댓글 작성
-	@Transactional
-	@Override
-	public boolean insertReply(Comments comments) {
-		int isInserted = commentsDao.insertReply(comments);
-		return isInserted == 1;
-	}
-
-	@Transactional
-	@Override
-	public void updateCommentGroup(int commentId) {
-		commentsDao.updateCommentGroup(commentId);
-	}
-
-	
-	// 대댓글 수정
-	@Transactional
-	@Override
-	public boolean modifyReply(Comments comments) {
-		int isModified = commentsDao.modifyReply(comments);
-		return isModified == 1;
-	}
-
-
-
 
 }

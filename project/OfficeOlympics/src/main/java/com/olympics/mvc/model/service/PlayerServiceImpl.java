@@ -101,7 +101,6 @@ public class PlayerServiceImpl implements PlayerService{
 	@Transactional
 	@Override
 	public boolean deleteOlympics(int id) {
-		int isDeleted = playerDao.deleteOlympics(id);
-		return isDeleted == 1;
+		return playerDao.deleteOlympics(id) == 1;
 	}
 }
