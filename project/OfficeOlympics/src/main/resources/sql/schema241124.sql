@@ -68,6 +68,7 @@ CREATE TABLE comments (
   comment_text VARCHAR(255) NOT NULL, -- 댓글 내용
   reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 등록 날짜 (기본값: 현재 시간)
   update_date TIMESTAMP DEFAULT NULL, -- 수정 날짜 (NULL 가능)
+  is_deleted TINYINT(1) DEFAULT 0, -- 1이면 삭제된 댓글
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE NO ACTION, -- 사용자 삭제 시 연쇄 삭제
   FOREIGN KEY (challenge_id) REFERENCES challenges(challenge_id) ON DELETE CASCADE ON UPDATE NO ACTION -- 챌린지 삭제 시 연쇄 삭제
 );
