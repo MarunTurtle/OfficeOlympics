@@ -1,3 +1,27 @@
+# Office Olympics 오피스 올림픽 설계서
+
+## 목차
+- [Office Olympics 오피스 올림픽 설계서](#office-olympics-오피스-올림픽-설계서)
+  - [목차](#목차)
+    - [1. 프로젝트 개요](#1-프로젝트-개요)
+    - [2. 타겟 페르소나](#2-타겟-페르소나)
+    - [3. 기대 효과](#3-기대-효과)
+    - [4. 핵심 기능](#4-핵심-기능)
+    - [5. 유저 저니 맵](#5-유저-저니-맵)
+    - [6. 기술 스택](#6-기술-스택)
+    - [7. 시스템 아키텍처](#7-시스템-아키텍처)
+    - [8. API 명세서](#8-api-명세서)
+    - [9. Use Case 다이어그램](#9-use-case-다이어그램)
+    - [10. ERD 다이어그램](#10-erd-다이어그램)
+    - [11. Class 다이어그램](#11-class-다이어그램)
+    - [12. 변수명 리스트](#12-변수명-리스트)
+    - [13. 화면설계서](#13-화면설계서)
+      - [1) 공통 컴포넌트](#1-공통-컴포넌트)
+      - [2) 페이지 구성](#2-페이지-구성)
+      - [3) 로고](#3-로고)
+      - [4) 색상 팔레트](#4-색상-팔레트)
+      - [5) 타이포그래피](#5-타이포그래피)
+
 ### 1. 프로젝트 개요
 
 - **프로젝트 명**: 오피스 올림픽
@@ -122,7 +146,7 @@
 | ChallengesDTO | DTO | Challenge \| Score \| Rank |
 | CommentsDTO | DTO | Comments |
 
-### 12. 화면설계서
+### 13. 화면설계서
 
 [Figma 목업 링크](https://www.figma.com/file/QGQUGc3WrTEybfLmkKcl8f?node-id=0:1&locale=en&type=design)
 
@@ -170,14 +194,12 @@
    - 로그인: 이메일/비밀번호 입력
    - 회원가입: 개인정보 입력 폼, 프로필 이미지 업로드
 
-#### 3) 디자인 가이드
-
-#### 1) 로고
+#### 3) 로고
 ![Office Olympics Logo](/media/frontend/logo_office_olympics_large.png)
 - 사무용품을 활용한 올림픽 오륜기 모티브
 - USB, 자, 시계, 스테이플러, 도넛으로 구성
 
-#### 2) 색상 팔레트
+#### 4) 색상 팔레트
 ![Color Palette](/media/frontend/color_palette.png)
 | 색상 | HEX | 용도 |
 |------|-----|------|
@@ -190,7 +212,7 @@
 - 모든 색상은 WCAG 2.0 접근성 기준을 준수
 - CSS 변수로 관리 (`--primary-color`, `--secondary-color` 등)
 
-#### 3) 타이포그래피
+#### 5) 타이포그래피
 - **기본 서체**: Pretendard
   - 한글 최적화 및 가독성이 우수한 오픈소스 글꼴
   - [Pretendard 공식 GitHub](https://github.com/orioncactus/pretendard)
