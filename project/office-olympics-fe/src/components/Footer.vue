@@ -6,10 +6,7 @@
  */
 
 <template>
-  <!--
-    푸터 영역
-    copyright 정보 표시
-  -->
+  <!-- 푸터 영역 copyright 정보 표시 -->
   <footer class="footer">
     <p>&copy; 2024 Office Olympics. All rights reserved.</p>
   </footer>

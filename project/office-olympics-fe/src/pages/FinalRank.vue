@@ -9,7 +9,7 @@
 <template>
   <MainLayout>
     <div class="container py-4">
-      <h1 class="text-center mb-5">올림픽 최종 결과</h1>
+      <h1 class="text-center mt-5 mb-5">올림픽 최종 결과</h1>
 
       <div class="row justify-content-center">
         <div class="col-md-8">
@@ -34,7 +34,7 @@
                 <div class="rank-card bg-success text-white p-4 rounded">
                   <div class="rank-position">2위</div>
                   <div class="player-name">{{ rankings[1].playerName }}</div>
-                  <div class="score">총점: {{ formatScore(rankings[1].score) }}</div>
+                  <div class="score">{{ formatScore(rankings[1].score) }} 점</div>
                 </div>
               </div>
 
@@ -43,7 +43,7 @@
                 <div class="rank-card bg-primary text-white p-4 rounded">
                   <div class="rank-position">1위</div>
                   <div class="player-name">{{ rankings[0].playerName }}</div>
-                  <div class="score">총점: {{ formatScore(rankings[0].score) }}</div>
+                  <div class="score">{{ formatScore(rankings[0].score) }} 점</div>
                 </div>
               </div>
 
@@ -52,17 +52,17 @@
                 <div class="rank-card bg-warning p-4 rounded">
                   <div class="rank-position">3위</div>
                   <div class="player-name">{{ rankings[2].playerName }}</div>
-                  <div class="score">총점: {{ formatScore(rankings[2].score) }}</div>
+                  <div class="score">{{ formatScore(rankings[2].score) }} 점</div>
                 </div>
               </div>
             </div>
 
             <!-- 액션 버튼 -->
             <div class="d-flex justify-content-center gap-3 mt-5">
-              <button class="btn btn-primary" @click="confirmNewOlympics">
+              <button class="btn btn-primary w-100" @click="confirmNewOlympics">
                 새로운 올림픽 열기
               </button>
-              <button class="btn btn-secondary" @click="goToMain">
+              <button class="btn btn-secondary w-100" @click="goToMain">
                 홈페이지로 돌아가기
               </button>
             </div>
@@ -154,41 +154,139 @@ const goToMain = () => {
 </script>
 
 <style scoped>
-/*
-  시상대 컨테이너 스타일링:
-  - 최소 높이 설정으로 시각적 안정감
-  - 순위별 높이 차이 표현
-*/
+/* 시상대 컨테이너 기본 스타일 */
 .podium-container {
-  min-height: 400px;
+  min-height: 25rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem;
+  flex-wrap: nowrap; /* 줄바꿈 방지 */
 }
 
 /* 각 순위 카드 스타일링 */
 .podium-item {
-  width: 30%;
+  flex: 1;
+  min-width: 8rem; /* 최소 너비 설정 */
+  max-width: 15rem; /* 최대 너비 설정 */
 }
 
 .rank-card {
-  text-align: center;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  gap: 0.6rem;
+  padding: 1.5rem !important;
 }
 
-/* 순위별 높이 차이 설정 */
-.first { transform: translateY(-50px); }
-.second { transform: translateY(-25px); }
-.third { transform: translateY(0); }
+/* 순위별 높이와 위치 차이 설정 */
+.first .rank-card {
+  height: 25.25rem;
+}
 
-/* 순위 텍스트 스타일링 */
+.second .rank-card {
+  height: 19.25rem;
+}
+
+.third .rank-card {
+  height: 16.25rem;
+}
+
+/* 순위 텍스트 반응형 조정 */
 .rank-position {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
   font-weight: bold;
+  color: white;
 }
 
 .player-name {
-  font-size: 1.2rem;
-  margin: 10px 0;
+  font-size: clamp(1rem, 1.5vw, 2.5rem);
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: white;
+  word-break: break-all;
 }
 
 .score {
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 1.2vw, 1.2rem);
+  color: black;
+  font-weight: 600;
+}
+
+/* 버튼 컨테이너 스타일 */
+.d-flex.justify-content-center.gap-3.mt-5 {
+  flex-wrap: wrap;
+}
+
+/* 버튼 공통 스타일 */
+.btn {
+  padding: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 200px;
+  flex: 1;
+}
+
+/* Primary 버튼 스타일 */
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.02);
+}
+
+/* Secondary 버튼 스타일 */
+.btn-secondary {
+  border: none;
+}
+
+.btn-secondary:hover {
+  transform: scale(1.02);
+}
+
+/* 태블릿 화면 대응 */
+@media (max-width: 992px) {
+  .podium-container {
+    padding: 0.5rem;
+  }
+
+  .rank-card {
+    padding: 1rem !important;
+  }
+}
+
+/* 모바일 화면 대응 */
+@media (max-width: 768px) {
+  .podium-container {
+    gap: 0.5rem;
+  }
+
+  .first .rank-card {
+    height: 21rem;
+  }
+
+  .second .rank-card {
+    height: 17rem;
+  }
+
+  .third .rank-card {
+    height: 14rem;
+  }
+}
+
+/* 작은 모바일 화면 대응 */
+@media (max-width: 480px) {
+  .podium-item {
+    min-width: 6rem;
+  }
+
+  .rank-card {
+    padding: 0.75rem !important;
+  }
 }
 </style>

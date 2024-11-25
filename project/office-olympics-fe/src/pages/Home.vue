@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
         - 챌린지 없음 메시지
         - 챌린지 그리드 표시
       -->
-      <div class="featured-challenges mt-5">
+      <div class="featured-challenges mt-5 mb-5">
         <h2 class="text-center mb-4">추천 챌린지</h2>
 
         <!-- 로딩 스피너 -->
@@ -376,7 +376,6 @@ onBeforeUnmount(() => {
 .featured-challenges {
   padding: 0 2rem;
   max-width: 1400px;
-  margin: 0 auto;
 }
 
 /**

@@ -263,18 +263,21 @@ onMounted(() => {
 .btn-primary:hover {
   background-color: var(--interaction-hover-color);
   border-color: var(--interaction-hover-color);
+  transform: scale(1.02);
+
 }
 
 /* 삭제 버튼 */
 .btn-outline-danger {
-  color: var(--alert-color);
-  border-color: var(--alert-color);
+  color: white;
+  background-color: var(--alert-color);
   font-weight: 600;
 }
 
 .btn-outline-danger:hover {
-  background-color: var(--alert-color);
-  border-color: var(--alert-color);
+  background-color: #e84c76;
   color: white;
+  transform: scale(1.02);
+
 }
 </style>
