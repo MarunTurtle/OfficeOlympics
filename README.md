@@ -21,6 +21,7 @@
       - [3) 로고](#3-로고)
       - [4) 색상 팔레트](#4-색상-팔레트)
       - [5) 타이포그래피](#5-타이포그래피)
+    - [14. 간트차트](#14-간트차트)
 
 ### 1. 프로젝트 개요
 
@@ -217,3 +218,6 @@
   - 한글 최적화 및 가독성이 우수한 오픈소스 글꼴
   - [Pretendard 공식 GitHub](https://github.com/orioncactus/pretendard)
 
+### 14. 간트차트
+
+![Gantt Chart](/media/GanttChart.png)
