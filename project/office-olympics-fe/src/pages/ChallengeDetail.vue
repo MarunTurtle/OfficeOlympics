@@ -98,7 +98,7 @@
  * }
  */
 
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 import { useCommentStore } from '@/stores/comment';
@@ -133,28 +133,42 @@ const transformYoutubeUrl = (url) => {
   return url;
 };
 
-// 컴포넌트 마운트 시 데이터 로드
-onMounted(async () => {
-  try {
-    loading.value = true;
-    // 챌린지 상세 정보와 메인 페이지 데이터 병렬 로드
-    const [challengeResponse, mainPageResponse] = await Promise.all([
-      challengeStore.fetchChallengeDetails(challengeId),
-      challengeStore.fetchMainPageData()
-    ]);
+/**
+ * 라우트 파라미터 변경 감지 및 챌린지 데이터 갱신
+ *
+ * @description
+ * - 사용자가 추천 챌린지 카드를 클릭할 때 페이지 새로고침 없이 컨텐츠 갱신
+ * - 직접 URL 입력 시에도 올바른 챌린지 데이터 로드
+ * - immediate 옵션으로 컴포넌트 마운트 시 초기 데이터 자동 로드
+ */
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId) {
+      loading.value = true;
+      try {
+        // 성능 최적화: 챌린지 상세 정보와 메인 페이지 데이터를 병렬로 요청
+        const [challengeResponse, mainPageResponse] = await Promise.all([
+          challengeStore.fetchChallengeDetails(parseInt(newId)),
+          challengeStore.fetchMainPageData()
+        ]);
 
-    challenge.value = {
-      id: challengeResponse.challengeId,
-      title: challengeResponse.challengeName,
-      description: challengeResponse.challengeDesc,
-      videoUrl: transformYoutubeUrl(challengeResponse.challengeUrl)
-    };
-  } catch (error) {
-    console.error('Failed to fetch challenge details:', error);
-  } finally {
-    loading.value = false;
-  }
-});
+        // 백엔드 응답을 프론트엔드 데이터 구조로 변환
+        challenge.value = {
+          id: challengeResponse.challengeId,
+          title: challengeResponse.challengeName,
+          description: challengeResponse.challengeDesc,
+          videoUrl: transformYoutubeUrl(challengeResponse.challengeUrl)
+        };
+      } catch (error) {
+        console.error('Failed to fetch challenge details:', error);
+      } finally {
+        loading.value = false;
+      }
+    }
+  },
+  { immediate: true }
+);
 
 // 챌린지 시작 핸들러
 const startChallenge = () => {

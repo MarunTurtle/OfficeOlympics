@@ -5,30 +5,14 @@
  */
 
 <template>
-  <!--
-    추천 챌린지 카드 컨테이너
-    카드 전체가 클릭 가능한 영역
-  -->
-  <div class="recommended-challenge-card">
-    <!--
-      썸네일 영역
-      YouTube 영상의 썸네일을 16:9 비율로 표시
-    -->
+  <RouterLink :to="`/challenges/${id}`" class="recommended-challenge-card">
     <div class="thumbnail-wrapper">
       <img :src="thumbnailUrl" :alt="title" class="card-img">
     </div>
-
-    <!--
-      카드 본문
-      제목과 숨겨진 링크 포함
-    -->
     <div class="card-body">
       <h4 class="card-title">{{ title }}</h4>
-      <!-- stretched-link로 카드 전체 영역을 클릭 가능하게 만듦 -->
-      <RouterLink :to="`/challenges/${id}`" class="stretched-link">
-      </RouterLink>
     </div>
-  </div>
+  </RouterLink>
 </template>
 
 <script setup>
@@ -77,6 +61,9 @@ const thumbnailUrl = computed(() => {
   - 둥근 모서리 처리
 */
 .recommended-challenge-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
   position: relative;
   margin-bottom: 1rem;
   border-radius: 8px;
