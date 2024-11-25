@@ -149,20 +149,29 @@ const remainingPlayers = computed(() => rankings.value.slice(3));
 
 /* 금메달 색상 */
 .rank-1-card {
-  background-color: #FFD700;
-  background: linear-gradient(to right, #FFD700, #FDB931);
+  background-color: var(--tertiary-color);
+}
+
+.rank-1-card .rank-number {
+  color: #FFD700;
 }
 
 /* 은메달 색상 */
 .rank-2-card {
-  background-color: #C0C0C0;
-  background: linear-gradient(to right, #C0C0C0, #A7A7A7);
+    background-color: var(--tertiary-color);
+}
+
+.rank-2-card .rank-number {
+  color: #C0C0C0;
 }
 
 /* 동메달 색상 */
 .rank-3-card {
-  background-color: #CD7F32;
-  background: linear-gradient(to right, #CD7F32, #B36A2B);
+  background-color: var(--tertiary-color);
+}
+
+.rank-3-card .rank-number {
+  color: #CD7F32;
 }
 
 .rank-number {
