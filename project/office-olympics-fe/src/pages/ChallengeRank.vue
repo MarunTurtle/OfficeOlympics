@@ -8,61 +8,65 @@
 <template>
   <MainLayout>
     <div class="container py-4">
-      <h1 class="text-center mb-5">챌린지 결과</h1>
+      <h1 class="text-center mb-5">Current Leaderboard</h1>
 
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <!--
-            로딩 상태 표시
-            데이터 로딩 중일 때 스피너 표시
-          -->
           <div v-if="loading" class="text-center">
             <div class="spinner-border" role="status">
-              <span class="visually-hidden">로딩중...</span>
+              <span class="visually-hidden">Loading...</span>
             </div>
           </div>
 
-          <!--
-            에러 상태 표시
-            데이터 로딩 실패 시 에러 메시지 표시
-          -->
           <div v-else-if="error" class="alert alert-danger text-center">
             {{ error }}
           </div>
 
-          <!-- 순위 표시 섹션 -->
           <div v-else>
             <div class="rankings-list">
-              <!--
-                각 플레이어의 순위 아이템
-                순위, 이름, 점수를 한 줄에 표시
-              -->
-              <div v-for="player in rankings" :key="player.rank"
-                   class="ranking-item p-3 mb-2 border rounded">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <span class="me-3">#{{ player.rank }}</span>
-                    <span>{{ player.playerName }}</span>
+              <!-- Top 3 Rankings -->
+              <div v-for="player in topThree" :key="player.rank"
+                   :class="['ranking-card', `rank-${player.rank}-card`]">
+                <div class="d-flex justify-content-between align-items-center p-4">
+                  <div class="d-flex align-items-center gap-4">
+                    <div class="rank-number">{{ player.rank }}위</div>
+                    <div class="player-info">
+                      <div class="player-name">{{ player.playerName }}</div>
+                    </div>
                   </div>
-                  <div>
-                    <strong>{{ player.score }}</strong> 점
-                  </div>
+                  <div class="score">{{ player.score }} 점</div>
                 </div>
               </div>
-            </div>
 
-            <!--
-              네비게이션 버튼
-              - 다음 챌린지로 이동
-              - 올림픽 종료 및 최종 순위 확인
-            -->
-            <div class="d-flex justify-content-center gap-3 mt-4">
-              <button class="btn btn-primary" @click="nextChallenge">
-                다음 챌린지
-              </button>
-              <button class="btn btn-secondary" @click="endOlympics">
-                올림픽 종료
-              </button>
+              <!-- Regular Rankings -->
+              <div v-for="player in remainingPlayers" :key="player.rank"
+                   class="regular-ranking-item">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                  <div class="d-flex align-items-center gap-4">
+                    <div class="regular-rank">{{ player.rank }}위</div>
+                    <div class="regular-player-name">{{ player.playerName }}</div>
+                  </div>
+                  <div class="regular-score">{{ player.score }} 점</div>
+                </div>
+              </div>
+
+              <!-- 네비게이션 버튼 - rankings-list 안으로 이동 -->
+              <div class="d-flex justify-content-between gap-3 mt-5">
+                <button
+                  type="button"
+                  class="btn btn-primary flex-grow-1"
+                  @click="nextChallenge"
+                >
+                  다음 챌린지
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-alert flex-grow-1"
+                  @click="endOlympics"
+                >
+                  올림픽 종료
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -84,7 +88,7 @@
  * }
  */
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useChallengeStore } from '@/stores/challenge';
 import MainLayout from '@/layouts/MainLayout.vue';
@@ -120,4 +124,146 @@ const nextChallenge = () => {
 const endOlympics = () => {
   router.push(`/challenges/${route.params.id}/final-rank`);
 };
+
+// 컴퓨티드 프로퍼티 추가
+const topThree = computed(() => rankings.value.slice(0, 3));
+const remainingPlayers = computed(() => rankings.value.slice(3));
 </script>
+
+<style scoped>
+.rankings-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ranking-card {
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ranking-card:hover {
+  transform: translateY(-3px);
+}
+
+/* 금메달 색상 */
+.rank-1-card {
+  background-color: #FFD700;
+  background: linear-gradient(to right, #FFD700, #FDB931);
+}
+
+/* 은메달 색상 */
+.rank-2-card {
+  background-color: #C0C0C0;
+  background: linear-gradient(to right, #C0C0C0, #A7A7A7);
+}
+
+/* 동메달 색상 */
+.rank-3-card {
+  background-color: #CD7F32;
+  background: linear-gradient(to right, #CD7F32, #B36A2B);
+}
+
+.rank-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.player-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.score {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.regular-ranking-item {
+  background-color: white;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.regular-ranking-item:hover {
+  transform: translateY(-3px);
+  background-color: #f8f9fa;
+}
+
+.regular-rank {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.regular-player-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.regular-score {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #666;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .rank-number, .player-name, .score {
+    font-size: 1.1rem;
+  }
+
+  .regular-rank, .regular-player-name, .regular-score {
+    font-size: 1rem;
+  }
+}
+
+/**
+ * 버튼 공통 스타일
+ * - 일관된 크기와 패딩
+ * - 부드러운 전환 효과
+ */
+.btn {
+  padding: 1rem 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 8px;
+}
+
+/**
+ * Primary 버튼 스타일
+ * - 다음 챌린지 버튼
+ */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.02);
+}
+
+/**
+ * Alert 버튼 스타일
+ * - 올림픽 종료 버튼
+ */
+.btn-alert {
+  background-color: var(--alert-color);
+  color: white;
+}
+
+.btn-alert:hover {
+  background-color: #e84c76; /* alert color의 더 진한 버전 */
+  transform: scale(1.02);
+}
+</style>
