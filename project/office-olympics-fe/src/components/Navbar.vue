@@ -210,20 +210,54 @@ const onLogout = async () => {
   transform: scale(0.95);
 }
 
-/* Mobile menu styling */
+/* Mobile menu optimization */
 @media (max-width: 991.98px) {
   .navbar-collapse {
     padding: 1rem 0;
+    /* Optimize collapse transition */
+    transition: height 0.2s ease-out;
+    transform-origin: top;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    background: var(--secondary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Container positioning */
+  .navbar > .container {
+    position: relative;
   }
 
   .nav-item {
     margin: 0.5rem 0;
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .nav-button,
   .btn-tertiary {
     width: 100%;
     text-align: center;
+    /* Remove transform animations on mobile */
+    transform: none !important;
+  }
+
+  /* Optimize toggler button */
+  .navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+  }
+
+  .navbar-toggler:hover {
+    opacity: 0.7;
   }
 }
 </style>
