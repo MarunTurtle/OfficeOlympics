@@ -233,7 +233,7 @@ public class CommentsController {
 		comments.setCommentGroup(commentId);
 		comments.setCommentId(replyId);
 		
-		boolean isSoftDeleted = commentService.checkDeleted(commentId);
+		boolean isSoftDeleted = commentService.checkDeleted(replyId);
         
         if (isSoftDeleted) {
         	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("삭제된 댓글은 수정할 수 없습니다.");
