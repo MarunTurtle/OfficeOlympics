@@ -1,13 +1,26 @@
 package com.olympics.mvc.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.olympics.mvc.interceptor.LoginInterceptor;
 
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer{
+	
+	@Autowired
+	private LoginInterceptor loginInterceptor;
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
+		.excludePathPatterns("/auth/**", "/", "/error", "/static/**");
+	}
 	
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
