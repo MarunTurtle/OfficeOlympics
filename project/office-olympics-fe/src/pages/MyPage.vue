@@ -59,7 +59,7 @@
             <div class="card-body p-4">
               <div v-if="players.length === 0" class="text-center py-5">
                 <i class="bi bi-people-fill text-muted fs-1 mb-3 d-block"></i>
-                <p class="text-muted mb-0">생성된 ��림픽이 없습니다</p>
+                <p class="text-muted mb-0">생성된 올림픽이 없습니다</p>
               </div>
               <div v-else class="table-responsive">
                 <table class="table table-hover align-middle">
