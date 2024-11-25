@@ -1,16 +1,13 @@
 /**
  * @파일명: Navbar.vue
- * @설명: 모든 페이지 상단에 표시되는 네비게이션 바 컴포넌트
+ * @설명: 사용자의 인증 상태에 따라 다른 메뉴를 표시, 반응형 디자인을 지원하는 상단 네비게이션 바
  * @관련백엔드:
  *   - POST /api/auth/logout (로그아웃 요청)
  *   - 인증 상태에 따라 다른 메뉴 표시
  */
 
 <template>
-  <!--
-    Bootstrap Navbar 컴포넌트
-    반응형 디자인을 위해 expand-lg 클래스 사용
-  -->
+  <!-- 반응형 네비게이션 바 컨테이너 -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
       <!-- 로고 및 홈 링크 -->
@@ -29,7 +26,7 @@
 
       <!-- 네비게이션 메뉴 아이템들 -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto text-end">
+        <ul class="navbar-nav ms-auto">
           <!--
             Case 1: 로그아웃 상태
             로그인/회원가입 버튼 표시
@@ -79,11 +76,12 @@
 
 <script setup>
 /**
- * @컴포넌트명: Navbar
- * @설명: 사용자 인증 상태에 따라 동적으로 메뉴를 표시하는 네비게이션 바
- * @의존성:
- *   - AuthStore: 사용자 인증 상태 관리
- *   - OlympicStore: 올림픽 생성 상태 관리
+ * 네비게이션 바 로직
+ *
+ * @의존성
+ * - AuthStore: 사용자 인증 상태 관리
+ * - OlympicStore: 올림픽 데이터 상태 관리
+ * - Router: 페이지 네비게이션
  */
 
 import { computed } from "vue";
@@ -119,13 +117,22 @@ const onLogout = async () => {
 
 <style scoped>
 /*
-  네비게이션 바 컴포넌트의 스타일 정의
-  1. 컴포넌트 레이아웃
-  2. 인터랙션 효과
-  3. 버튼 스타일 변형
+  네비게이션 바 스타일링
+
+  1. 기본 레이아웃
+    - 로고 크기와 여백 설정
+    - 기본 배경색 및 정렬
+
+  2. 버튼 스타일
+    - 기본/경고/보조 버튼 변형
+    - 호버 및 클릭 인터랙션
+
+  3. 반응형 디자인
+    - 모바일 뷰에서의 메뉴 표시
+    - 터치 인터랙션 최적화
 */
 
-/* 1. 기본 레이아웃 스타일 */
+/* 기본 레이아웃 */
 .navbar {
   background-color: var(--secondary-color);
 }
@@ -140,7 +147,7 @@ const onLogout = async () => {
   margin-left: 10px;
 }
 
-/* 2. 공통 버튼 스타일 */
+/* 버튼 기본 스타일 */
 .nav-button {
   /* 텍스트 스타일링 */
   font-size: 1rem;
@@ -210,54 +217,43 @@ const onLogout = async () => {
   transform: scale(0.95);
 }
 
-/* Mobile menu optimization */
-@media (max-width: 991.98px) {
-  .navbar-collapse {
-    padding: 1rem 0;
-    /* Optimize collapse transition */
-    transition: height 0.2s ease-out;
-    transform-origin: top;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    background: var(--secondary-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Container positioning */
-  .navbar > .container {
-    position: relative;
+/* 반응형 스타일 */
+@media (max-width: 991.98px) { /* Bootstrap's lg breakpoint */
+  .navbar-nav {
+    width: 100%;
+    display: flex;
+    align-items: center; /* Center items vertically */
   }
 
   .nav-item {
-    margin: 0.5rem 0;
-    opacity: 1;
-    transform: translateX(0);
+    width: 100%;
+    margin: 5px auto; /* Changed from '5px 0' to '5px auto' for horizontal centering */
+    display: flex;
+    justify-content: center; /* Center the button container */
   }
 
   .nav-button,
   .btn-tertiary {
-    width: 100%;
+    width: 95%;
+    display: block;
     text-align: center;
-    /* Remove transform animations on mobile */
-    transform: none !important;
+    border-radius: 5px !important;
+    transition: background-color 0.3s, transform 0.2s !important;
   }
 
-  /* Optimize toggler button */
-  .navbar-toggler {
-    border: none;
-    padding: 0.5rem;
-    transition: opacity 0.2s ease;
+  /* Reduce hover scale effect for mobile */
+  .nav-button:hover,
+  .btn-tertiary:hover {
+    transform: scale(1.02); /* Reduced from 1.05 to 1.02 */
   }
 
-  .navbar-toggler:focus {
-    box-shadow: none;
-    outline: none;
+  .nav-button:active,
+  .btn-tertiary:active {
+    transform: scale(0.98); /* Adjusted from 0.95 to 0.98 */
   }
 
-  .navbar-toggler:hover {
-    opacity: 0.7;
+  .navbar-collapse {
+    transition: height 0.3s !important;
   }
 }
 </style>
