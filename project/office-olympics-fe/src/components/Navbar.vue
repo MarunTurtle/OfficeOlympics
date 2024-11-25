@@ -29,7 +29,7 @@
 
       <!-- 네비게이션 메뉴 아이템들 -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto text-end">
           <!--
             Case 1: 로그아웃 상태
             로그인/회원가입 버튼 표시
@@ -208,5 +208,22 @@ const onLogout = async () => {
 
 .btn-tertiary:active {
   transform: scale(0.95);
+}
+
+/* Mobile menu styling */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding: 1rem 0;
+  }
+
+  .nav-item {
+    margin: 0.5rem 0;
+  }
+
+  .nav-button,
+  .btn-tertiary {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>
