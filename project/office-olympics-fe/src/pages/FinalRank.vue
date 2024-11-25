@@ -9,7 +9,8 @@
 <template>
   <MainLayout>
     <div class="container py-4">
-      <h1 class="text-center mt-5 mb-5">올림픽 최종 결과</h1>
+      <h1 class="text-center mt-3">올림픽 최종 결과</h1>
+      <h2 class="text-center mt-2 mb-3">축하합니다!</h2>
 
       <div class="row justify-content-center">
         <div class="col-md-8">

@@ -121,13 +121,13 @@ const thumbnailUrl = computed(() => {
   margin: 0;
   font-size: 1rem;
   line-height: 1.4;
-  height: 2.0em;
+  height: 1.4em;
   font-weight: 500;
   color: #2c3e50;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 

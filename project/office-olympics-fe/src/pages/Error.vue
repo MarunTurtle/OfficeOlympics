@@ -6,22 +6,22 @@
 
 <template>
   <MainLayout>
-    <!--
-      에러 페이지 컨테이너
-      중앙 정렬된 에러 메시지와 홈 버튼 표시
-    -->
-    <div class="error-page">
-      <!-- 에러 제목 -->
-      <h1 class="text-danger text-center">앗! 문제가 발생했습니다.</h1>
-
-      <!-- 에러 설명 -->
-      <p class="text-center">
-        찾으시는 페이지가 삭제되었거나, 일시적으로 사용할 수 없습니다.
-      </p>
-
-      <!-- 홈으로 이동하는 네비게이션 버튼 -->
-      <div class="text-center mt-4">
-        <RouterLink to="/" class="btn btn-primary">홈으로 이동</RouterLink>
+    <div class="auth-form">
+      <h1 class="text-center mb-4 text-danger">앗! 문제가 발생했습니다.</h1>
+      <div class="error-content">
+        <img
+          src="@/assets/images/error.png"
+          alt="Office Olympics Error"
+          class="error-image mb-4"
+        />
+        <p class="text-center text-muted mb-4">
+          찾으시는 페이지가 삭제되었거나, 일시적으로 사용할 수 없습니다.
+        </p>
+        <div class="text-center">
+          <RouterLink to="/" class="btn btn-primary w-100">
+            홈으로 이동
+          </RouterLink>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -32,28 +32,48 @@ import MainLayout from '@/layouts/MainLayout.vue';
 </script>
 
 <style scoped>
-/*
-  에러 페이지 스타일링:
-  - 중앙 정렬
-  - 적절한 여백
-  - 반응형 폰트 크기
-*/
-.error-page {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
+.auth-form {
+  max-width: 40rem;
+  margin: 20px auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+}
+
+.error-image {
+  width: 100%;
+  max-width: 40rem;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.error-content {
+  border-radius: 8px;
+  padding: 1.5rem;
   text-align: center;
 }
 
-/* 에러 제목 스타일 */
-.error-page h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+h1 {
+  color: var(--alert-color);
+  font-weight: 600;
 }
 
-/* 에러 설명 텍스트 스타일 */
-.error-page p {
-  font-size: 1.2rem;
-  color: #6c757d;
+p {
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--interaction-hover-color);
+  transform: scale(1.02);
 }
 </style>

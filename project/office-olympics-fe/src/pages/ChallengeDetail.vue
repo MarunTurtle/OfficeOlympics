@@ -187,8 +187,6 @@ const recommendedChallenges = computed(() => {
 /* 메인 콘텐츠 영역 스타일링 */
 .content-section {
   background: white;
-  border-radius: 12px;
-  border: 1px solid var(--tertiary-color);
   overflow: hidden;
 }
 
