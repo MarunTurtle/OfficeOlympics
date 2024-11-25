@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer{
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(loginInterceptor).addPathPatterns("/**")
-		.excludePathPatterns("/auth/**", "/", "/error", "/static/**");
+		.excludePathPatterns("/auth/**", "/", "/error", "/static/**, /api-user/**", "/swagger-ui/**", "/v3/api-docs/**");
 	}
 	
 	@Override
