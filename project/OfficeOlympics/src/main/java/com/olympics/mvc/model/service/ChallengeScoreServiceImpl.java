@@ -45,7 +45,7 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 
 	    // 변환된 데이터를 insert에 사용 가능한 형태로 준비
 	    List<Map<String, Object>> scoreData = new ArrayList<>();
-	    for (int i = 0; i < score.getPlayerId().size(); i++) {
+	    for (int i = 0; i < score.getScores().size(); i++) {
 	        Map<String, Object> map = new HashMap<>();
 	        map.put("challengeId", score.getChallengeId());
 	        map.put("playerId", score.getPlayerId().get(i));
