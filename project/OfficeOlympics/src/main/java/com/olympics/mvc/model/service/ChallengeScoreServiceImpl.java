@@ -51,7 +51,6 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	        map.put("playerId", score.getPlayerId().get(i));
 	        map.put("score", score.getScores().get(i));
 	        scoreData.add(map);
-	        System.out.println(scoreData.get(i));
 	    }
 	    
 	    // challenge_id와 player_id에 대응하는 score_id가 있는지 확인
