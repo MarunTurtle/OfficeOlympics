@@ -14,8 +14,6 @@ public class LoginInterceptor implements HandlerInterceptor{
 			throws Exception {
 		
 		HttpSession session = request.getSession();
-	    System.out.println("Session ID: " + session.getId());
-	    System.out.println("loginUserId: " + session.getAttribute("loginUserId"));
 	    
 	    Integer isLogin = (Integer) session.getAttribute("loginUserId");
 	    if (isLogin == null) {
@@ -23,7 +21,6 @@ public class LoginInterceptor implements HandlerInterceptor{
 	        return false;
 	    }
 
-	    System.out.println("User logged in with ID: " + isLogin);
 	    return true;
 	}
 	
