@@ -58,8 +58,10 @@ public class ChallengeController {
 		
 		Challenge challenge = challengeService.selectChallenge(challengeId);
 		
-		return challenge != null ? ResponseEntity.ok(challenge)
-								 : ResponseEntity.noContent().build();
+		if(challenge != null) {
+			return ResponseEntity.ok(challenge);
+		}
+		return ResponseEntity.noContent().build();
 	}
     
     
@@ -70,6 +72,7 @@ public class ChallengeController {
      * @return 챌린지 점수 기록 페이지 문자열
      */
     @GetMapping("/{challengeId}/score")
+    @Operation(summary = "챌린지 점수 기록 폼 반환", description = "챌린지의 점수를 기록하는 폼을 반환합니다.")
     public ResponseEntity<?> getScoreForm(@PathVariable("challengeId") int challengeId, HttpSession session){
 
     	int userId = (int) session.getAttribute("loginUserId");
@@ -143,6 +146,7 @@ public class ChallengeController {
 		return ResponseEntity.ok(rank);
 	}
 	
+    
     /**
      * 챌린지 종료 시 최종 리더보드 조회
      *

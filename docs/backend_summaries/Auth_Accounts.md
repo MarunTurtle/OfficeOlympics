@@ -5,12 +5,14 @@
 - [작업 내역](#작업-내역)
 - [각 파일의 내용](#각-파일의-내용)
 - [비밀번호 해싱 처리 방법](#\※-비밀번호-해싱-처리-방법)
+- [파일 검증 기능](#\※-파일-검증-기능)
+- [세션 검증 기능](#\※-세션-검증-기능)
 
 ## 주요 코드 구조 및  로직
 
 ### Swagger API 이미지
 
-![be_auth.png](../media/backend/be_auth.png)
+![be_auth.png](../../media/backend/be_auth.png)
 
 - **회원 정보 관리**: `User` 모델과 `UserDao` 인터페이스를 통해 데이터베이스와 연동하며, 주요 메서드로 `insertUser`, `selectUser`, `selectById`, `deleteUser`, `modifyUser` 등이 구현되어 있습니다.
 - **비밀번호 암호화**: `UserServiceImpl`에서 `HashUtil`을 사용해 비밀번호를 SHA-256으로 해싱하고 `salt`를 적용하는 방식이 적절히 설정되었습니다.

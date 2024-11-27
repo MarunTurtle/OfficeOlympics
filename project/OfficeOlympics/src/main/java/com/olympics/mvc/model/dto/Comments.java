@@ -5,7 +5,7 @@ public class Comments {
     private int userId; // 작성자 ID
     private int challengeId; // 챌린지 ID
     private int commentDepth; // 0 이면 댓글, 1이면 대댓글
-    private int commentGroup; // 댓글 그룹(원댓글 ID)
+    private int commentGroup; // 댓글 그룹 (원댓글의 ID)
     private String commentText; // 댓글내용
     private String regDate; // 작성일자
     private String updateDate; // 수정일자

@@ -4,11 +4,11 @@ import java.util.List;
 
 // challenge_scores table
 public class Score {
-	private int scoreId;
-	private int challengeId;
-	private List<String> playerNames;
-	private List<Integer> playerId;
-	private List<Integer> scores;
+	private int scoreId; // 점수 PK
+	private int challengeId; // 챌린지 id
+	private List<String> playerNames; // 플레이어 이름
+	private List<Integer> playerId; // 플레이어 ID
+	private List<Integer> scores; // 획득점수
 	private String regDate;
 	
 	public Score() {

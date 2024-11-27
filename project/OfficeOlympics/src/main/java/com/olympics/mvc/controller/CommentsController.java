@@ -92,8 +92,10 @@ public class CommentsController {
 
         boolean isInserted = commentService.insertComment(comments);
 
-        return isInserted ? ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.")
-                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if(isInserted) {
+        	return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 	
 	
@@ -138,8 +140,10 @@ public class CommentsController {
         
         boolean isModified = commentService.modifyComment(comments);
 
-        return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
-                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if(isModified) {
+        	return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
     
 	
@@ -167,8 +171,10 @@ public class CommentsController {
 		
 		boolean isDeleted = commentService.deleteCommentOrReply(commentId, userId);
 		
-		return isDeleted ? ResponseEntity.ok("댓글이 정상적으로 삭제되었습니다.")
-               			 : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 삭제 실패");
+		if(isDeleted) {
+			return ResponseEntity.ok("댓글이 정상적으로 삭제되었습니다.");
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 삭제 실패");
 	}
 	
 	
@@ -198,8 +204,10 @@ public class CommentsController {
 
         boolean isInserted = commentService.insertReply(comments);
 
-        return isInserted ? ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.")
-                          : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if(isInserted) {
+        	return ResponseEntity.ok("댓글이 정상적으로 등록되었습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 	
     /**
@@ -242,9 +250,13 @@ public class CommentsController {
 		
 		boolean isModified = commentService.modifyReply(comments);
 		
-		return isModified ? ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.")
-						  : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		if(isModified) {
+			return ResponseEntity.ok("댓글이 정상적으로 수정되었습니다.");
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
+    
     
     private boolean isInvalidComment(Comments comments) {
         return comments == null || comments.getCommentText() == null || comments.getCommentText().trim().isEmpty();

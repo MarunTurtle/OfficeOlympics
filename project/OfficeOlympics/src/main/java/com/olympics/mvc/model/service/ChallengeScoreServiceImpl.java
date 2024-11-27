@@ -23,21 +23,19 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 		this.challengeDao = challengeDao;
 	}
 
-	// 전체 챌린지 조회
 	@Override
 	public List<Challenge> getChallenges() {
 		return challengeDao.getChallenges();
 	}
-	
-	// 챌린지 조회
+
 	@Override
 	public Challenge selectChallenge(int challengeId) {
 		return challengeDao.selectChallenge(challengeId);
 	}
 
-	// 챌린지 결과 기록
-	@Transactional
+	
 	@Override
+	@Transactional
 	public boolean upsertScores(Score score) {
 		// 이름을 ID로 변환
 	    List<Integer> ids = challengeDao.nameToId(score.getPlayerNames());
@@ -64,14 +62,13 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 	    }
 	}
 	
-	// 챌린지 총 점수 업데이트
-	@Transactional
+	
 	@Override
+	@Transactional
 	public void updateTotalScore() {
 		challengeDao.updateTotalScore();
 	}
 
-	// 현재 챌린지에서의 순위 조회
 	@Override
 	public List<Rank> selectChallengeScore(int challengeId, int olympicsId) {
 		Map<String, Object> params = new HashMap<>();
@@ -81,7 +78,6 @@ public class ChallengeScoreServiceImpl implements ChallengeScoreService{
 		return challengeDao.selectChallengeScore(params);
 	}
 
-	// 올림픽 팀 내 순위 조회
 	@Override
 	public List<Rank> selectFinalScore(int olympicsId) {
 		return challengeDao.selectFinalScore(olympicsId);

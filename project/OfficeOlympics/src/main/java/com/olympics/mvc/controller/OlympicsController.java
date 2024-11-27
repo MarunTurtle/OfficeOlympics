@@ -124,7 +124,10 @@ public class OlympicsController {
         
         boolean isDeleted = playerService.deleteOlympics(olympicsId);
         
-        return isDeleted ? ResponseEntity.noContent().build() 
-        				 : ResponseEntity.notFound().build();
+        if(isDeleted) {
+        	return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.notFound().build();
     }
 }

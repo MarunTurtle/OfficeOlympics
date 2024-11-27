@@ -103,12 +103,11 @@
 | | 대댓글 수정 | PUT | /challenges/{challengesId}/comments/{commentId}/replies/{replyId} |
 
 ### 9. Use Case 다이어그램
-
-![Use Case Diagram](/media/UseCaseDiagram.png) 
+ <img src="./media/UseCaseDiagram.png" height="700">
 
 ### 10. ERD 다이어그램
+ <img src="./media/ERD.png" width="700">
 
-![ER Diagram](./media/ERD.png)
 - **users**: 사용자 정보를 저장하는 테이블로, 이메일, 비밀번호, 닉네임 등의 정보를 포함합니다.
 - **olympics**: 올림픽 팀 정보와 호스트 사용자 정보를 저장합니다.
 - **players**: 올림픽 참가 플레이어 정보를 저장합니다.
@@ -118,7 +117,7 @@
 
 ### 11. Class 다이어그램
 
-![Class Diagram](/media/backend/ClassDiagram.png)
+ <img src="./media/backend/ClassDiagram.png" width="1000">
 
 ### 12. 변수명 리스트
 
@@ -174,34 +173,55 @@
      - 올림픽 이름 입력
      - 참가자 수 설정 (최대 10명)
      - 참가자 닉네임 입력
+     <img src="./media/feature_gif/2_올림픽생성.gif" width="700">
    - **챌린지 상세 (ChallengeDetail.vue)**:
      - 16:9 비율 비디오 플레이어
      - 챌린지 설명
      - 댓글 시스템
+     <img src="./media/feature_gif/3_챌린지선택.gif" width="700">
    - **스코어 입력 (ChallengeScore.vue)**:
      - 플레이어별 점수 입력
      - 현재 순위 표시
+     <img src="./media/feature_gif/4_점수등록.gif" width="700">
    - **최종 순위 (FinalRank.vue)**:
      - 시상대 형태의 순위 표시
      - 새 올림픽 시작/홈으로 이동 버튼
+    <img src="./media/feature_gif/10_최종결과_올림픽삭제.gif" width="700">
 
-3. **마이페이지 (MyPage.vue)**
+3. **댓글 기능**
+  - **댓글/대댓글 작성**
+  <img src="./media/feature_gif/5_댓글작성.gif" width="700">
+  <img src="./media/feature_gif/6_대댓글_작성.gif" width="700">
+  
+  - **댓극/대댓글 수정&삭제**
+  <img src="./media/feature_gif/7_댓글_대댓글_수정.gif" width="700">
+  <img src="./media/feature_gif/8_댓글_대댓글_삭제.gif" width="700">
+
+4. **마이페이지 (MyPage.vue)**
    - 프로필 정보 표시
    - 올림픽 참가자 목록 및 점수
    - 프로필 수정 모달
    - 계정 삭제 기능
+  <img src="./media/feature_gif/9_마이페이지_수정.gif" width="700">
+  <img src="./media/feature_gif/12_계정삭제.gif" width="700">
 
-4. **인증 페이지**
+5. **인증 페이지**
    - 로그인: 이메일/비밀번호 입력
    - 회원가입: 개인정보 입력 폼, 프로필 이미지 업로드
+  <img src="./media/feature_gif/0_회원가입.gif" width="700">
+  <img src="./media/feature_gif/1_로그인.gif" width="700">
+  <img src="./media/feature_gif/11_로그아웃.gif" width="700">
+  <img src="./media/feature_gif/13_에러페이지.gif" width="700">
 
 #### 3) 로고
-![Office Olympics Logo](/media/frontend/logo_office_olympics_large.png)
+  <img src="./media/frontend/logo_office_olympics_large.png" width="1000">
+
 - 사무용품을 활용한 올림픽 오륜기 모티브
 - USB, 자, 시계, 스테이플러, 도넛으로 구성
 
 #### 4) 색상 팔레트
-![Color Palette](/media/frontend/color_palette.png)
+  <img src="./media/frontend/color_palette.png" width="1000">
+
 | 색상 | HEX | 용도 |
 |------|-----|------|
 | `#2B88D9` | Primary | 주요 브랜드 색상, 로고, 강조 텍스트 |
@@ -219,5 +239,4 @@
   - [Pretendard 공식 GitHub](https://github.com/orioncactus/pretendard)
 
 ### 14. 간트차트
-
-![Gantt Chart](/media/GanttChart.png)
+  <img src="./media/GanttChart.png" width="1000">

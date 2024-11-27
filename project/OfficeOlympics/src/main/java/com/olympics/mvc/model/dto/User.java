@@ -8,18 +8,15 @@ public class User {
 	private String email; // 로그인 아이디
 	private String password; // 비밀번호 (SHA-256)
 	private String salt; // 개별 salt
-	private String name; // 닉네임
-	private String nickname;
+	private String name; // 이름
+	private String nickname; // 닉네임
 	private String profileImg; // 사용자가 등록한 사진 이름
 	private String imgSrc; // 서버에 저장한 이름
 	private String regDate; // 가입일자
 	
-	public User() {
-		// TODO Auto-generated constructor stub
-	}
+	public User() {}
 	
 	// User 생성자
-
 	public User(int userId, String email, String password, String salt, String name, String nickname, String profileImg,
 			String imgSrc, String regDate) {
 		super();

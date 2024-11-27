@@ -9,7 +9,7 @@
 
 ### Swagger API 이미지
 
-![be_olympics.png](../media/backend/be_olympics.png)
+![be_olympics.png](../../media/backend/be_olympics.png)
 
 - **올림픽 팀 관리**: `OlympicsController`와 `PlayerService`를 통해 올림픽 팀을 생성, 조회, 삭제할 수 있는 기능이 구현되어 있습니다.
 - **데이터베이스 연동**: `PlayerDao`와 `PlayerMapper.xml`을 이용해 MyBatis로 데이터베이스와 상호작용하며, `Player` 및 `OlympicsSetup` 객체와 관련된 데이터 CRUD 작업을 수행합니다.
@@ -68,6 +68,6 @@
     - **특정 팀의 선수 목록 조회**: `getPlayersByOlympicsId`: 특정 팀에 속한 선수 목록을 조회합니다.
     - **주요 매핑**: `deleteOlympics`: 특정 팀을 삭제합니다.
 
-- dto
+- dto   
     `OlympicsSetup`: 팀 생성에 필요한 정보인 사용자 ID, 팀 이름, 플레이어 이름 목록 등을 저장하는 DTO입니다.
     - `Player`: 개별 선수 정보를 저장하며, `olympicsId`, `playerId`, `playerName`, `totalScore`, `regDate` 등의 필드를 포함합니다.

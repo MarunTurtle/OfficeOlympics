@@ -4,6 +4,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class FileConfirm {
 	
+	/**
+	 * 파일 확장자 확인
+	 * @param file 사용자가 등록한 file
+	 * @return 파일 형식 확인 후 jpg/ png가 아닐 경우 false 반환
+	 */
 	public static boolean isValidImageFile(MultipartFile file) {
 		
 		// 1. 파일 확장자 확인

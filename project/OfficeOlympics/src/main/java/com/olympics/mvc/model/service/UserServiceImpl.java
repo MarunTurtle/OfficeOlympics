@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * 회원가입
 	 */
-	@Transactional
 	@Override
+	@Transactional
 	public boolean insertUser(User user, MultipartFile profileImg) {
 		String salt = HashUtil.generateSalt();
 		user.setSalt(salt);
@@ -90,8 +90,8 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * 회원탈퇴
 	 */
-	@Transactional
 	@Override
+	@Transactional
 	public boolean deleteUser(int id) {
 		return userDao.deleteUser(id) == 1;
 	}
@@ -126,8 +126,8 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * 회원정보 수정
 	 */
-	@Transactional
 	@Override
+	@Transactional
 	public boolean modifyUser(User user, MultipartFile profileImg) {
 		
 		User exUser = userDao.selectById(user.getUserId());

@@ -9,7 +9,7 @@
 
 ### Swagger API 이미지
 
-![be_challenges.png](../media/backend/be_challenges.png)
+![be_challenges.png](../../media/backend/be_challenges.png)
 
 - **챌린지 관리**: `ChallengeController`와 `ChallengeScoreService`를 통해 챌린지의 생성, 조회, 기록 제출, 리더보드 조회 기능이 구현되어 있습니다.
 - **데이터베이스 연동**: `ChallengeScoreDao`와 `ChallengeScoreMapper.xml`을 이용해 MyBatis로 데이터베이스와 연동하여 챌린지와 관련된 데이터 조작을 수행합니다.

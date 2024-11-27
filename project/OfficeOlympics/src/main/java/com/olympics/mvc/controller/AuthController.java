@@ -151,7 +151,9 @@ public class AuthController {
 		
 		boolean isRegistered = userService.insertUser(user, profileImg);
 		
-		return isRegistered ? ResponseEntity.ok(name + "님 회원가입 성공")
-			    			: ResponseEntity.badRequest().body("회원가입 실패 : 이미 존재하는 사용자입니다.");
+		if(isRegistered) {
+			return ResponseEntity.ok(name + "님 회원가입 성공");
+		}
+		return ResponseEntity.badRequest().body("회원가입 실패 : 이미 존재하는 사용자입니다.");
 	}
 }

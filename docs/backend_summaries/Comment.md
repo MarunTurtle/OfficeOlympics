@@ -4,12 +4,15 @@
 - [주요 코드 구조 및 로직](#주요-코드-구조-및-로직)
 - [작업 내역](#작업-내역)
 - [각 파일의 내용](#각-파일의-내용)
+- [댓글 로직 설계](#\※-댓글-로직-설계)
+  - [설계 시 고려 사항](#설계-시-고려-사항)
+  - [commentGroup을 활용한 구조의 장점](#commentgroup을-활용한-구조의-장점)
 
 ## 주요 코드 구조 및 로직
 
 ### Swagger API 이미지
 
-![be_comments.png](../media/backend/be_comments.png)
+![be_comments.png](../../media/backend/be_comments.png)
 
 - **댓글 관리**: `CommentsController`와 `CommentsService`를 통해 챌린지별 댓글 작성, 조회, 수정, 삭제 기능을 구현했습니다.
 - **데이터베이스 연동**: `CommentsDao`와 `CommentsMapper.xml`을 이용해 MyBatis로 댓글 데이터 조작을 수행합니다.

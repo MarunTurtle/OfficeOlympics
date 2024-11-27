@@ -21,12 +21,11 @@ public class PlayerServiceImpl implements PlayerService{
 	public PlayerServiceImpl(PlayerDao playerDao) {
 		this.playerDao = playerDao;
 	}
+
 	
-	// 올림픽 팀 생성
-	@Transactional
 	@Override
+	@Transactional
 	public int insertOlympics(int userId, String olympicsName) {
-		// 틀 생성
 		OlympicsSetup olympics = new OlympicsSetup();
 		// olympics 기본 설정
 	    olympics.setUserId(userId);
@@ -36,17 +35,17 @@ public class PlayerServiceImpl implements PlayerService{
 	    return olympics.getOlympicsId(); // 생성된 olympics ID 반환
 	}
 
-	// 올림픽 팀 설정
-	@Transactional
+
 	@Override
+	@Transactional
 	public boolean addPlayers(List<Player> players) {
 		int result = playerDao.addPlayers(players);
 		return result == players.size();
 	}
 	
-	// 올림픽 팀 수정
-	@Transactional
+
 	@Override
+	@Transactional
 	public boolean modifyOlympics(OlympicsSetup olympicsSetup) {
 		
 		List<Integer> playerIds = playerDao.getPlayerIdByOlympics(olympicsSetup.getOlympicsId());
@@ -75,13 +74,13 @@ public class PlayerServiceImpl implements PlayerService{
 	    return playersModified > 0 && nameModified > 0;
 	}
 	
-	// 올림픽 팀원 조회 (올림픽 ID 기준)
+
 	@Override
 	public List<Map<String, Object>> getPlayersByOlympicsId(int olympicsId) {
 		return playerDao.getPlayersByOlympicsId(olympicsId);
 	}
 	
-	// 올림픽 ID 조회 (사용자 ID 기준)
+
 	@Override
 	public int findOlympicsIdByUserId(int userId) {
 		Integer olympicsId = playerDao.findOlympicsIdByUserId(userId);
@@ -91,15 +90,15 @@ public class PlayerServiceImpl implements PlayerService{
 		return olympicsId;
 	}
 
-	// 올림픽을 생성한 사용자 ID 조회
+
 	@Override
 	public int getOlympicCreatorUserId(int olympicsId) {
 		return playerDao.getOlympicCreatorUserId(olympicsId);
 	}
+
 	
-	// 올림픽 팀 삭제
-	@Transactional
 	@Override
+	@Transactional
 	public boolean deleteOlympics(int id) {
 		return playerDao.deleteOlympics(id) == 1;
 	}

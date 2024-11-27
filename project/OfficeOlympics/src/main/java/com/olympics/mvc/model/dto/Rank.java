@@ -1,9 +1,9 @@
 package com.olympics.mvc.model.dto;
 
 public class Rank {
-	private int rank;
-	private String playerName;
-	private int score;
+	private int rank; // 등수
+	private String playerName; 
+	private int score; // 점수
 
 	public Rank() {
 		super();
