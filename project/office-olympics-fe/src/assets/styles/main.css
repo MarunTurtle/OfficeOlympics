@@ -1,0 +1,211 @@
+/* Font Imports */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+
+/* Global Font Family */
+body {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Colors */
+:root {
+  --primary-color: #2B88D9;
+  --secondary-color: #F2F2F0;
+  --tertiary-color: #E8EdF2;
+  --warning-color: #F2AE30;
+  --interaction-hover-color: #0DA64F;
+  --alert-color: #F2668B;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+p {
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+/* Buttons */
+button {
+  font-family: 'Pretendard', sans-serif;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button.primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+button.primary:hover {
+  background-color: var(--interaction-hover-color);
+}
+
+button.warning {
+  background-color: var(--warning-color);
+  color: #fff;
+}
+
+button.alert {
+  background-color: var(--alert-color);
+  color: #fff;
+}
+
+button.secondary {
+  background-color: var(--secondary-color);
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+button.secondary:hover {
+  background-color: #e2e2e0;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Navbar */
+.navbar {
+  font-family: 'Pretendard', sans-serif;
+  background-color: var(--secondary-color);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  color: var(--primary-color) !important;
+  font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+  color: #333 !important;
+  transition: color 0.3s ease;
+}
+
+/* Footer */
+footer {
+  background-color: var(--secondary-color);
+  color: #333;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Forms */
+input, select, textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.2rem 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Cards */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  /* transform: translateY(-5px); */
+}
+
+.card .card-title {
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff;
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color) !important;
+}
+
+.leaderboard-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.rank-1 {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+.rank-2 {
+  color: #C0C0C0;
+  font-weight: bold;
+}
+
+.rank-3 {
+  color: #CD7F32;
+  font-weight: bold;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+

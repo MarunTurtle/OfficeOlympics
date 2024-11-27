@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.PlayerDao">
+
+	<!-- 올림픽 팀 생성 (자동 생성된 ID 매핑) -->
+    <insert id="insertOlympics" parameterType="Player" useGeneratedKeys="true" keyProperty="olympicsId">
+        INSERT INTO olympics (user_id, olympics_name)
+        VALUES (#{userId}, #{olympicsName});
+    </insert>
+	
+	<!-- 올림픽 팀 설정 -->
+	<insert id="addPlayers" parameterType="list" useGeneratedKeys="true" keyColumn="player_id">
+		INSERT INTO players (olympics_id, player_name, total_score, reg_date)
+        VALUES
+        <foreach collection="players" item="player" separator=",">
+            (#{player.olympicsId}, #{player.playerName}, #{player.totalScore}, NOW())
+        </foreach>
+        ;
+    </insert>
+    
+	<!-- player_name -> player_id 추출 -->
+    <select id="nameToId" parameterType="list" resultType="int">
+    	SELECT player_id FROM players
+    	WHERE player_name IN
+    	<foreach item="playerName" collection="list" open="(" separator="," close=")">
+        #{playerName}
+    	</foreach>
+    	;
+    </select>
+    
+    
+    <!-- 올림픽 팀 멤버 수정 -->
+    <update id="modifyPlayers" parameterType="map">
+        UPDATE players
+        <set>
+            player_name = CASE player_id
+            <foreach collection="playerDataList" item="playerData">
+                WHEN #{playerData.playerId} THEN #{playerData.playerName}
+            </foreach>
+            END
+        </set>
+        WHERE olympics_id = #{olympicsId}
+        AND player_id IN
+        <foreach collection="playerDataList" item="playerData" open="(" separator="," close=")">
+            #{playerData.playerId}
+        </foreach>
+    </update>
+	
+	<!-- 올림픽 팀 이름 수정 -->
+	<update id="modifyOlympics" parameterType="map">
+		UPDATE olympics
+		SET olympics_name = #{olympicsName}
+		WHERE olympics_id = #{olympicsId};
+	</update>
+	
+	<!-- 올림픽 playerID 조회 -->
+	<select id="getPlayerIdByOlympics" parameterType="int" resultType="String">
+		SELECT player_id FROM players
+		WHERE olympics_id = #{olympicsId};
+	</select>
+	
+	<!-- 올림픽 팀원 조회 (olympics ID 기준) -->
+	<select id="getPlayersByOlympicsId" parameterType="int" resultType="map">
+		SELECT o.olympics_name, p.player_name, p.total_score FROM players p
+		INNER JOIN olympics o ON o.olympics_id = p.olympics_id
+		WHERE o.olympics_id = #{olympicsId};
+	</select>
+	
+	<!-- 올림픽 ID 조회 (사용자 ID 기준) -->
+	<select id="findOlympicsIdByUserId" parameterType="int" resultType="int">
+		SELECT COALESCE(olympics_id, 0) FROM olympics
+		WHERE user_id = #{userId};
+	</select>
+	
+	<!-- 올림픽을 생성한 사용자 ID 조회 -->
+	<select id="getOlympicCreatorUserId" parameterType="int" resultType="int">
+		SELECT user_id FROM olympics
+		WHERE olympics_id = #{olympicsId};
+	</select>
+	
+	
+	<!-- 올림픽 팀 삭제 -->
+	<delete id="deleteOlympics" parameterType="int">
+		DELETE FROM olympics
+		WHERE olympics_id = #{olympicsId};
+	</delete>
+	
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.ChallengeScoreDao">
+	<!-- 전체 챌린지 조회 -->
+	<select id="getChallenges">
+		SELECT * FROM challenges;
+	</select>
+
+	<!-- 챌린지 조회 -->
+    <select id="selectChallenge" parameterType="int" resultType="Challenge">
+    	SELECT * FROM challenges
+    	WHERE challenge_id = #{challengeId};
+    </select>
+    
+    <!-- player_name -> player_id 추출 -->
+    <select id="nameToId" parameterType="list" resultType="int">
+    	SELECT player_id FROM players
+    	WHERE player_name IN
+    	<foreach item="playerName" collection="playerNames" open="(" separator="," close=")">
+        #{playerName}
+    	</foreach>
+    	;
+    </select>
+    
+    <!-- score_id 존재 여부 확인 -->
+    <select id="findScoreId" parameterType="list" resultType="int">
+    	SELECT 
+		CASE WHEN count(*) > 1 THEN 1
+		ELSE 0 
+		END AS countScore FROM challenge_scores
+		WHERE
+    	<foreach collection="list" item="score" separator="OR">
+        (challenge_id = #{score.challengeId} AND player_id = #{score.playerId})
+    	</foreach>
+    	;
+    </select>
+    
+    <!-- 챌린지 결과 기록 (삽입) -->
+    <insert id="insertScore" parameterType="list" useGeneratedKeys="true" keyProperty="scoreId">
+    	INSERT INTO challenge_scores (challenge_id, player_id, score, reg_date)
+    	VALUES 
+    	<foreach collection="list" item="score" separator=",">
+    		(#{score.challengeId}, #{score.playerId}, #{score.score}*100, NOW())
+    	</foreach>
+    	;
+    </insert>
+    
+    <!-- 챌린지 결과 기록 (누적) -->
+    <update id="updateScore" parameterType="list">
+        UPDATE challenge_scores
+        SET 
+            score = CASE
+            <foreach collection="list" item="score">
+                WHEN (challenge_id = #{score.challengeId} AND player_id = #{score.playerId}) 
+                THEN score + #{score.score} * 100
+            </foreach>
+            END,
+            reg_date = NOW()
+        WHERE (challenge_id, player_id) IN
+        <foreach collection="list" item="score" open="(" separator="," close=")">
+            (#{score.challengeId}, #{score.playerId})
+        </foreach>
+    </update>
+
+    <!-- 챌린지 총 점수 업데이트 -->
+    <update id="updateTotalScore">
+	    UPDATE players 
+		SET total_score = (
+					  SELECT SUM(score) 
+					  FROM challenge_scores 
+					  WHERE challenge_scores.player_id = players.player_id)
+			, reg_date = NOW();
+    </update>
+
+    <!-- 현재 챌린지에서의 순위 조회 -->
+    <select id="selectChallengeScore" parameterType="map" resultType="Rank">
+    	SELECT row_number() over(order by score desc) as 'rank', pl.player_name as 'playerName', cs.score as 'score'
+		FROM challenge_scores cs 
+		INNER JOIN players pl ON pl.player_id=cs.player_id
+		WHERE cs.challenge_id = #{challengeId}
+		AND pl.olympics_id = #{olympicsId};
+    </select>
+    
+    <!-- 올림픽 팀 내 순위 조회 -->
+    <select id="selectFinalScore" parameterType="int" resultType="Rank">
+    	SELECT row_number() over(order by total_score desc) as 'rank', player_name as 'playerName', total_score as 'score'
+		FROM players p
+		inner join olympics o ON p.olympics_id=o.olympics_id
+        WHERE o.user_id = #{userId}
+		LIMIT 3;
+    </select>
+    
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.olympics.mvc.model.dao.UserDao">
+<!-- resultMap 삭제 -->
+
+	<!-- 회원 가입 insertUser -->
+	<!-- keyProperty는 데이터베이스에 레코드를 삽입할 때 자동으로 생성된 키 값을 매핑하는 역할 -->
+	<!-- useGeneratedKeys="true" 설정을 통해 통해 새로 삽입된 레코드의 ID 값을 MyBatis에서 바로 사용할 수 있음-->
+	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
+		INSERT INTO users (email, password, salt, name, nickname, profile_img, img_src)
+		VALUES (#{email}, #{password}, #{salt}, #{name}, #{nickname}, #{profileImg}, #{imgSrc});
+	</insert>
+	
+	<!-- 회원 삭제 deleteUser -->
+	<delete id="deleteUser" parameterType="int">
+		DELETE FROM users
+		WHERE user_id = #{userId};
+	</delete>
+	
+	<!-- 회원 정보 조회 selectUser -->
+	<select id="selectUser" resultType="User" parameterType="String">
+		SELECT * FROM users
+		WHERE email = #{email};
+	</select>
+	
+	<!--  회원 정보 id로 조회 selectById-->
+	<select id="selectById" resultType ="User" parameterType="int">
+		SELECT email, name, nickname, profile_img, img_src, reg_date FROM users
+		WHERE user_id = #{userId};
+	</select>
+	
+	<!-- 회원 정보 수정 (비밀번호 제외) modifyUser -->
+	<!-- 회원정보는 닉네임, 이미지만 수정 가능하도록 변경 -->
+	<update id="modifyUser" parameterType="User">
+		UPDATE users
+		SET nickname = #{nickname}, profile_img = #{profileImg}, img_src = #{imgSrc}
+		WHERE user_id = #{userId};
+	</update>
+	
+	
+</mapper>
